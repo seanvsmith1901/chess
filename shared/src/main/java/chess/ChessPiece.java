@@ -1,5 +1,7 @@
 package chess;
 
+import com.sun.source.tree.NewArrayTree;
+
 import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -73,6 +75,12 @@ public class ChessPiece {
         if (currentPiece.getPieceType() == PieceType.BISHOP) {
             newArrayList = BishopMoves(myPosition, board);
         }
+        if (currentPiece.getPieceType() == PieceType.QUEEN) {
+            newArrayList = QueenMoves(myPosition, board);
+        }
+        if (currentPiece.getPieceType() == PieceType.ROOK) {
+            newArrayList = RookMoves(myPosition, board);
+        }
 
         return newArrayList;
     }
@@ -88,119 +96,144 @@ public class ChessPiece {
     // so surface is still between 1 and 8
     public ArrayList<ChessMove> BishopMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
-
-        //added this comment to make sure everything is working correctly
-
-        // first, up and right
-        var currColumn = myPosition.getColumn();
-        var currRow = myPosition.getRow();
-
-        while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
-            currRow += 1;
-            currColumn += 1;
-            if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
-                var newChessPosition = new ChessPosition(currRow, currColumn);
-                if (board.getPiece(newChessPosition) != null) {
-                    if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
-                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
-                        break;
+        for (var i = 0; i < 4; i++) {
+            var currColumn = myPosition.getColumn();
+            var currRow = myPosition.getRow();
+            while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
+                if (i == 0) {
+                    currRow += 1;
+                    currColumn += 1;
+                }
+                if (i == 1) {
+                    currRow -=1 ;
+                    currColumn += 1;
+                }
+                if (i == 2) {
+                    currRow -= 1;
+                    currColumn -= 1;
+                }
+                if (i == 3) {
+                    currRow += 1;
+                    currColumn -= 1;
+                }
+                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
+                    var newChessPosition = new ChessPosition(currRow, currColumn);
+                    if (board.getPiece(newChessPosition) != null) {
+                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
+                            var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                            possibleMoves.add(newChessMove);
+                            break;
+                        }
+                        else {
+                            break;
+                        }
                     }
                     else {
-                        break;
-                    }
-                }
-                else {
-                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                    possibleMoves.add(newChessMove);
-                }
-            }
-        }
-
-        // now down and right
-        currColumn = myPosition.getColumn();
-        currRow = myPosition.getRow();
-
-        while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
-            currRow -= 1;
-            currColumn += 1;
-            if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
-                var newChessPosition = new ChessPosition(currRow, currColumn);
-                if (board.getPiece(newChessPosition) != null) {
-                    if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
-                        break;
                     }
-                    else {
-                        break;
-                    }
-
-                }
-                else {
-                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                    possibleMoves.add(newChessMove);
                 }
             }
+
         }
-
-
-        // down and left
-        currColumn = myPosition.getColumn();
-        currRow = myPosition.getRow();
-
-        while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
-            currRow -= 1;
-            currColumn -= 1;
-            if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
-                var newChessPosition = new ChessPosition(currRow, currColumn);
-                if (board.getPiece(newChessPosition) != null) {
-                    if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
-                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
-                        break;
-                    }
-                    else {
-                        break;
-                    }
-
-                }
-                else {
-                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                    possibleMoves.add(newChessMove);
-                }
-            }
-        }
-
-        // up and left
-        currColumn = myPosition.getColumn();
-        currRow = myPosition.getRow();
-
-        while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
-            currRow += 1;
-            currColumn -= 1;
-            if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
-                var newChessPosition = new ChessPosition(currRow, currColumn);
-                if (board.getPiece(newChessPosition) != null) {
-                    if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
-                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
-                        break;
-                    }
-                    else {
-                        break;
-                    }
-
-                }
-                else {
-                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                    possibleMoves.add(newChessMove);
-                }
-            }
-        }
-
         return possibleMoves;
+    }
 
+    public ArrayList<ChessMove> QueenMoves(ChessPosition myPosition, ChessBoard board) {
+        var possibleMoves = new ArrayList<ChessMove>();
+        for (var i = 0; i < 8; i++) {
+            var currColumn = myPosition.getColumn();
+            var currRow = myPosition.getRow();
+            while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
+                if (i == 0) {
+                    currRow += 1;
+                    currColumn += 1;
+                }
+                if (i == 1) {
+                    currRow -=1 ;
+                    currColumn += 1;
+                }
+                if (i == 2) {
+                    currRow -= 1;
+                    currColumn -= 1;
+                }
+                if (i == 3) {
+                    currRow += 1;
+                    currColumn -= 1;
+                }
+                if (i == 4) {
+                    currRow += 1;
+                }
+                if (i == 5) {
+                    currRow -= 1;
+                }
+                if (i == 6) {
+                    currColumn += 1;
+                }
+                if (i == 7) {
+                    currColumn -= 1;
+                }
+                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
+                    var newChessPosition = new ChessPosition(currRow, currColumn);
+                    if (board.getPiece(newChessPosition) != null) {
+                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
+                            var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                            possibleMoves.add(newChessMove);
+                            break;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    else {
+                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                        possibleMoves.add(newChessMove);
+                    }
+                }
+            }
+
+        }
+        return possibleMoves;
+    }
+    public ArrayList<ChessMove> RookMoves(ChessPosition myPosition, ChessBoard board) {
+        var possibleMoves = new ArrayList<ChessMove>();
+        for (var i = 0; i < 4; i++) {
+            var currColumn = myPosition.getColumn();
+            var currRow = myPosition.getRow();
+            while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
+                if (i == 0) {
+                    currRow += 1;
+                }
+                if (i == 1) {
+                    currRow -=1 ;
+                }
+                if (i == 2) {
+                    currColumn += 1;
+                }
+                if (i == 3) {
+                    currColumn -= 1;
+                }
+                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
+                    var newChessPosition = new ChessPosition(currRow, currColumn);
+                    if (board.getPiece(newChessPosition) != null) {
+                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
+                            var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                            possibleMoves.add(newChessMove);
+                            break;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    else {
+                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                        possibleMoves.add(newChessMove);
+                    }
+                }
+            }
+
+        }
+        return possibleMoves;
     }
 
 }
