@@ -89,7 +89,7 @@ public class ChessPiece {
     public ArrayList<ChessMove> BishopMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
 
-
+        //added this comment to make sure everything is working correctly
 
         // first, up and right
         var currColumn = myPosition.getColumn();
