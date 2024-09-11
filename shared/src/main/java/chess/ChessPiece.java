@@ -84,6 +84,9 @@ public class ChessPiece {
         if (currentPiece.getPieceType() == PieceType.KING) {
             newArrayList = KingMoves(myPosition, board);
         }
+        if (currentPiece.getPieceType() == PieceType.KNIGHT) {
+            newArrayList = KnightMoves(myPosition, board);
+        }
 
         return newArrayList;
     }
@@ -125,6 +128,67 @@ public class ChessPiece {
                 if (i == 7) {
                     currColumn -= 1;
                 }
+                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
+                    var newChessPosition = new ChessPosition(currRow, currColumn);
+                    if (board.getPiece(newChessPosition) != null) {
+                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
+                            var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                            possibleMoves.add(newChessMove);
+                        }
+                    }
+                    else {
+                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                        possibleMoves.add(newChessMove);
+                    }
+                }
+            }
+        }
+
+        return possibleMoves;
+
+    }
+
+    public ArrayList<ChessMove> KnightMoves(ChessPosition myPosition, ChessBoard board) {
+        var possibleMoves = new ArrayList<ChessMove>();
+        // so we need to check 4 directions
+        // but only run once
+        for (var i = 0; i < 8; i++) {
+            var currColumn = myPosition.getColumn();
+            var currRow = myPosition.getRow();
+            if ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
+                if (i == 0) {
+                    currRow += 2;
+                    currColumn += 1;
+                }
+                if (i == 1) {
+                    currRow += 2;
+                    currColumn -= 1;
+                }
+                if (i == 2) {
+                    currRow -= 2;
+                    currColumn += 1;
+                }
+                if (i == 3) {
+                    currRow -= 2;
+                    currColumn -= 1;
+                }
+                if (i == 4) {
+                    currRow += 1;
+                    currColumn += 2;
+                }
+                if (i == 5) {
+                    currRow += 1;
+                    currColumn -= 2;
+                }
+                if (i == 6) {
+                    currRow -= 1;
+                    currColumn += 2;
+                }
+                if (i == 7) {
+                    currRow -= 1;
+                    currColumn -= 2;
+                }
+
                 if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
                     var newChessPosition = new ChessPosition(currRow, currColumn);
                     if (board.getPiece(newChessPosition) != null) {
