@@ -1,5 +1,6 @@
 package chess;
 
+import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,17 +74,22 @@ public class ChessPiece {
             newArrayList = BishopMoves(myPosition, board);
         }
 
-       //newArrayList = BishopMoves(myPosition);
-
         return newArrayList;
     }
-    // given that this contains the bishop, I just need to check the 4 diagonals.
-    // every time we check a space, we need to check if there is another peice there
-    // if there is another peice and its our color, we can't move.
-    // if there is another piece and its NOT our color, we can capture it and move to its space.
 
+
+    public ArrayList<ChessMove> KingMoves(ChessPosition myPosition, ChessBoard board) {
+        var possibleMoves = new ArrayList<ChessMove>();
+        return possibleMoves;
+
+    }
+
+    //change the paradigm - we should only enter pieces positions between 1 and 8,
+    // so surface is still between 1 and 8
     public ArrayList<ChessMove> BishopMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
+
+
 
         // first, up and right
         var currColumn = myPosition.getColumn();
@@ -94,23 +100,20 @@ public class ChessPiece {
             currColumn += 1;
             if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
                 var newChessPosition = new ChessPosition(currRow, currColumn);
-                var boardTestPosition = new ChessPosition(currRow-1, currColumn-1);
-                if (board.getPiece(boardTestPosition) != null) {
-                    if (board.getPiece(boardTestPosition).getPieceType() != this.type) {
+                if (board.getPiece(newChessPosition) != null) {
+                    if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                         break;
                     }
                     else {
-                        if (boardTestPosition == myPosition) {
-                            break;
-                        }
+                        break;
                     }
                 }
-                var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                possibleMoves.add(newChessMove);
-
-
+                else {
+                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                    possibleMoves.add(newChessMove);
+                }
             }
         }
 
@@ -123,23 +126,21 @@ public class ChessPiece {
             currColumn += 1;
             if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
                 var newChessPosition = new ChessPosition(currRow, currColumn);
-                var boardTestPosition = new ChessPosition(currRow-1, currColumn-1);
-                if (board.getPiece(boardTestPosition) != null) {
-                    if (board.getPiece(boardTestPosition).getPieceType() != this.type) {
+                if (board.getPiece(newChessPosition) != null) {
+                    if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                         break;
                     }
                     else {
-                        if (boardTestPosition == myPosition) {
-                            break;
-                        }
+                        break;
                     }
+
                 }
-                var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                possibleMoves.add(newChessMove);
-
-
+                else {
+                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                    possibleMoves.add(newChessMove);
+                }
             }
         }
 
@@ -153,23 +154,21 @@ public class ChessPiece {
             currColumn -= 1;
             if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
                 var newChessPosition = new ChessPosition(currRow, currColumn);
-                var boardTestPosition = new ChessPosition(currRow-1, currColumn-1);
-                if (board.getPiece(boardTestPosition) != null) {
-                    if (board.getPiece(boardTestPosition).getPieceType() != this.type) {
+                if (board.getPiece(newChessPosition) != null) {
+                    if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                         break;
                     }
                     else {
-                        if (boardTestPosition == myPosition) {
-                            break;
-                        }
+                        break;
                     }
+
                 }
-                var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                possibleMoves.add(newChessMove);
-
-
+                else {
+                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                    possibleMoves.add(newChessMove);
+                }
             }
         }
 
@@ -182,23 +181,21 @@ public class ChessPiece {
             currColumn -= 1;
             if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
                 var newChessPosition = new ChessPosition(currRow, currColumn);
-                var boardTestPosition = new ChessPosition(currRow-1, currColumn-1);
-                if (board.getPiece(boardTestPosition) != null) {
-                    if (board.getPiece(boardTestPosition).getPieceType() != this.type) {
+                if (board.getPiece(newChessPosition) != null) {
+                    if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                         break;
                     }
                     else {
-                        if (boardTestPosition == myPosition) {
-                            break;
-                        }
+                        break;
                     }
+
                 }
-                var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                possibleMoves.add(newChessMove);
-
-
+                else {
+                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                    possibleMoves.add(newChessMove);
+                }
             }
         }
 
