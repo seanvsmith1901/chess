@@ -8,12 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-/**
- * Represents a single chess piece
- * <p>
- * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
- */
+// a single chess piece with all its methods
 public class ChessPiece {
 
     private PieceType type;
@@ -50,29 +45,13 @@ public class ChessPiece {
         return this.type;
     }
 
-    /**
-     * Calculates all the positions a chess piece can move to
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
-     *
-     * @return Collection of valid moves
-     */
-
-
+    // calculates all possible moves and then returns an arraylist of all of those moves.
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        // so given that we get teh board, and the position
-        // we need to find the peice that we are dealing with
-        // run that function
-        // and then return the stubbins
-
+        // first get the piece and create the return object
         var currentPiece = board.getPiece(myPosition);
-
-        // for whatever reason I can't get it to check the type right.
-        var currentPieceType = currentPiece.getPieceType();
         var newArrayList = new ArrayList<ChessMove>();
 
-        // I mean I guess we start with the bishop
-
+        // I really should make this a match statement but I am lazy
         if (currentPiece.getPieceType() == PieceType.BISHOP) {
             newArrayList = BishopMoves(myPosition, board);
         }
@@ -91,17 +70,19 @@ public class ChessPiece {
         if (currentPiece.getPieceType() == PieceType.PAWN) {
             newArrayList = PawnMoves(myPosition, board);
         }
-
+        // if the piece is null we return an empty list, which is jsut right
         return newArrayList;
     }
 
+    // this one is by far the most complicated.
     public ArrayList<ChessMove> PawnMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         var currColumn = myPosition.getColumn();
         var currRow = myPosition.getRow();
+        // first check that we are in a valid spot then its color
         if ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
             if (this.teamColor == ChessGame.TeamColor.WHITE) {
-                if (currRow == 2) {
+                if (currRow == 2) { // if we are in the starting position we can try to double jump so check all that
                     var newChessPosition = new ChessPosition(currRow+2, currColumn);
                     var intermediateChessPosition = new ChessPosition(currRow+1, currColumn);
                     if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
@@ -109,9 +90,9 @@ public class ChessPiece {
                         possibleMoves.addAll(MultiplyPawn(newChessMove));
                     }
                 }
-                currRow++;
+                currRow++; // either way we can try advancing one (if we are white)
             } else {
-                if (currRow == 7) {
+                if (currRow == 7) { // we are in the black starting position
                     var newChessPosition = new ChessPosition(currRow-2, currColumn);
                     var intermediateChessPosition = new ChessPosition(currRow-1, currColumn);
                     if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
@@ -119,28 +100,29 @@ public class ChessPiece {
                         possibleMoves.addAll(MultiplyPawn(newChessMove));
                     }
                 }
-                currRow--;
+                currRow--; // either way we can try moving only one
             }
-            if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
+            if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // bounds checking
 
-                var newChessPosition = new ChessPosition(currRow, currColumn);
-                if (board.getPiece(newChessPosition) == null) {
-                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                    possibleMoves.addAll(MultiplyPawn(newChessMove));
+                var newChessPosition = new ChessPosition(currRow, currColumn); // for our new position
+                if (board.getPiece(newChessPosition) == null) { // if no one is there
+                    var newChessMove = new ChessMove(myPosition, newChessPosition, null); // create the chess move
+                    possibleMoves.addAll(MultiplyPawn(newChessMove)); // this checks for promotions and returns all possible promotiosn
                 }
 
                 // test the left and right stuff
-                currColumn = myPosition.getColumn();
-                currColumn++;
+                currColumn = myPosition.getColumn(); // reset cause this is color neutral
+                currColumn++; // check to our right
                 newChessPosition = new ChessPosition(currRow, currColumn);
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
-                    if (board.getPiece(newChessPosition) != null) {
-                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
+                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // check bounds
+                    if (board.getPiece(newChessPosition) != null) { // check to see if there is a piece to the diagonal
+                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) { // peice and wrong color?
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                            possibleMoves.addAll(MultiplyPawn(newChessMove));
+                            possibleMoves.addAll(MultiplyPawn(newChessMove)); // helper function
                         }
                     }
                 }
+                // same thing as the above but to the left
                 currColumn = myPosition.getColumn();
                 currColumn--;
                 newChessPosition = new ChessPosition(currRow, currColumn);
@@ -154,11 +136,13 @@ public class ChessPiece {
                 }
             }
         }
-        return possibleMoves;
+        return possibleMoves; // return the possible moves
     }
 
+    // checks for promotions and returns all possible promotions
     public ArrayList<ChessMove> MultiplyPawn(ChessMove currentMove) {
         var newMoves = new ArrayList<ChessMove>();
+        // checks if we are in a promition spot (there's probably a less costly version of this)
         if (((currentMove.getEndPosition().getRow() == 1) && (getTeamColor() == ChessGame.TeamColor.BLACK)) || (currentMove.getEndPosition().getRow() == 8) && (getTeamColor() == ChessGame.TeamColor.WHITE)) {
             for (var j = 0; j < 4; j++) {
                 var newPieceType = PieceType.PAWN;
@@ -178,13 +162,13 @@ public class ChessPiece {
                 newMoves.add(newChessMove);
             }
         }
-        else {
+        else { // if no promotion possible, return the normal move with a null promotion
             newMoves.add(currentMove);
         }
-        return newMoves;
+        return newMoves; // returns all possible stubbins
     }
 
-
+    // king time
     public ArrayList<ChessMove> KingMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         // so we need to check 4 directions
@@ -192,7 +176,8 @@ public class ChessPiece {
         for (var i = 0; i < 8; i++) {
             var currColumn = myPosition.getColumn();
             var currRow = myPosition.getRow();
-            if ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
+            if ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) { // check bounds
+                // check each of the possible 8 moves
                 if (i == 0) {
                     currRow += 1;
                     currColumn += 1;
@@ -221,34 +206,32 @@ public class ChessPiece {
                 if (i == 7) {
                     currColumn -= 1;
                 }
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
+                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // bounds check again
                     var newChessPosition = new ChessPosition(currRow, currColumn);
-                    if (board.getPiece(newChessPosition) != null) {
+                    if (board.getPiece(newChessPosition) != null) { // if there is a capture possible
                         if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                             possibleMoves.add(newChessMove);
                         }
                     }
-                    else {
+                    else { // no capture possible? just move forward.
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
                 }
             }
         }
-
         return possibleMoves;
-
     }
 
+    // I thought this one was going to be hard but he was easy money
     public ArrayList<ChessMove> KnightMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
-        // so we need to check 4 directions
-        // but only run once
+        // so we need to check 8 directions, but only run once
         for (var i = 0; i < 8; i++) {
             var currColumn = myPosition.getColumn();
             var currRow = myPosition.getRow();
-            if ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
+            if ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) { // bounds checking
                 if (i == 0) {
                     currRow += 2;
                     currColumn += 1;
@@ -282,15 +265,15 @@ public class ChessPiece {
                     currColumn -= 2;
                 }
 
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
+                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // bounds checking again
                     var newChessPosition = new ChessPosition(currRow, currColumn);
-                    if (board.getPiece(newChessPosition) != null) {
+                    if (board.getPiece(newChessPosition) != null) { // if there is a capture possible
                         if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                             possibleMoves.add(newChessMove);
                         }
                     }
-                    else {
+                    else { // just add the move
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
@@ -298,19 +281,18 @@ public class ChessPiece {
             }
         }
 
-        return possibleMoves;
+        return possibleMoves; // retunrs all the moves
 
     }
 
-    //change the paradigm - we should only enter pieces positions between 1 and 8,
-    // so surface is still between 1 and 8
+    // our first infinite scaler - follow this format for bisohp queen and rook
     public ArrayList<ChessMove> BishopMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
-        for (var i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) { // check all directions (4)
             var currColumn = myPosition.getColumn();
             var currRow = myPosition.getRow();
-            while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
-                if (i == 0) {
+            while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) { // this is a while bc we can move till edge of board
+                if (i == 0) { // check each of the 4 combinations
                     currRow += 1;
                     currColumn += 1;
                 }
@@ -326,29 +308,29 @@ public class ChessPiece {
                     currRow += 1;
                     currColumn -= 1;
                 }
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
+                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // make sure new move is in bounds
                     var newChessPosition = new ChessPosition(currRow, currColumn);
-                    if (board.getPiece(newChessPosition) != null) {
+                    if (board.getPiece(newChessPosition) != null) { // if there is a piece
                         if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                             possibleMoves.add(newChessMove);
-                            break;
+                            break; // we can't move any further forward
                         }
                         else {
-                            break;
+                            break; // there was a piece that was our color, blocked
                         }
                     }
-                    else {
+                    else { // no piece just keep moving forward
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
                 }
             }
-
         }
-        return possibleMoves;
+        return possibleMoves; // return the moves
     }
 
+    // basically the same as the bishop
     public ArrayList<ChessMove> QueenMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         for (var i = 0; i < 8; i++) {
@@ -405,6 +387,8 @@ public class ChessPiece {
         }
         return possibleMoves;
     }
+
+    // basically the same as the bishop
     public ArrayList<ChessMove> RookMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         for (var i = 0; i < 4; i++) {
@@ -441,12 +425,12 @@ public class ChessPiece {
                     }
                 }
             }
-
         }
         return possibleMoves;
     }
 
 
+    // override the equals and hashcode for tests, and the toString for debugging
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

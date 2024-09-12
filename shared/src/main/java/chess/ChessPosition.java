@@ -10,6 +10,7 @@ import java.util.Objects;
  */
 public class ChessPosition {
 
+    // we need a row and a clolumn for our 2d array, as well as our constructor.
     private final int row;
     private final int col;
 
@@ -18,22 +19,17 @@ public class ChessPosition {
         this.col = col;
     }
 
-    /**
-     * @return which row this position is in
-     * 1 codes for the bottom row
-     */
+    // some getters
     public int getRow() {
         return row;
     }
 
-    /**
-     * @return which column this position is in
-     * 1 codes for the left row
-     */
+
     public int getColumn() {
         return col;
     }
 
+    // need to overide the equals, hashcode and tostring for testing and debugging
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
