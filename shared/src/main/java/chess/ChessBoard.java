@@ -83,7 +83,6 @@ public class ChessBoard {
                 addPiece(newChessPosition, newChessPiece);
             }
         }
-        var myBoy = 1;
     }
 
     @Override
