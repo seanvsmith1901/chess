@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -34,17 +37,64 @@ public class ChessBoard {
         return squares[position.getRow()-1][position.getColumn()-1];
     }
 
+
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        for (var i = 1; i < 8; i++) {
-            var newChessPosition = new ChessPosition(2, i);
-            addPiece(newChessPosition,  );
+        for (var color = 0; color < 2; color++) {
+            var teamColor = ChessGame.TeamColor.WHITE;
+            if (color == 1) {
+                teamColor = ChessGame.TeamColor.BLACK;
+            }
+            for (var i = 1; i < 9; i++) {
+                var newChessPosition = new ChessPosition(2, i);
+                if (teamColor == ChessGame.TeamColor.BLACK) {
+                    newChessPosition = new ChessPosition(7, i);
+                }
+                var newChessPiece = new ChessPiece(teamColor, ChessPiece.PieceType.PAWN);
+                addPiece(newChessPosition,  newChessPiece);
+            }
+            for (var i = 1; i < 9; i++) {
+                var newChessPosition = new ChessPosition(1, i);
+                if (teamColor == ChessGame.TeamColor.BLACK) {
+                    newChessPosition = new ChessPosition(8, i);
+                }
+                var pieceType = ChessPiece.PieceType.PAWN;
+                if (i == 1 || i == 8) {
+                    pieceType = ChessPiece.PieceType.ROOK;
+                }
+                if (i == 2 || i == 7) {
+                    pieceType = ChessPiece.PieceType.KNIGHT;
+                }
+                if (i == 3 || i == 6) {
+                    pieceType = ChessPiece.PieceType.BISHOP;
+                }
+                if (i == 4) {
+                    pieceType = ChessPiece.PieceType.QUEEN;
+                }
+                if (i == 5) {
+                    pieceType = ChessPiece.PieceType.KING;
+                }
+                var newChessPiece = new ChessPiece(teamColor, pieceType);
+                addPiece(newChessPosition, newChessPiece);
+            }
         }
-        for (var i = 1; i < 8; i++) {
-            var newChessPosition = new ChessPosition(1, i);
-        }
+        var myBoy = 1;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(squares, that.squares);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(squares);
     }
 }
