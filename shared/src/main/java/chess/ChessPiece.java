@@ -102,7 +102,8 @@ public class ChessPiece {
             if (this.teamColor == ChessGame.TeamColor.WHITE) {
                 if (currRow == 2) {
                     var newChessPosition = new ChessPosition(currRow+2, currColumn);
-                    if (board.getPiece(newChessPosition) == null) {
+                    var intermediateChessPosition = new ChessPosition(currRow+1, currColumn);
+                    if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
@@ -111,7 +112,8 @@ public class ChessPiece {
             } else {
                 if (currRow == 7) {
                     var newChessPosition = new ChessPosition(currRow-2, currColumn);
-                    if (board.getPiece(newChessPosition) == null) {
+                    var intermediateChessPosition = new ChessPosition(currRow-1, currColumn);
+                    if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
