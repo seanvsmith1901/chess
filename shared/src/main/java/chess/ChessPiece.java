@@ -6,6 +6,7 @@ import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -441,6 +442,66 @@ public class ChessPiece {
         return possibleMoves;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return type == that.type && teamColor == that.teamColor;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, teamColor);
+    }
+
+    @Override
+    public String toString() {
+        var string = "L";
+        // make sure that white is upper and black is lower
+        if (ChessGame.TeamColor.BLACK.equals(teamColor)) {
+            if (type == PieceType.KING) {
+                string = "k";
+            }
+            if (type == PieceType.QUEEN) {
+                string = "q";
+            }
+            if (type == PieceType.KNIGHT) {
+                string = "n";
+            }
+            if (type == PieceType.BISHOP) {
+                string = "b";
+            }
+            if (type == PieceType.ROOK) {
+                string = "r";
+            }
+            if (type == PieceType.PAWN) {
+                string = "p";
+            }
+        }
+        if (ChessGame.TeamColor.WHITE.equals(teamColor)) {
+            if (type == PieceType.KING) {
+                string = "K";
+            }
+            if (type == PieceType.QUEEN) {
+                string = "Q";
+            }
+            if (type == PieceType.KNIGHT) {
+                string = "N";
+            }
+            if (type == PieceType.BISHOP) {
+                string = "B";
+            }
+            if (type == PieceType.ROOK) {
+                string = "R";
+            }
+            if (type == PieceType.PAWN) {
+                string = "P";
+            }
+        }
+        return string;
+    }
 }
 
 

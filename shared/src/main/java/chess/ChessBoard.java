@@ -39,6 +39,7 @@ public class ChessBoard {
 
 
 
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
@@ -96,5 +97,24 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(squares);
+    }
+
+    @Override
+    public String toString() {
+        var board  = "";
+        for (int rows = 0; rows < 8; rows++) {
+            for (int columns = 0; columns < 8; columns++) {
+                board += "|";
+                if (squares[rows][columns] != null) {
+                    board += squares[rows][columns].toString();
+                }
+                else {
+                    board += " ";
+                }
+                board += "|";
+            }
+            board += "\n";
+        }
+        return board;
     }
 }
