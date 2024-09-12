@@ -87,8 +87,50 @@ public class ChessPiece {
         if (currentPiece.getPieceType() == PieceType.KNIGHT) {
             newArrayList = KnightMoves(myPosition, board);
         }
+        if (currentPiece.getPieceType() == PieceType.PAWN) {
+            newArrayList = PawnMoves(myPosition, board);
+        }
 
         return newArrayList;
+    }
+
+    public ArrayList<ChessMove> PawnMoves(ChessPosition myPosition, ChessBoard board) {
+        var possibleMoves = new ArrayList<ChessMove>();
+        var currColumn = myPosition.getColumn();
+        var currRow = myPosition.getRow();
+        if ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
+            if (this.teamColor == ChessGame.TeamColor.WHITE) {
+                currColumn++;
+            } else {
+                currColumn--;
+            }
+            if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
+
+                var newChessPosition = new ChessPosition(currRow, currColumn);
+                if (board.getPiece(newChessPosition) == null) {
+                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                    possibleMoves.add(newChessMove);
+                }
+
+                // test the left and right stuff
+                currRow++;
+                if (board.getPiece(newChessPosition) != null) {
+                    if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
+                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                        possibleMoves.add(newChessMove);
+                    }
+                }
+                currRow--;
+                currRow--;
+                if (board.getPiece(newChessPosition) != null) {
+                    if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
+                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                        possibleMoves.add(newChessMove);
+                    }
+                }
+            }
+        }
+        return possibleMoves;
     }
 
 
