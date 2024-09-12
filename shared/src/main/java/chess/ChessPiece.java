@@ -100,9 +100,9 @@ public class ChessPiece {
         var currRow = myPosition.getRow();
         if ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
             if (this.teamColor == ChessGame.TeamColor.WHITE) {
-                currColumn++;
+                currRow++;
             } else {
-                currColumn--;
+                currRow--;
             }
             if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
 
@@ -120,8 +120,8 @@ public class ChessPiece {
                         possibleMoves.add(newChessMove);
                     }
                 }
-                currRow--;
-                currRow--;
+                currColumn--;
+                currColumn--;
                 if (board.getPiece(newChessPosition) != null) {
                     if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
