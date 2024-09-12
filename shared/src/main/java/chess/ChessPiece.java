@@ -113,15 +113,18 @@ public class ChessPiece {
                 }
 
                 // test the left and right stuff
-                currRow++;
+                currColumn = myPosition.getColumn();
+                currColumn++;
+                newChessPosition = new ChessPosition(currRow, currColumn);
                 if (board.getPiece(newChessPosition) != null) {
                     if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
                 }
+                currColumn = myPosition.getColumn();
                 currColumn--;
-                currColumn--;
+                newChessPosition = new ChessPosition(currRow, currColumn);
                 if (board.getPiece(newChessPosition) != null) {
                     if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
