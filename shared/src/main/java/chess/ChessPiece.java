@@ -105,7 +105,7 @@ public class ChessPiece {
                     var intermediateChessPosition = new ChessPosition(currRow+1, currColumn);
                     if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
+                        possibleMoves.addAll(MultiplyPawn(newChessMove));
                     }
                 }
                 currRow++;
@@ -115,7 +115,7 @@ public class ChessPiece {
                     var intermediateChessPosition = new ChessPosition(currRow-1, currColumn);
                     if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
+                        possibleMoves.addAll(MultiplyPawn(newChessMove));
                     }
                 }
                 currRow--;
@@ -125,7 +125,7 @@ public class ChessPiece {
                 var newChessPosition = new ChessPosition(currRow, currColumn);
                 if (board.getPiece(newChessPosition) == null) {
                     var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                    possibleMoves.add(newChessMove);
+                    possibleMoves.addAll(MultiplyPawn(newChessMove));
                 }
 
                 // test the left and right stuff
@@ -135,7 +135,7 @@ public class ChessPiece {
                 if (board.getPiece(newChessPosition) != null) {
                     if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
+                        possibleMoves.addAll(MultiplyPawn(newChessMove));
                     }
                 }
                 currColumn = myPosition.getColumn();
@@ -144,12 +144,39 @@ public class ChessPiece {
                 if (board.getPiece(newChessPosition) != null) {
                     if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
+                        possibleMoves.addAll(MultiplyPawn(newChessMove));
                     }
                 }
             }
         }
         return possibleMoves;
+    }
+
+    public ArrayList<ChessMove> MultiplyPawn(ChessMove currentMove) {
+        var newMoves = new ArrayList<ChessMove>();
+        if (((currentMove.getEndPosition().getRow() == 1) && (getTeamColor() == ChessGame.TeamColor.BLACK)) || (currentMove.getEndPosition().getRow() == 8) && (getTeamColor() == ChessGame.TeamColor.WHITE)) {
+            for (var j = 0; j < 4; j++) {
+                var newPieceType = PieceType.PAWN;
+                if (j == 0) {
+                    newPieceType = PieceType.QUEEN;
+                }
+                if (j == 1) {
+                    newPieceType = PieceType.ROOK;
+                }
+                if (j == 2) {
+                    newPieceType = PieceType.KNIGHT;
+                }
+                if (j == 3) {
+                    newPieceType = PieceType.BISHOP;
+                }
+                var newChessMove = new ChessMove(currentMove.getStartPosition(), currentMove.getEndPosition(), newPieceType);
+                newMoves.add(newChessMove);
+            }
+        }
+        else {
+            newMoves.add(currentMove);
+        }
+        return newMoves;
     }
 
 
