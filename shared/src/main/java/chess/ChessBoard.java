@@ -102,8 +102,8 @@ public class ChessBoard {
     public String toString() {
         var board  = "";
         for (int rows = 7; rows >= 0; rows--) {
+            board += "|";
             for (int columns = 7; columns >= 0; columns--) {
-                board += "|";
                 if (squares[rows][columns] != null) {
                     board += squares[rows][columns].toString();
                 }
