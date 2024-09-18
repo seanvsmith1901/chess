@@ -32,7 +32,7 @@ public class ChessBoard {
             if (color == 1) {
                 teamColor = ChessGame.TeamColor.BLACK;
             }
-            for (var i = 1; i < 9; i++) {
+            for (var i = 1; i < 9; i++) { // adds the pawns first
                 var newChessPosition = new ChessPosition(2, i);
                 if (teamColor == ChessGame.TeamColor.BLACK) {
                     newChessPosition = new ChessPosition(7, i);
@@ -40,7 +40,7 @@ public class ChessBoard {
                 var newChessPiece = new ChessPiece(teamColor, ChessPiece.PieceType.PAWN);
                 addPiece(newChessPosition,  newChessPiece);
             }
-            for (var i = 1; i < 9; i++) {
+            for (var i = 1; i < 9; i++) { // add everything else, white or black. (the order is the same)
                 var newChessPosition = new ChessPosition(1, i);
                 if (teamColor == ChessGame.TeamColor.BLACK) {
                     newChessPosition = new ChessPosition(8, i);

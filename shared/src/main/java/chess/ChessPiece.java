@@ -171,7 +171,7 @@ public class ChessPiece {
     // king time
     public ArrayList<ChessMove> KingMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
-        // so we need to check 4 directions
+        // so we need to check 8 directions
         // but only run once
         for (var i = 0; i < 8; i++) {
             var currColumn = myPosition.getColumn();
@@ -317,7 +317,7 @@ public class ChessPiece {
                             break; // we can't move any further forward
                         }
                         else {
-                            break; // there was a piece that was our color, blocked
+                            break; // have to explicitly break on infinite repeaters otherwise we WILL keep moving
                         }
                     }
                     else { // no piece just keep moving forward
