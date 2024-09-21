@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -11,6 +12,9 @@ import java.util.Collection;
 public class ChessGame {
 
     private Boolean turn = true;
+    private ChessBoard board; //thats it I guess
+
+    // need to somehow give it access to a board.
 
 
     public ChessGame() {
@@ -54,7 +58,16 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+            var currentPiece = board.getPiece(startPosition);
+            var validMoves = new ArrayList<ChessMove>();
+
+            if(currentPiece == null) {
+                return null;
+            }
+            else {
+                return currentPiece.pieceMoves(board, startPosition);
+            }
+
     }
 
     /**
@@ -64,7 +77,14 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece currentPiece = board.getPiece(move.getStartPosition());
+        if(validMoves(move.getStartPosition()).contains(move)) {
+            board.deletePiece(move.getStartPosition());
+            board.addPiece(move.getEndPosition(), currentPiece);
+        }
+        else {
+            throw new InvalidMoveException();
+        }
     }
 
     /**

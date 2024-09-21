@@ -19,6 +19,10 @@ public class ChessBoard {
         squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
+    public void deletePiece(ChessPosition position) {
+        squares[position.getRow()-1][position.getColumn()-1] = null;
+    }
+
     // snags a piece given the position on the board.
     public ChessPiece getPiece(ChessPosition position) {
         // its -1 becuase we represent the positions as 1-8 on the surface but they are really 0-7, need to adjust
