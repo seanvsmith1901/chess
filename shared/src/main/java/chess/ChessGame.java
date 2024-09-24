@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -77,14 +78,18 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ChessPiece currentPiece = board.getPiece(move.getStartPosition());
-        if(validMoves(move.getStartPosition()).contains(move)) {
-            board.deletePiece(move.getStartPosition());
-            board.addPiece(move.getEndPosition(), currentPiece);
+        try {
+            ChessPiece currentPiece = board.getPiece(move.getStartPosition());
+            if(validMoves(move.getStartPosition()).contains(move)) {
+                board.deletePiece(move.getStartPosition());
+                board.addPiece(move.getEndPosition(), currentPiece);
+            }
         }
-        else {
-            throw new InvalidMoveException();
+        catch(Exception invalidMovesException) {
+            invalidMovesException.printStackTrace(); // just to do something but IDK how we want to handle this
         }
+
+
     }
 
     /**
@@ -94,7 +99,24 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        HashMap<ChessPosition, ChessPiece> currentPieces = board.getTeamPieces(teamColor);
+        ChessPosition checkPosition = new ChessPosition(-1,-1); // not even on the board, will never trip
+        for (ChessPosition currentPosition : currentPieces.keySet()) {
+            if(currentPieces.get(currentPosition).getPieceType() == ChessPiece.PieceType.KING) {
+                checkPosition = currentPosition;
+            }
+        }
+        currentPieces = board.getOtherTeamPieces(teamColor);
+
+        for (ChessPosition currentPosition : currentPieces.keySet()) {
+            Collection<ChessMove> currentPieceMoves = currentPieces.get(currentPosition).pieceMoves(board, currentPosition);
+            if (currentPieceMoves.contains(checkPosition)) {
+                return true;
+            }
+
+        }
+        return false;
+
     }
 
     /**
@@ -133,6 +155,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return board;
     }
 }

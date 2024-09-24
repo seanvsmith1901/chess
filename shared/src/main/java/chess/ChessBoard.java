@@ -1,7 +1,6 @@
 package chess;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -9,18 +8,55 @@ import java.util.Objects;
 public class ChessBoard {
     // regardless its alwasys going to be an 8 by 8 array, so we don't need a constructor cause its always the same
     private ChessPiece[][] squares = new ChessPiece[8][8];
+    HashMap<ChessPosition, ChessPiece> whitePieces = new HashMap<>();
+    HashMap<ChessPosition, ChessPiece> blackPieces = new HashMap<>();
 
     public ChessBoard() {
 
     }
 
+    public HashMap<ChessPosition, ChessPiece> getTeamPieces(ChessGame.TeamColor teamColor) {
+        if(teamColor == ChessGame.TeamColor.BLACK)
+        {
+            return blackPieces;
+        }
+        else {
+            return whitePieces;
+        }
+    }
+
+    public HashMap<ChessPosition, ChessPiece> getOtherTeamPieces(ChessGame.TeamColor teamColor) {
+        if(teamColor == ChessGame.TeamColor.BLACK)
+        {
+            return whitePieces;
+        }
+        else {
+            return blackPieces;
+        }
+    }
+
+
     // adds a peice to board given the position and the piece
     public void addPiece(ChessPosition position, ChessPiece piece) {
+        if (piece.getTeamColor() == ChessGame.TeamColor.BLACK)
+        {
+            blackPieces.put(position, piece);
+        }
+        else {
+            whitePieces.put(position, piece);
+        }
         squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
     public void deletePiece(ChessPosition position) {
+        if(getPiece(position).getTeamColor() == ChessGame.TeamColor.BLACK) {
+            blackPieces.remove(position);
+        }
+        else {
+            whitePieces.remove(position);
+        }
         squares[position.getRow()-1][position.getColumn()-1] = null;
+
     }
 
     // snags a piece given the position on the board.
@@ -29,8 +65,37 @@ public class ChessBoard {
         return squares[position.getRow()-1][position.getColumn()-1];
     }
 
+    public void resetMaps() {
+
+        // color is implied through name but we can always double check, but here we just have the positions of all the pieces of each color and then the piece itself.
+        HashMap<ChessPosition, ChessPiece> newWhitePieces = new HashMap<>();
+        HashMap<ChessPosition, ChessPiece> newBlackPieces = new HashMap<>();
+
+        whitePieces.clear();
+        blackPieces.clear();
+
+
+        for(var row = 1; row < 9; row++) {
+            for (var column = 1; column < 9; column++) {
+                var newChessPosition = new ChessPosition(row, column);
+                if(getPiece(newChessPosition) != null) {
+                    if (getPiece(newChessPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        newBlackPieces.put(newChessPosition, getPiece(newChessPosition));
+                    }
+                    else {
+                        newWhitePieces.put(newChessPosition, getPiece(newChessPosition));
+                    }
+                }
+            }
+        }
+        whitePieces = newWhitePieces;
+        blackPieces = newBlackPieces;
+    }
+
+
     // resets the board to the opening configuration.
     public void resetBoard() {
+
         for (var color = 0; color < 2; color++) {
             var teamColor = ChessGame.TeamColor.WHITE;
             if (color == 1) {
@@ -67,10 +132,11 @@ public class ChessBoard {
                 }
                 var newChessPiece = new ChessPiece(teamColor, pieceType);
                 addPiece(newChessPosition, newChessPiece);
+
             }
         }
+        resetMaps();
     }
-
     // override the equals, hashcode and tostring for testing purposes.
     @Override
     public boolean equals(Object o) {

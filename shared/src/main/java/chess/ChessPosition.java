@@ -29,6 +29,8 @@ public class ChessPosition {
         return col;
     }
 
+
+
     // need to overide the equals, hashcode and tostring for testing and debugging
     @Override
     public boolean equals(Object o) {
