@@ -91,7 +91,8 @@ public class ChessPiece {
                     }
                 }
                 currRow++; // either way we can try advancing one (if we are white)
-            } else {
+            }
+            else {
                 if (currRow == 7) { // we are in the black starting position
                     var newChessPosition = new ChessPosition(currRow-2, currColumn);
                     var intermediateChessPosition = new ChessPosition(currRow-1, currColumn);
