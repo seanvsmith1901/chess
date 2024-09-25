@@ -119,6 +119,19 @@ public class ChessGame {
 
     }
 
+    public boolean canKingMove(TeamColor teamColor) {
+        HashMap<ChessPosition, ChessPiece> currentPieces = board.getTeamPieces(teamColor);
+        // first we need to get the king and find his valid moves
+        ArrayList<ChessPosition> kingMoves;
+        for (ChessPosition currentPosition : currentPieces.keySet()) {
+            if(currentPieces.get(currentPosition).getPieceType() == ChessPiece.PieceType.KING) {
+                kingMoves = currentPieces.get(currentPosition).pieceMoves(squares, );
+            }
+        }
+
+
+    }
+
     /**
      * Determines if the given team is in checkmate
      *
