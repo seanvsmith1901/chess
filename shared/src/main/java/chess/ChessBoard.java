@@ -137,6 +137,29 @@ public class ChessBoard {
         }
         resetMaps();
     }
+
+
+    public void eraseBoard() {
+        for (var row = 0; row < 8; row++) {
+            for (var col = 0; col < 8; col++) {
+                squares[row][col] = null;
+            }
+        }
+    }
+
+    public ChessBoard setBoard(ChessBoard newBoard) {
+        eraseBoard();
+        for (var row = 1; row < 9; row++) {
+            for (var col = 1; col < 9; col++) {
+                ChessPosition newPosition = new ChessPosition(row, col);
+                if(newBoard.getPiece(newPosition) != null) {
+                    addPiece(newPosition, newBoard.getPiece(newPosition));
+                }
+            }
+        }
+        return this;
+    }
+
     // override the equals, hashcode and tostring for testing purposes.
     @Override
     public boolean equals(Object o) {
