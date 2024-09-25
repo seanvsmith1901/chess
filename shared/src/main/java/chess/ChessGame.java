@@ -80,8 +80,28 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         try {
+
             ChessPiece currentPiece = board.getPiece(move.getStartPosition());
-            if(validMoves(move.getStartPosition()).contains(move)) {
+            var teamColor = currentPiece.getTeamColor();
+            if (isInCheckMate(teamColor)) {
+                ;
+            }
+
+            
+
+            if(validMoves(move.getStartPosition()).contains(move))  {
+                if (isInCheck(teamColor)) {
+                    ; // my brain broken
+                }
+                // we know its real but we need to make sure we aren't in check and we we aren't in stalement
+                // if the king is in check we need to make sure the are moving the king
+                // if there is a promotion piece and there is a pawn in range we need to make sure to change that piece to that piece.
+                // also if the move goves in we also need to change the player color
+                //
+
+
+
+                // and then at the very end we get to do this
                 board.deletePiece(move.getStartPosition());
                 board.addPiece(move.getEndPosition(), currentPiece);
             }
