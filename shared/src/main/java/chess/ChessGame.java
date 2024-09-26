@@ -88,54 +88,37 @@ public class ChessGame {
             ChessPiece currentPiece = board.getPiece(move.getStartPosition());
             var teamColor = currentPiece.getTeamColor();
 
-            if(teamColor == getTeamTurn()) {
-                if(validMoves(move.getStartPosition()).contains(move))  {
-                    if (isInCheck(teamColor)) {
-
-                        if(currentPiece.getPieceType() != ChessPiece.PieceType.KING) {
-                            throw new InvalidMoveException("Your king is in check! try again");
+            if(teamColor == getTeamTurn()) { // checks if its our turn
+                if(validMoves(move.getStartPosition()).contains(move))  { // if the move is a valid move (our piece can move there)
+                    if (isInCheck(teamColor)) { // if we are in check, make sure we get out of check
+                        executeMove(move);
+                        if(isInCheck(teamColor)) { // we are still in check boys
+                            unExecuteMove(move);
+                            throw new InvalidMoveException("You're still in check and that doesn't get you out! beware!");
                         }
-                        else {
-                            if(isPositionAvaliable(teamColor, move.getEndPosition())) {
-
-                            }
-                        }
+                        unExecuteMove(move); // unexecute it regardless because we will still do it at the end.
                     }
                     else {
                         // check for pawn position and promotion piece
                         if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-
+                            ; // TODO: add support for checking if pawns can promote and do that.
                         }
-
-
-
-                        //after we preform the move, make sure we don't end up in check lol
-
                     }
-
-                    // we know its real but we need to make sure we aren't in check and we we aren't in stalement
-                    // if the king is in check we need to make sure the are moving the king
-                    // if there is a promotion piece and there is a pawn in range we need to make sure to change that piece to that piece.
-                    // also if the move goves in we also need to change the player color
-                    //
-                    // and then at the very end we get to do this
+                     // if we have cleard everything, make the move
                     executeMove(move);
-                    if(isInCheck(teamColor)) {
+                    if(isInCheck(teamColor)) { // if that move puts us in check, we need to walk it back and try again
                         unExecuteMove(move);
                         throw new InvalidMoveException("that move puts your king in check so don't do that");
                     }
+                }
+                else {
+                    throw new InvalidMoveException("You can't park there!");
                 }
             }
             else {
                 throw new InvalidMoveException("Not your turn yet fetcher");
             }
 
-
-
-            if ((isInCheckmate(teamColor)) || (isInStalemate(teamColor))) {
-                ; // idk what to do here, but we are here
-                // end the game!
-            }
 
 
 
@@ -163,7 +146,7 @@ public class ChessGame {
         ChessPosition kingPosition = getKingPosition(teamColor);
         var otherPieces = board.getOtherTeamPieces(teamColor);
         Collection<ChessPosition> piecesThatWIllKillYOu;
-        Collection<ChessMove> currentPieceMoves = piecesThatWIllKillYOu.get(kingPosition).pieceMoves(board, kingPosition);
+
 
 
 
@@ -256,10 +239,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) { // I have to reprogram this a lot.
-        if ((canKingMove(teamColor) == false) && (isInCheck(teamColor))) {
-            return true;
-        }
-        return false;
+       // this is where a lot of stuff needs to ahppen
         
     }
 
