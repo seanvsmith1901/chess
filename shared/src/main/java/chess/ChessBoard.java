@@ -25,6 +25,32 @@ public class ChessBoard {
         }
     }
 
+    public ArrayList<ChessPosition> getTeamPositions(ChessGame.TeamColor teamColor) {
+        ArrayList<ChessPosition> positions = new ArrayList<>();
+        if(teamColor == ChessGame.TeamColor.BLACK) {
+            for (ChessPosition newPosition : blackPieces.keySet()) {
+                positions.add(newPosition);
+            }
+        }
+        else {
+            for (ChessPosition newPosition : whitePieces.keySet()) {
+                positions.add(newPosition);
+            }
+        }
+        return positions;
+    }
+
+    public ArrayList<ChessPosition> getOtherTeamPositions(ChessGame.TeamColor teamColor) {
+        ArrayList<ChessPosition> positions = new ArrayList<>();
+        if(teamColor == ChessGame.TeamColor.WHITE) {
+            positions.addAll(blackPieces.keySet());
+        }
+        else {
+           positions.addAll(blackPieces.keySet());
+        }
+        return positions;
+    }
+
     public HashMap<ChessPosition, ChessPiece> getOtherTeamPieces(ChessGame.TeamColor teamColor) {
         if(teamColor == ChessGame.TeamColor.BLACK)
         {

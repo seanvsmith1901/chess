@@ -74,7 +74,6 @@ public class ChessGame {
             else {
                 return currentPiece.pieceMoves(board, startPosition);
             }
-
     }
 
     /**
@@ -99,9 +98,11 @@ public class ChessGame {
                         unExecuteMove(move); // unexecute it regardless because we will still do it at the end.
                     }
                     else {
-                        // check for pawn position and promotion piece
+                        // check for pawn position and promotion piece (make sure promotion is valid)
                         if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                            ; // TODO: add support for checking if pawns can promote and do that.
+                            if (!((teamColor == TeamColor.BLACK && move.getEndPosition().getRow() == 1) || (teamColor == TeamColor.WHITE && move.getEndPosition().getRow() == 8))) {
+                                throw new InvalidMoveException("You can't promote a pawn there, don't do that");
+                            }
                         }
                     }
                      // if we have cleard everything, make the move
@@ -118,40 +119,34 @@ public class ChessGame {
             else {
                 throw new InvalidMoveException("Not your turn yet fetcher");
             }
-
-
-
-
-
-
         }
         catch(Exception invalidMovesException) {
             invalidMovesException.printStackTrace(); // just to do something but IDK how we want to handle this
         }
-
-
     }
 
 
     public Boolean getOutOfCheck(TeamColor teamColor) {
         if (!(canKingMove(teamColor))) {
-            getChecKPieces(teamColor) {
+            ArrayList<ChessPosition> myPieces = board.getTeamPositions(teamColor);
 
+            ArrayList<ChessMove> movesThatCancelCheck = new ArrayList<ChessMove>(); // incase we need to tell players where they CAN move
+
+            // check every move that every one of my peices can make, and if it can get me out of check.
+            for(ChessPosition myPiecePosition : myPieces) {
+                for(ChessMove currentMove : validMoves(myPiecePosition)) {
+                    makeMove(currentMove);
+                    if(!(isInCheck(teamColor))) {
+                        return true;
+                    }
+                    unExecuteMove(currentMove);
+                }
             }
         }
         return false;
     }
 
-    Collection<ChessPosition> getChecKPieces(TeamColor teamColor) { // returns all the pieces that have the king in they sight
-        ChessPosition kingPosition = getKingPosition(teamColor);
-        var otherPieces = board.getOtherTeamPieces(teamColor);
-        Collection<ChessPosition> piecesThatWIllKillYOu;
 
-
-
-
-
-    }
 
     public ChessPosition getKingPosition(TeamColor teamColor) {
         HashMap<ChessPosition, ChessPiece> currentPieces = board.getTeamPieces(teamColor);
@@ -193,12 +188,12 @@ public class ChessGame {
             if (currentPieceMoves.contains(checkPosition)) {
                 return true;
             }
-
         }
         return false;
     }
 
-    
+
+
     public boolean isPositionAvaliable(TeamColor teamColor, ChessPosition checkPosition) {
         HashMap<ChessPosition, ChessPiece> currentPieces = board.getOtherTeamPieces(teamColor);
 
@@ -239,7 +234,12 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) { // I have to reprogram this a lot.
-       // this is where a lot of stuff needs to ahppen
+       if (!(canKingMove(teamColor)) && !(getOutOfCheck(teamColor)) && isInCheck(teamColor)) {
+           return true;
+       }
+       else {
+           return false;
+       }
         
     }
 
@@ -251,8 +251,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if ((canKingMove(teamColor) == false) && (isInCheck(teamColor) == false)) {
-            
+        if  (!(canKingMove(teamColor)) && !(getOutOfCheck(teamColor)) && isInCheck(teamColor)) {
             return true;
         }
         return false;
