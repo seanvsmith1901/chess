@@ -205,7 +205,7 @@ public class ChessBoard {
         var board  = "";
         for (int rows = 7; rows >= 0; rows--) {
             board += "|";
-            for (int columns = 7; columns >= 0; columns--) {
+            for (int columns = 0; columns <= 7; columns++) {
                 if (squares[rows][columns] != null) {
                     board += squares[rows][columns].toString();
                 }
