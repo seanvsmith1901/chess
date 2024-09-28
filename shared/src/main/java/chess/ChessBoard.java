@@ -16,49 +16,52 @@ public class ChessBoard {
     }
 
     public HashMap<ChessPosition, ChessPiece> getTeamPieces(ChessGame.TeamColor teamColor) {
-        if(teamColor == ChessGame.TeamColor.BLACK)
-        {
-            return blackPieces;
+        HashMap<ChessPosition, ChessPiece> positions = new HashMap<>();
+        for(var row = 1; row < 9; row++) {
+            for (var col = 1; col < 9; col++) {
+                var newChessPosition = new ChessPosition(row, col);
+                if(getPiece(newChessPosition) != null) { // if there is a piece
+                    if (getPiece(newChessPosition).getTeamColor() == teamColor) { // and its NOT our color
+                        positions.put(newChessPosition, getPiece(newChessPosition));
+                    }
+                }
+            }
         }
-        else {
-            return whitePieces;
-        }
+
+        return positions;
     }
 
     public ArrayList<ChessPosition> getTeamPositions(ChessGame.TeamColor teamColor) {
         ArrayList<ChessPosition> positions = new ArrayList<>();
-        if(teamColor == ChessGame.TeamColor.BLACK) {
-            for (ChessPosition newPosition : blackPieces.keySet()) {
-                positions.add(newPosition);
-            }
-        }
-        else {
-            for (ChessPosition newPosition : whitePieces.keySet()) {
-                positions.add(newPosition);
-            }
+
+        for (ChessPosition newPosition : getTeamPieces(teamColor).keySet()) {
+            positions.add(newPosition);
+
         }
         return positions;
     }
 
     public ArrayList<ChessPosition> getOtherTeamPositions(ChessGame.TeamColor teamColor) {
         ArrayList<ChessPosition> positions = new ArrayList<>();
-        if(teamColor == ChessGame.TeamColor.WHITE) {
-            positions.addAll(blackPieces.keySet());
-        }
-        else {
-           positions.addAll(blackPieces.keySet());
+        for (ChessPosition newPosition : getOtherTeamPieces(teamColor).keySet()) {
+            positions.add(newPosition);
         }
         return positions;
     }
 
     public HashMap<ChessPosition, ChessPiece> getOtherTeamPieces(ChessGame.TeamColor teamColor) {
-        if(teamColor == ChessGame.TeamColor.BLACK)
-        {
-            return whitePieces;
+        HashMap<ChessPosition, ChessPiece> positions = new HashMap<>();
+        for(var row = 1; row < 9; row++) {
+            for (var col = 1; col < 9; col++) {
+                var newChessPosition = new ChessPosition(row, col);
+                if(getPiece(newChessPosition) != null) { // if there is a piece
+                    if (getPiece(newChessPosition).getTeamColor() != teamColor) { // and its NOT our color
+                        positions.put(newChessPosition, getPiece(newChessPosition));
+                    }
+                }
+            }
         }
-        else {
-            return blackPieces;
-        }
+        return positions;
     }
 
 

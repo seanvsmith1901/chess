@@ -1,5 +1,6 @@
 package chess;
 
+//import java.lang.foreign.FunctionDescriptor;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,21 +68,23 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         var currentPiece = board.getPiece(startPosition);
+        setTeamTurn(currentPiece.getTeamColor());
         Collection<ChessMove> validMoves = currentPiece.pieceMoves(board, startPosition);
+        Collection<ChessMove> finalMoves = currentPiece.pieceMoves(board, startPosition);
 
         if (currentPiece == null) {
             return null; // covers base case 1
         } else {
                 for (ChessMove currentMove : validMoves) {
                     try {
-                        checkMove(currentMove);
+                         checkMove(currentMove);
 
                     } catch (InvalidMoveException e) {
                         //System.out.println(e.getMessage());
-                        validMoves.remove(currentMove);
+                        finalMoves.remove(currentMove);
                     }
                 }
-            return validMoves;
+            return finalMoves;
         }
     }
 
@@ -92,7 +95,8 @@ public class ChessGame {
      * @param move chess move to preform
      * @throws InvalidMoveException if move is invalid
      */
-    public void checkMove(ChessMove move) throws InvalidMoveException { // given a move from a valid move list, check to make sure we can in fact move there.
+    public boolean checkMove(ChessMove move) throws InvalidMoveException { // given a move from a valid move list, check to make sure we can in fact move there.
+
         ChessPiece currentPiece = board.getPiece(move.getStartPosition());
         var teamColor = currentPiece.getTeamColor();
         Collection<ChessMove> validMoves = currentPiece.pieceMoves(board, move.getStartPosition());
@@ -100,12 +104,12 @@ public class ChessGame {
         if(teamColor == getTeamTurn()) { // checks if its our turn
             // get the actual piece moves here lol, this is gonna call itself recuresively.
                 if (isInCheck(teamColor)) { // if we are in check, make sure we get out of check
-                    executeMove(move);
+                    ChessPiece possiblePiece = executeMove(move);
                     if(isInCheck(teamColor)) { // we are still in check boys
-                        unExecuteMove(move);
+                        unExecuteMove(move, possiblePiece);
                         throw new InvalidMoveException("You're still in check and that doesn't get you out! beware!");
                     }
-                    unExecuteMove(move); // unexecute it regardless because we will still do it at the end.
+                    unExecuteMove(move, possiblePiece); // unexecute it regardless because we will still do it at the end.
                 }
                 else {
                     // check for pawn position and promotion piece (make sure promotion is valid)
@@ -116,22 +120,31 @@ public class ChessGame {
                     }
                 }
                 // if we have cleard everything, make the move
-                executeMove(move);
+                ChessPiece possiblePiece = executeMove(move);
                 if(isInCheck(teamColor)) { // if that move puts us in check, we need to walk it back and try again
-                    unExecuteMove(move);
+                    unExecuteMove(move, possiblePiece);
                     throw new InvalidMoveException("that move puts your king in check so don't do that");
                 }
-                unExecuteMove(move); // this function doesn't actually DO the move, it just checks to make sure its valid. undo it when you done.
+                unExecuteMove(move, possiblePiece); // this function doesn't actually DO the move, it just checks to make sure its valid. undo it when you done.
         }
         else {
             throw new InvalidMoveException("Not your turn yet fetcher");
         }
+        return true;
     }
 
 
 
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ;
+        if (board != null) {
+            if(checkMove(move)){
+                ChessPiece possiblePiece = executeMove(move);
+            }
+        }
+        else {
+            throw new InvalidMoveException("there ain't not board!");
+        }
+
     }
 
 
@@ -146,6 +159,8 @@ public class ChessGame {
             // check every move that every one of my peices can make, and if it can get me out of check.
             for(ChessPosition myPiecePosition : myPieces) {
                 for(ChessMove currentMove : validMoves(myPiecePosition)) {
+                    ChessPiece possiblePiece = executeMove(currentMove);
+                    unExecuteMove(currentMove, possiblePiece);
                     try {
                         makeMove(currentMove);
                     }
@@ -155,7 +170,7 @@ public class ChessGame {
                     if(!(isInCheck(teamColor))) {
                         return true;
                     }
-                    unExecuteMove(currentMove);
+                    unExecuteMove(currentMove, possiblePiece);
                 }
             }
         }
@@ -175,18 +190,25 @@ public class ChessGame {
         return checkPosition;
     }
 
-    public void executeMove(ChessMove move) { // only used after we've checked everything else lol
-        setTeamTurn(getTeamTurn());
+    public ChessPiece executeMove(ChessMove move) { // only used after we've checked everything else lol
         ChessPiece currentPiece = board.getPiece(move.getStartPosition());
+        ChessPiece possiblePiece = null;
+        if(board.getPiece(move.getEndPosition()) != null) {
+            possiblePiece = board.getPiece(move.getEndPosition());
+        }
         board.deletePiece(move.getStartPosition());
         board.addPiece(move.getEndPosition(), currentPiece);
+        return possiblePiece;
     }
 
-    public void unExecuteMove(ChessMove move) {
+    public void unExecuteMove(ChessMove move, ChessPiece oldPiece) {
         setTeamTurn(getTeamTurn()); // its kind of like a coin
         ChessPiece currentPiece = board.getPiece(move.getEndPosition());
         board.deletePiece(move.getEndPosition());
         board.addPiece(move.getStartPosition(), currentPiece);
+        if (oldPiece != null){
+            board.addPiece(move.getEndPosition(), oldPiece);
+        }
     }
 
     /**
