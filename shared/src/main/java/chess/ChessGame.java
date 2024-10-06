@@ -345,7 +345,7 @@ public class ChessGame {
      *
      * @return the chessboard
      */
-    public ChessBoard getBoard() { // funny little getter 
+    public ChessBoard getBoard() { // funny little getter
         return board;
     }
 }
