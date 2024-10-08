@@ -25,5 +25,7 @@ public class Server {
     }
     private static void createRoutes() {
         Spark.get("/hello", ((request, response) -> "I really need to go to the bathroom"));
+
+
    }
 }
