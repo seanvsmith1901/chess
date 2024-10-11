@@ -1,8 +1,10 @@
 package server;
 
+import handler.chessHandler;
 import spark.*;
 
 public class Server {
+
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -25,7 +27,5 @@ public class Server {
     }
     private static void createRoutes() {
         Spark.get("/hello", ((request, response) -> "I really need to go to the bathroom"));
-
-
    }
 }
