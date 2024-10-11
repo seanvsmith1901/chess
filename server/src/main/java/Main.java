@@ -12,8 +12,6 @@ public class Main {
         Server server = new Server();
         server.run(8080);
 
-        var handler = new chessHandler();
-
     }
 //    private static void createServer() {
 //        Spark.port(8080);

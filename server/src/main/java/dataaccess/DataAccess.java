@@ -1,40 +1,39 @@
 package dataaccess;
 
-
+import model.*;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
 
+import javax.management.monitor.GaugeMonitor;
 import java.util.Collection;
 
 public interface DataAccess {
-    User getUser(string userName);
-    void createUser(User userData);
 
-    void createAuth(auth authData);
+    UserData getUser(String userName) throws DataAccessException;
 
-    bool checkUserRequest(User returnedUser, string username, string password);
+    void createUser(UserData currentUser) throws DataAccessException;
+
+    void createAuth(AuthData currentAuth) throws DataAccessException;
+
+    Boolean checkUserRequest(UserData returnedUser, String username, String password) throws DataAccessException;
 
     // need to add functionality to return atuh objects from the checkUser(userRequsest) function under handler
 
-    auth getAuth(string authToken);
+    AuthData getAuth(String authToken) throws DataAccessException;
 
-    void deleteAuth(auth authToken);
+    void deleteAuth(AuthData currentAuth) throws DataAccessException;
 
-    Gson getGames();
+    Gson getGames() throws DataAccessException;
 
-    game GetGame(string gameID);
+    GameData GetGame(int gameID) throws DataAccessException;
 
-    void createGame(string gameID);
+    void createGame(int gameID) throws DataAccessException;
 
-    void updateGame(Game currentGame, string playerColor, string username);
+    void updateGame(GameData currentGame, String playerColor, String username) throws DataAccessException;
 
-    void deleteEverything();
+    void deleteEverything() throws DataAccessException;
 
     // add functionality to check if a user specificed color is already in a game or not
-
-
-
-
 
 }
