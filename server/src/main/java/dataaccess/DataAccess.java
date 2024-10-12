@@ -12,9 +12,9 @@ public interface DataAccess {
 
     // uncomment these one at a time while you start adding them to your memeory data access and go from there.
 
-//    UserData getUser(String userName) throws DataAccessException;
+    UserData getUser(String userName) throws DataAccessException;
 //
-//    void createUser(UserData currentUser) throws DataAccessException;
+    void createUser(UserData currentUser) throws DataAccessException;
 //
 //    void createAuth(AuthData currentAuth) throws DataAccessException;
 //
@@ -34,7 +34,7 @@ public interface DataAccess {
 //
 //    void updateGame(GameData currentGame, String playerColor, String username) throws DataAccessException;
 
-    void deleteEverything() throws DataAccessException;
+    Object deleteEverything() throws DataAccessException;
 
     // add functionality to check if a user specificed color is already in a game or not
 

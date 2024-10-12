@@ -11,8 +11,12 @@ public class AuthService {
 
     private DataAccess dataAccess;
 
-    public void deleteEverything() throws DataAccessException {
-        dataAccess.deleteEverything();
+    public AuthService(DataAccess dataAccess) {
+        this.dataAccess = dataAccess;
+    }
+
+    public Object deleteEverything(DataAccess thisDataAccess) throws DataAccessException {
+        return thisDataAccess.deleteEverything();
     }
 
 }

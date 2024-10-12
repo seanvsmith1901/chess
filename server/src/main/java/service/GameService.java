@@ -8,7 +8,12 @@ import java.util.Dictionary;
 
 public class GameService {
 
-    public DataAccess dataAccess;
+    private DataAccess dataAccess;
+
+    public GameService(DataAccess dataAccess) {
+        this.dataAccess = dataAccess;
+    }
+
 
     public Gson getGames(AuthData authToke) {}
     public Gson createGame (AuthData authToken, String gameName) {}

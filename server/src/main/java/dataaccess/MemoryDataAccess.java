@@ -16,11 +16,22 @@ public class MemoryDataAccess implements DataAccess {
     Map<String, GameData> gameTokens = new HashMap<String, GameData>();
     Map<String, UserData> userTokens = new HashMap<String, UserData>();
 
-    public void deleteEverything() {
+    public Object deleteEverything() {
         authenticationTokens.clear();
         gameTokens.clear();
         userTokens.clear();
+        return this;
     }
+
+    public UserData getUser(String username) {
+        return userTokens.get(username);
+    }
+
+    public void createUser(UserData currentUser) {
+        var userName = currentUser.name();
+        userTokens.put(userName, currentUser);
+    }
+
 
     // so this is where I actually have to like, store everything which is going to be annoying.
     // I need to be able to implement the three different kinds of model data structures as like a hash map or something
