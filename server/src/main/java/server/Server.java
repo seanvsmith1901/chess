@@ -9,7 +9,7 @@ import spark.*;
 
 public class Server {
 
-    private FrakenHandler handler;
+    private final FrakenHandler handler = new FrakenHandler();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -22,6 +22,8 @@ public class Server {
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         //Spark.init();
+        Spark.delete("/db", this::clearDataBase);// how the fetch do I call this function??);
+        Spark.exception(DataAccessException.class, this::exceptionHandler);
         createRoutes();
 
         Spark.awaitInitialization();
@@ -33,11 +35,16 @@ public class Server {
         Spark.awaitStop();
     }
     private static void createRoutes() {
-        Spark.delete("/db", clearDataBase());
+        ;
    }
 
    private static void clearDataBase(Request req, Response res)  throws DataAccessException {
-        var response = handler.
+       handler.clearDataBase();
    }
+
+    private void exceptionHandler(DataAccessException ex, Request req, Response res) {
+        //res.status(ex.StatusCode());
+        print("Something went wrong :(");
+    }
 
 }

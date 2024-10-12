@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class MemoryDataAccess {
+public class MemoryDataAccess implements DataAccess {
 
     Map<String, AuthData> authenticationTokens = new HashMap<String, AuthData>();
     Map<String, GameData> gameTokens = new HashMap<String, GameData>();
