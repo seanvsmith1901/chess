@@ -20,6 +20,10 @@ public class UserService {
         dataAccess.createUser(newUser);
     }
 
+    public UserData getUser(String username) throws DataAccessException {
+        return dataAccess.getUser(username);
+    }
+
 
 //    public AuthData checkUser(UserData user) {}
 //    void logOutUser(AuthData authToken) {}

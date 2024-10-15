@@ -11,6 +11,8 @@ import spark.*;
 public class Server {
 
     private FrakenHandler handler;
+    private Gson Serializer = new Gson();
+
 
     public Server(FrakenHandler handler) {
         this.handler = handler;
@@ -29,7 +31,8 @@ public class Server {
         //Spark.init();
 
         Spark.delete("/db", this::clearDataBase);// how the fetch do I call this function??);
-        Spark.post("/user:username:password:email", this::createUser);
+        Spark.post("/user:username:password:email", this::registerUser);
+        Spark.post("/session:username:password", this::createSession);
 
 
         Spark.exception(DataAccessException.class, this::exceptionHandler);
@@ -45,12 +48,22 @@ public class Server {
     }
 
    private Object clearDataBase(Request req, Response res)  throws DataAccessException {
-       return handler.clearDataBase();
+        res.status(200);
+        return handler.clearDataBase();
+
    }
 
-   private Object createUser(Request req, Response res)  throws DataAccessException {
-       // first try to find the user, make sure thats null, create the user adn then create an auth token with that user, and return that authtoken. 
-        handler.createUser(req.attribute("username"), req.attribute("password"), req.attribute("email"));
+   private Object registerUser(Request req, Response res)  throws DataAccessException {
+       // first try to find the user, make sure thats null, create the user adn then create an auth token with that user, and return that authtoken.
+        var newAuthenticationObject = handler.registerUser(req.attribute("username"), req.attribute("password"), req.attribute("email"));
+        res.status(200);
+        return new Gson().toJson(newAuthenticationObject);
+   }
+
+   private Object createSession(Request req, Response res)  throws DataAccessException {
+        var newAuthenticationObject = handler.createSession(req.attribute("username"), req.attribute("password"));
+        res.status(200);
+        return new Gson().toJson(newAuthenticationObject);
    }
 
     private void exceptionHandler(DataAccessException ex, Request req, Response res) {

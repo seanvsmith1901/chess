@@ -15,9 +15,9 @@ public class GameService {
     }
 
 
-    public Gson getGames(AuthData authToke) {}
-    public Gson createGame (AuthData authToken, String gameName) {}
-    public Gson joinGame (AuthData authToken, String playerColor, int gameID) {}
+//    public Object getGames(AuthData authToken) {}
+//    public Object createGame (AuthData authToken, String gameName) {}
+//    public Object joinGame (AuthData authToken, String playerColor, int gameID) {}
 
 
 }
