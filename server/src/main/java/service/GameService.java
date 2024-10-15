@@ -2,6 +2,7 @@ package service;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccess;
+import dataaccess.DataAccessException;
 import model.*;
 
 import java.util.Dictionary;
@@ -12,6 +13,22 @@ public class GameService {
 
     public GameService(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
+    }
+
+    public Object getGames() throws DataAccessException {
+        return dataAccess.getGames();
+    }
+
+    public void createGame(String gameName) throws DataAccessException {
+        dataAccess.createGame(gameName);
+    }
+
+    public GameData getGame(String gameName) throws DataAccessException {
+        return dataAccess.getGame(gameName);
+    }
+
+    public GameData getGameFromID(int gameID) throws DataAccessException {
+        return dataAccess.getGameFromID(gameID);
     }
 
 

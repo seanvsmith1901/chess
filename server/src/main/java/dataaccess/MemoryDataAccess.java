@@ -1,11 +1,13 @@
 package dataaccess;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
 
+import javax.xml.crypto.Data;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +32,39 @@ public class MemoryDataAccess implements DataAccess {
     public void createUser(UserData currentUser) {
         var userName = currentUser.name();
         userTokens.put(userName, currentUser);
+    }
+
+    public AuthData getAuthObject(String authToken) throws DataAccessException {
+        if(authenticationTokens.containsKey(authToken)) {
+            return authenticationTokens.get(authToken);
+        }
+        else {
+            throw new DataAccessException("Game already exists");
+        }
+    }
+
+    public void deleteAuthToken(AuthData authToken) throws DataAccessException {
+        authenticationTokens.remove(authToken);
+    }
+
+    public Object getGames() throws DataAccessException {
+        return gameTokens; // should just return the whole fetching dictionary.
+    }
+
+    public void createGame(String gameName) throws DataAccessException {
+        // i should check that there isn't already an exisitng game
+        // stupid gameID is going to be the total number of games
+        var gameID = gameTokens.size()+1;
+        GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());
+        gameTokens.put(gameName, newGame);
+    }
+
+    public GameData getGame(String gameName) throws DataAccessException {
+        return gameTokens.get(gameName);
+    }
+
+    public GameData getGameFromID(Integer gameID) throws DataAccessException {
+        ; // i have to somehow extract the game from the list using just its ID, which is a wierd problem lol.
     }
 
 

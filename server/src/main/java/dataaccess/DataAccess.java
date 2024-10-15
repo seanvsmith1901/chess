@@ -15,6 +15,19 @@ public interface DataAccess {
     UserData getUser(String userName) throws DataAccessException;
 //
     void createUser(UserData currentUser) throws DataAccessException;
+
+    AuthData getAuthObject(String authToken) throws DataAccessException;
+
+    void deleteAuthToken(AuthData authToken) throws DataAccessException;
+
+    Object getGames() throws DataAccessException;
+
+    void createGame(String gameName) throws DataAccessException;
+
+    GameData getGame(String gameName) throws DataAccessException;
+
+    GameData getGameFromID(Integer gameID) throws DataAccessException;
+
 //
 //    void createAuth(AuthData currentAuth) throws DataAccessException;
 //

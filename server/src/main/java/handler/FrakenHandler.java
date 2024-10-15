@@ -9,6 +9,8 @@ import service.UserService;
 
 import model.*;
 
+import javax.xml.crypto.Data;
+import java.util.HashMap;
 import java.util.Objects;
 
 
@@ -52,6 +54,48 @@ public class FrakenHandler {
         }
     }
 
+    public void logOutUser(String authToken) throws DataAccessException {
+        AuthData currentAuth = authService.getAuthObject(authToken);
+        if (currentAuth != null) {
+            authService.deleteAuthObject(currentAuth);
+        }
+        else {
+            throw new DataAccessException("Wrong auth token");
+        }
+
+
+
+    }
+
+    public Object getGames(String authToken) throws DataAccessException {
+        AuthData currentAuth = authService.getAuthObject(authToken);
+        if (currentAuth != null) {
+            return gameService.getGames();
+        }
+        else {
+            throw new DataAccessException("Wrong auth token");
+        }
+    }
+
+    public Object createGame(String authToken, String gameName) throws DataAccessException {
+        AuthData currentAuth = authService.getAuthObject(authToken);
+        var currentGame = gameService.getGame(gameName);
+        if (currentGame != null) {
+            throw new DataAccessException("Game already exists");
+        }
+        gameService.createGame(gameName);
+
+
+        GameData actualGame = gameService.getGame(gameName);
+        HashMap<String, Integer> newMap = new HashMap<>();
+        newMap.put(actualGame.gameName(), actualGame.gameID()); //
+        return newMap;
+    }
+
+    public Object joinGame(String gameName, String gameColor, int gameID) throws DataAccessException {
+        AuthData currentAuth = authService.getAuthObject(gameName);
+        var currentGame = gameService.getGameFromID(gameID);
+    }
 
 
 

@@ -6,6 +6,8 @@ import dataaccess.DataAccessException;
 import handler.*;
 import spark.*;
 
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Server {
@@ -33,6 +35,10 @@ public class Server {
         Spark.delete("/db", this::clearDataBase);// how the fetch do I call this function??);
         Spark.post("/user:username:password:email", this::registerUser);
         Spark.post("/session:username:password", this::createSession);
+        Spark.delete("/session:authToken", this::logOutUser);
+        Spark.get("/game:authToken", this::getGames);
+        Spark.post("/game:authToken:gameName", this::createGame);
+        Spark.put("/game:authToken:playerColor:gameID", this::joinGame);
 
 
         Spark.exception(DataAccessException.class, this::exceptionHandler);
@@ -66,9 +72,34 @@ public class Server {
         return new Gson().toJson(newAuthenticationObject);
    }
 
+   private Object logOutUser(Request req, Response res)  throws DataAccessException {
+        handler.logOutUser(req.attribute("authToken"));
+        res.status(200);
+        Map<String, Integer> myDict = new HashMap<>();
+        return new Gson().toJson(myDict);
+   }
+
+   private Object getGames(Request req, Response res)  throws DataAccessException {
+        return handler.getGames(req.attribute("authToken"));
+   }
+
     private void exceptionHandler(DataAccessException ex, Request req, Response res) {
         //res.status(ex.StatusCode());
         System.out.println("Something went wrong :(");
     }
+
+    private Object createGame(Request req, Response res)  throws DataAccessException {
+        // need to return the gamename and the gameID. lez go
+        res.status(200);
+        return handler.createGame(req.attribute("authToken"), req.attribute("gameName"));
+
+    }
+
+    private Object joinGame(Request req, Response res)  throws DataAccessException {
+        res.status(200);
+        return handler.joinGame(req.attribute("authToken"), req.attribute("playerColor"), req.attribute("gameID"));
+    }
+
+
 
 }

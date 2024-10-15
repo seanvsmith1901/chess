@@ -26,6 +26,14 @@ public class AuthService {
         return new AuthData(authentication, username); // returns the new authentication object
     }
 
+    public AuthData getAuthObject(String authToken) throws DataAccessException {
+        return dataAccess.getAuthObject(authToken);
+    }
+
+    public void deleteAuthObject(AuthData authToken) throws DataAccessException {
+        dataAccess.deleteAuthToken(authToken);
+    }
+
     private String generateRandomString(int length) {
 
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
