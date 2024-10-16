@@ -16,8 +16,7 @@ public class Server {
     private Gson Serializer = new Gson();
 
 
-    public Server(FrakenHandler handler) {
-        this.handler = handler;
+    public Server() {
     }
 
     public int run(int desiredPort) {
@@ -31,6 +30,8 @@ public class Server {
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         //Spark.init();
+
+        //Im an idiot, we will be passing a full authToken object in these functions when we delete and whatnot.
 
         Spark.delete("/db", this::clearDataBase);// how the fetch do I call this function??);
         Spark.post("/user:username:password:email", this::registerUser);

@@ -13,6 +13,8 @@ import javax.xml.crypto.Data;
 import java.util.HashMap;
 import java.util.Objects;
 
+import
+
 
 public class FrakenHandler {
     private AuthService authService;
@@ -92,9 +94,14 @@ public class FrakenHandler {
         return newMap;
     }
 
-    public Object joinGame(String gameName, String gameColor, int gameID) throws DataAccessException {
-        AuthData currentAuth = authService.getAuthObject(gameName);
+    public Object joinGame(String authToken, String playerColor, int gameID) throws DataAccessException {
+
+        AuthData currentAuth = authService.getAuthObject(authToken);
+        var username = currentAuth.userName();
         var currentGame = gameService.getGameFromID(gameID);
+        userService.replaceUserInGame(currentGame, username, playerColor);
+        return
+
     }
 
 

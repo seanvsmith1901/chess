@@ -24,6 +24,10 @@ public class UserService {
         return dataAccess.getUser(username);
     }
 
+    public void replaceUserInGame(GameData currentGame, String username, String playerColor) {
+        dataAccess.addUser(currentGame, username, playerColor);
+    }
+
 
 //    public AuthData checkUser(UserData user) {}
 //    void logOutUser(AuthData authToken) {}

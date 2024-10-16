@@ -28,6 +28,8 @@ public interface DataAccess {
 
     GameData getGameFromID(Integer gameID) throws DataAccessException;
 
+    void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException;
+
 //
 //    void createAuth(AuthData currentAuth) throws DataAccessException;
 //

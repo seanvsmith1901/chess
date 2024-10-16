@@ -64,12 +64,30 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public GameData getGameFromID(Integer gameID) throws DataAccessException {
-        ; // i have to somehow extract the game from the list using just its ID, which is a wierd problem lol.
+        for(GameData game: gameTokens.values()) {
+            if(game.gameID() == gameID) {
+                return game;
+            }
+        }
+        throw new DataAccessException("Game does not exist");
     }
-    // sdfgsdfgsdfgdfg 
 
-    // so this is where I actually have to like, store everything which is going to be annoying.
-    // I need to be able to implement the three different kinds of model data structures as like a hash map or something
-    // and then we can have a function that just uhh throws back nothing to show that we have nothing in there.
-
+    public void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException {
+        if(playerColor.equals("white")){
+            if (currentGame.whiteUsername() != null) {
+                throw new DataAccessException("that color is taken");
+            }
+            gameTokens.remove(currentGame.gameName());
+            GameData newGame = new GameData(currentGame.gameID(), username, currentGame.blackUsername(), currentGame.gameName(), currentGame.game());
+            gameTokens.put(currentGame.gameName(), newGame);
+        }
+        else {
+            if (currentGame.blackUsername() != null) {
+                throw new DataAccessException("that color is taken");
+            }
+            gameTokens.remove(currentGame.gameName());
+            GameData newGame = new GameData(currentGame.gameID(), currentGame.whiteUsername(), username, currentGame.gameName(), currentGame.game());
+            gameTokens.put(currentGame.gameName(), newGame); // keep the same game name
+        }
+    }
 }
