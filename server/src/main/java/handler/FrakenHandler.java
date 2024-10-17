@@ -100,7 +100,7 @@ public class FrakenHandler {
         var username = currentAuth.userName();
         var currentGame = gameService.getGameFromID(gameID);
         userService.replaceUserInGame(currentGame, username, playerColor);
-        return
+        return deez nuts
 
     }
 
