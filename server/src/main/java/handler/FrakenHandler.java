@@ -13,7 +13,6 @@ import javax.xml.crypto.Data;
 import java.util.HashMap;
 import java.util.Objects;
 
-import
 
 
 public class FrakenHandler {
@@ -100,7 +99,7 @@ public class FrakenHandler {
         var username = currentAuth.userName();
         var currentGame = gameService.getGameFromID(gameID);
         userService.replaceUserInGame(currentGame, username, playerColor);
-        return
+        return gameService.getGame(currentGame.gameName());
 
     }
 
