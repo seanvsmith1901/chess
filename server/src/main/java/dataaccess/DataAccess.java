@@ -21,7 +21,7 @@ public interface DataAccess {
 
     void deleteAuthToken(AuthData authToken) throws DataAccessException;
 
-    Object getGames() throws DataAccessException;
+    HashMap<String, GameData> getGames() throws DataAccessException;
 
     void createGame(String gameName) throws DataAccessException;
 

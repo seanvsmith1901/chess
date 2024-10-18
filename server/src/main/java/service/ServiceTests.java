@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 import model.UserData;
 
+import javax.xml.crypto.Data;
 import java.util.Dictionary;
 import java.util.Map;
 
@@ -133,9 +134,16 @@ public class ServiceTests {
 
     @Test
     void getGamesPositive() throws DataAccessException {
-        var newGame = new GameData(1, "white", "black", "bestGame", new ChessGame());
+        var newGame = new GameData(1, null, null, "bestGame", new ChessGame());
         gameService.createGame("bestGame");
-        assertEquals(gameService.getGames(), newGame);
+        assertEquals((gameService.getGames()).size(), 1);
+    }
+
+    @Test
+    void getGameUserNamePositive() throws DataAccessException {
+        var newGame = new GameData(1, null, null, "bestGame", new ChessGame());
+        gameService.createGame("bestGame"); // had to overwrite teh freaking chessgames equal operator for this one lol
+        assertEquals(gameService.getGame("bestGame"), newGame);
     }
 
 

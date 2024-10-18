@@ -84,7 +84,7 @@ public class Server {
    }
 
    private Object getGames(Request req, Response res)  throws DataAccessException {
-        return handler.getGames(req.attribute("authToken"));
+        return new Gson().toJson(handler.getGames(req.attribute("authToken")));
    }
 
     private void exceptionHandler(DataAccessException ex, Request req, Response res) {

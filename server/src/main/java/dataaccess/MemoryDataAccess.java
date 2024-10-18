@@ -14,9 +14,9 @@ import java.util.Map;
 
 public class MemoryDataAccess implements DataAccess {
 
-    Map<String, AuthData> authenticationTokens = new HashMap<String, AuthData>();
-    Map<String, GameData> gameTokens = new HashMap<String, GameData>();
-    Map<String, UserData> userTokens = new HashMap<String, UserData>();
+    HashMap<String, AuthData> authenticationTokens = new HashMap<String, AuthData>();
+    HashMap<String, GameData> gameTokens = new HashMap<String, GameData>();
+    HashMap<String, UserData> userTokens = new HashMap<String, UserData>();
 
     public Object deleteEverything() {
         authenticationTokens.clear();
@@ -54,7 +54,7 @@ public class MemoryDataAccess implements DataAccess {
 
     }
 
-    public Object getGames() throws DataAccessException {
+    public HashMap<String, GameData> getGames() throws DataAccessException {
         return gameTokens; // should just return the whole fetching dictionary.
     }
 
