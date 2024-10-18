@@ -28,7 +28,7 @@ public class GameService {
         return dataAccess.getGame(gameName);
     }
 
-    public GameData getGameFromID(int gameID) throws DataAccessException {
+    public GameData getGameFromID(String gameID) throws DataAccessException {
         return dataAccess.getGameFromID(gameID);
     }
 

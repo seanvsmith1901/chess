@@ -67,12 +67,15 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public GameData getGame(String gameName) throws DataAccessException {
-        return gameTokens.get(gameName);
+        if(gameTokens.containsKey(gameName)) {
+            return gameTokens.get(gameName);
+        }
+        throw new DataAccessException("that game don't exist cheif try again");
     }
 
-    public GameData getGameFromID(Integer gameID) throws DataAccessException {
+    public GameData getGameFromID(String gameID) throws DataAccessException {
         for(GameData game: gameTokens.values()) {
-            if(game.gameID() == gameID) {
+            if(String.valueOf(game.gameID()).equals(gameID)) {
                 return game;
             }
         }

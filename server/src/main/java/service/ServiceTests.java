@@ -140,23 +140,38 @@ public class ServiceTests {
     }
 
     @Test
-    void getGameUserNamePositive() throws DataAccessException {
+    void getGameNamePositive() throws DataAccessException {
         var newGame = new GameData(1, null, null, "bestGame", new ChessGame());
         gameService.createGame("bestGame"); // had to overwrite teh freaking chessgames equal operator for this one lol
         assertEquals(gameService.getGame("bestGame"), newGame);
     }
 
+    @Test
+    void getGameNameNegative() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {gameService.getGame("bestGame");});
+    }
+
+    @Test
+    void getGameFromIDPositive() throws DataAccessException {
+        var newGame = new GameData(1, null, null, "bestGame", new ChessGame());
+        gameService.createGame("bestGame");
+        assertEquals(gameService.getGameFromID("1"), newGame);
+    }
+
+    @Test
+    void getGameFromIDNegative() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {gameService.getGameFromID("bestGame");});
+    }
 
 
-//getGames()
+
+
 //
 //
 //createGame
 //
 //
-//getGame
-//
-//getGameFromID
+
 
 
 

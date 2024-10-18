@@ -27,7 +27,7 @@ public interface DataAccess {
 
     GameData getGame(String gameName) throws DataAccessException;
 
-    GameData getGameFromID(Integer gameID) throws DataAccessException;
+    GameData getGameFromID(String gameID) throws DataAccessException;
 
     void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException;
 

@@ -93,7 +93,7 @@ public class FrakenHandler {
         return newMap;
     }
 
-    public Object joinGame(String authToken, String playerColor, int gameID) throws DataAccessException {
+    public Object joinGame(String authToken, String playerColor, String gameID) throws DataAccessException {
 
         AuthData currentAuth = authService.getAuthObject(authToken);
         var username = currentAuth.userName();
