@@ -91,12 +91,18 @@ public class FrakenHandler {
         return gameService.getGame(currentGame.gameName());
     }
 
+    // helper functions that only exists for tests, and might be used at a higher level.
+
     public UserData getUser(String username) throws DataAccessException {
         return userService.getUser(username);
     }
 
     public AuthData getAuth(String username) throws DataAccessException {
         return authService.getAuthObjectFromUserName(username);
+    }
+
+    public GameData getGame(String gameName) throws DataAccessException {
+        return gameService.getGame(gameName);
     }
 
 

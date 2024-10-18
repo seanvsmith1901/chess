@@ -14,7 +14,7 @@ import java.util.Map;
 public class Server {
 
     private FrakenHandler handler;
-    private Gson Serializer = new Gson();
+    private Gson serializer = new Gson();
 
 
     public Server() {
@@ -58,7 +58,7 @@ public class Server {
 
    private Object clearDataBase(Request req, Response res)  throws DataAccessException {
         res.status(200);
-        return new Gson().toJson(handler.clearDataBase());
+        return serializer.toJson(handler.clearDataBase());
 
    }
 

@@ -98,8 +98,44 @@ public class handlerTests {
     }
 
     @Test
-    void createGame() throws DataAccessException {
+    void createGamePositive() throws DataAccessException {
         handler.registerUser("West", "12345", "West@gmail.com");
+        var authToken = handler.getAuth("West").authToken();
+        handler.createGame(authToken, "BestGame");
+        var newGame = new GameData(1, null, null, "BestGame", new ChessGame());
+        assertEquals(handler.getGame("BestGame"), newGame);
+    }
+
+    @Test
+    void createGamesNegative() throws DataAccessException { // doesn't let you overwrite a game
+        handler.registerUser("West", "12345", "West@gmail.com");
+        var authToken = handler.getAuth("West").authToken();
+        handler.createGame(authToken, "BestGame");
+        assertThrows(DataAccessException.class, () -> handler.createGame(authToken, "BestGame")); // checks to see if that game already exists when we create it
+
+    }
+
+    @Test
+    void joinGamePostitive() throws DataAccessException {
+        handler.registerUser("West", "12345", "West@gmail.com");
+        var authToken = handler.getAuth("West").authToken();
+        handler.createGame(authToken, "BestGame");
+        int gameID = handler.getGame("BestGame").gameID();
+        handler.joinGame(authToken, "white", String.valueOf(gameID));
+        var expectedGame = new GameData(1, "West", null, "BestGame", new ChessGame());
+        assertEquals(expectedGame, handler.getGame("BestGame")); // checks to make sure that we really have joined the game as white.
+    }
+
+    @Test
+    void joinGameNegative() throws DataAccessException {
+        handler.registerUser("West", "12345", "West@gmail.com");
+        handler.registerUser("East", "11111", "East@gmail.com");
+        var authToken = handler.getAuth("West").authToken();
+        var authToken2 = handler.getAuth("East").authToken();
+        handler.createGame(authToken, "BestGame");
+        int gameID = handler.getGame("BestGame").gameID();
+        handler.joinGame(authToken, "white", String.valueOf(gameID));
+        assertThrows(DataAccessException.class, () -> handler.joinGame(authToken2, "white", String.valueOf(gameID)));
     }
 
 

@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import model.*;
 import service.AuthService;
 import service.GameService;
@@ -22,7 +23,7 @@ public class MemoryDataAccess implements DataAccess {
         authenticationTokens.clear();
         gameTokens.clear();
         userTokens.clear();
-        return authenticationTokens.size() + gameTokens.size() + userTokens.size();
+        return authenticationTokens.toString() + gameTokens.toString() + userTokens.toString();
     }
 
     public UserData getUser(String username) throws DataAccessException {
