@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
 import model.*;
@@ -127,7 +128,29 @@ public class ServiceTests {
 //
 //    }
 
-    
+    // ** end of the authServiceTests *
+    //GameData(1, "white", "black", "bestGame", new ChessGame())   fake game if you need it
+
+    @Test
+    void getGamesPositive() throws DataAccessException {
+        var newGame = new GameData(1, "white", "black", "bestGame", new ChessGame());
+        gameService.createGame("bestGame");
+        assertEquals(gameService.getGames(), newGame);
+    }
+
+
+
+//getGames()
+//
+//
+//createGame
+//
+//
+//getGame
+//
+//getGameFromID
+
+
 
 
 

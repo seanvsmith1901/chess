@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 
 import javax.management.monitor.GaugeMonitor;
 import java.util.Collection;
+import java.util.HashMap;
 
 public interface DataAccess {
 
