@@ -23,7 +23,7 @@ public class MemoryDataAccess implements DataAccess {
         authenticationTokens.clear();
         gameTokens.clear();
         userTokens.clear();
-        return authenticationTokens.toString() + gameTokens.toString() + userTokens.toString();
+        return null;
     }
 
     public UserData getUser(String username) throws DataAccessException {

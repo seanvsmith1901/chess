@@ -35,8 +35,8 @@ public class Server {
 
         //Im an idiot, we will be passing a full authToken object in these functions when we delete and whatnot.
 
-        Spark.delete("/db", this::clearDataBase);// how the fetch do I call this function??);
-        Spark.post("/user:username:password:email", this::registerUser);
+        Spark.delete("/db", this::clearDataBase); // ok so check for stuff in the head vs. body, and understand how to access those elements. our handler is our service and our services are glorified data accessers. sweet.
+        Spark.post("/user", this::registerUser);
         Spark.post("/session:username:password", this::createSession);
         Spark.delete("/session:authToken", this::logOutUser);
         Spark.get("/game:authToken", this::getGames);
@@ -64,6 +64,9 @@ public class Server {
 
    private Object registerUser(Request req, Response res)  throws DataAccessException {
        // first try to find the user, make sure thats null, create the user adn then create an auth token with that user, and return that authtoken.
+       //
+       var body = req.body();
+       //we 
         var newAuthenticationObject = handler.registerUser(req.attribute("username"), req.attribute("password"), req.attribute("email"));
         res.status(200);
         return new Gson().toJson(newAuthenticationObject);

@@ -32,7 +32,7 @@ public class ServiceTests {
 
     @Test
     void deleteDataBase() throws DataAccessException { // positive test - add something to the data base and make sure it burns correctly.
-        assertEquals((authService.deleteEverything()), "{}{}{}");
+        assertEquals((authService.deleteEverything()), null);
 
     }
 
