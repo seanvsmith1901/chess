@@ -28,11 +28,11 @@ public class UserService {
         dataAccess.addUser(currentGame, username, playerColor);
     }
 
+    public int getUserCount() throws DataAccessException {
+        return dataAccess.getUserCount();
+    }
 
-//    public AuthData checkUser(UserData user) {}
-//    void logOutUser(AuthData authToken) {}
-//    public AuthData CheckUser(UserData user) {}
-//    void LogInUser(UserData newUser) {}
+
 
 
 

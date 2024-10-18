@@ -25,12 +25,18 @@ public class MemoryDataAccess implements DataAccess {
         return authenticationTokens.size() + gameTokens.size() + userTokens.size();
     }
 
-    public UserData getUser(String username) {
-        return userTokens.get(username);
+    public UserData getUser(String username) throws DataAccessException {
+        if(userTokens.containsKey(username)) {
+            return userTokens.get(username);
+        }
+        throw new DataAccessException("User not found");
     }
 
-    public void createUser(UserData currentUser) {
+    public void createUser(UserData currentUser) throws DataAccessException {
         var userName = currentUser.name();
+        if(userTokens.containsKey(userName)) {
+            throw new DataAccessException("That username is already taken my guy, be more creativer");
+        }
         userTokens.put(userName, currentUser);
     }
 
@@ -62,6 +68,9 @@ public class MemoryDataAccess implements DataAccess {
         // i should check that there isn't already an exisitng game
         // stupid gameID is going to be the total number of games
         var gameID = gameTokens.size()+1;
+        if (gameTokens.containsKey(gameName)) {
+            throw new DataAccessException("gameName already exists");
+        }
         GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());
         gameTokens.put(gameName, newGame);
     }
@@ -120,6 +129,10 @@ public class MemoryDataAccess implements DataAccess {
             }
         }
         throw new DataAccessException("username does not exist");
+    }
+
+    public int getUserCount() throws DataAccessException {
+        return userTokens.size();
     }
 
 

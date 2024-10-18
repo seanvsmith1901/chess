@@ -36,6 +36,8 @@ public interface DataAccess {
     void addAuth(AuthData currentAuth) throws DataAccessException;
 
     AuthData getAuthObjectFromUsername(String username) throws DataAccessException;
+
+    int getUserCount() throws DataAccessException;
 //
 //    void createAuth(AuthData currentAuth) throws DataAccessException;
 //

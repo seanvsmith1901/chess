@@ -1,6 +1,7 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
 import model.*;
@@ -23,9 +24,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ServiceTests {
 
-    static final AuthService authService = new AuthService(new MemoryDataAccess());
-    static final GameService gameService = new GameService(new MemoryDataAccess());
-    static final UserService userService = new UserService(new MemoryDataAccess());
+    static final DataAccess dataAccess = new MemoryDataAccess();
+
+    static final AuthService authService = new AuthService(dataAccess);
+    static final GameService gameService = new GameService(dataAccess);
+    static final UserService userService = new UserService(dataAccess);
 
 
     static private Server server;
@@ -141,14 +144,17 @@ public class ServiceTests {
 
     @Test
     void getGameNamePositive() throws DataAccessException {
-        var newGame = new GameData(1, null, null, "bestGame", new ChessGame());
-        gameService.createGame("bestGame"); // had to overwrite teh freaking chessgames equal operator for this one lol
-        assertEquals(gameService.getGame("bestGame"), newGame);
+        authService.deleteEverything();
+        var size = gameService.getGames().size();
+        var newGame = new GameData(1, null, null, "goodGame", new ChessGame()); // gonna be honest no clue as to why thats happening
+        gameService.createGame("goodGame"); // had to overwrite teh freaking chessgames equal operator for this one lol
+        assertEquals(gameService.getGame("goodGame"), newGame);
     }
 
     @Test
     void getGameNameNegative() throws DataAccessException {
-        assertThrows(DataAccessException.class, () -> {gameService.getGame("bestGame");});
+        authService.deleteEverything();
+        assertThrows(DataAccessException.class, () -> {gameService.getGame("deez");});
     }
 
     @Test
@@ -163,17 +169,78 @@ public class ServiceTests {
         assertThrows(DataAccessException.class, () -> {gameService.getGameFromID("bestGame");});
     }
 
+    @Test
+    void createGamePositive() throws DataAccessException {
+        var newGame = new GameData(1, null, null, "bestGame", new ChessGame());
+        gameService.createGame("bestGame");
+        assertEquals((gameService.getGames()).size(), 1);
+    }
 
+    @Test
+    void createGameNegative() throws DataAccessException {
+        var newGame = new GameData(1, null, null, "goodGame", new ChessGame());
+        gameService.createGame("goodGame");
+        var anotherGame =  new GameData(2, null, null, "goodGame", new ChessGame());
+        assertThrows(DataAccessException.class, () -> {gameService.createGame("goodGame");});
+    }
 
+    // ** END OF GAME TESTS **
 
-//
-//
-//createGame
-//
-//
+    // ** Start of user Test **
 
+    @Test
+    void createUserPositive() throws DataAccessException {
+        userService.createUser("West", "password", "west@gmail.com");
+        assertEquals(userService.getUserCount(), 1);
+    }
 
+    @Test
+    void createUserNegative() throws DataAccessException {
+        userService.createUser("West", "password", "west@gmail.com");
+        assertThrows(DataAccessException.class, () -> {userService.createUser("West", "password", "bad@gmail.com");}); // should just to see if they have the same username
+    }
 
+    @Test
+    void getUserPositive() throws DataAccessException {
+        var newUser = new UserData("West", "password", "west@gmail.com");
+        userService.createUser("West", "password", "west@gmail.com");
+        assertEquals(userService.getUser("West"), newUser);
+    }
+
+    @Test
+    void getUserNegative() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {userService.getUser("West");});
+    }
+
+    @Test
+    void replaceUserInGamePositive() throws DataAccessException {
+        var newUser = new UserData("West", "password", "west@gmail.com");
+        var expectedGame = new GameData(1, "West", null, "BestGame", new ChessGame());
+        gameService.createGame("BestGame");
+        var newGame = gameService.getGame("BestGame");
+        userService.createUser("West", "password", "west@gmail.com");
+        var currentUser = userService.getUser("West");
+        userService.replaceUserInGame(newGame, currentUser.name(), "white");
+        assertEquals(gameService.getGame("BestGame"), expectedGame);
+    }
+
+    @Test
+    void replaceUserInGameNegativeColorTaken() throws DataAccessException {
+        var newUser = new UserData("West", "password", "west@gmail.com");
+        var expectedGame = new GameData(1, "West", null, "BestGame", new ChessGame());
+        gameService.createGame("BestGame");
+        var newGame = gameService.getGame("BestGame");
+        userService.createUser("West", "password", "west@gmail.com");
+        var currentUser = userService.getUser("West");
+        userService.replaceUserInGame(newGame, currentUser.name(), "white");
+        assertThrows(DataAccessException.class, () -> {userService.replaceUserInGame(gameService.getGame("BestGame"), currentUser.name(), "white");});
+    }
+
+    @Test
+    void getUserCountPositive() throws DataAccessException {
+        userService.createUser("West", "password", "west@gmail.com");
+        assertEquals(userService.getUserCount(), 1);
+    }
 
 
 
