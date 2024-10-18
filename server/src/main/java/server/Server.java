@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
 import handler.*;
+import model.RegisterData;
 import spark.*;
 
 import java.util.HashMap;
@@ -65,9 +66,13 @@ public class Server {
    private Object registerUser(Request req, Response res)  throws DataAccessException {
        // first try to find the user, make sure thats null, create the user adn then create an auth token with that user, and return that authtoken.
        //
-       var body = req.body();
-       //we 
-        var newAuthenticationObject = handler.registerUser(req.attribute("username"), req.attribute("password"), req.attribute("email"));
+       RegisterData data = new Gson().fromJson(req.body(), RegisterData.class);
+       var username = data.username();
+       var password = data.password();
+       var email = data.email();
+
+       //we
+        var newAuthenticationObject = handler.registerUser(username, password, email);
         res.status(200);
         return new Gson().toJson(newAuthenticationObject);
 
