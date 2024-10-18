@@ -17,21 +17,27 @@ public class AuthService {
         this.dataAccess = dataAccess;
     }
 
-    public Object deleteEverything(DataAccess thisDataAccess) throws DataAccessException {
-        return thisDataAccess.deleteEverything();
+    public Object deleteEverything() throws DataAccessException {
+        return dataAccess.deleteEverything();
     }
 
-    public Object createAuthToken(String username) {
+    public Object createAuthToken(String username) throws DataAccessException {
         var authentication = generateRandomString(8);
-        return new AuthData(authentication, username); // returns the new authentication object
+        var newAuthData = new AuthData(authentication, username);
+        dataAccess.addAuth(newAuthData);
+        return newAuthData; // returns the new authentication object
     }
 
-    public AuthData getAuthObject(String authToken) throws DataAccessException {
-        return dataAccess.getAuthObject(authToken);
+    public AuthData getAuthObject(String userName) throws DataAccessException {
+        return dataAccess.getAuthObject(userName);
     }
 
     public void deleteAuthObject(AuthData authToken) throws DataAccessException {
         dataAccess.deleteAuthToken(authToken);
+    }
+
+    public int getAuthSize() throws DataAccessException {
+        return dataAccess.getAuthSize();
     }
 
     private String generateRandomString(int length) {

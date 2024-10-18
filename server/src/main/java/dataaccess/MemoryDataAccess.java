@@ -22,7 +22,7 @@ public class MemoryDataAccess implements DataAccess {
         authenticationTokens.clear();
         gameTokens.clear();
         userTokens.clear();
-        return this;
+        return authenticationTokens.size() + gameTokens.size() + userTokens.size();
     }
 
     public UserData getUser(String username) {
@@ -39,12 +39,18 @@ public class MemoryDataAccess implements DataAccess {
             return authenticationTokens.get(authToken);
         }
         else {
-            throw new DataAccessException("Game already exists");
+            throw new DataAccessException("token does not exists");
         }
     }
 
     public void deleteAuthToken(AuthData authToken) throws DataAccessException {
-        authenticationTokens.remove(authToken);
+        if (authenticationTokens.containsKey(authToken.userName())) {
+            authenticationTokens.remove(authToken.userName());
+        }
+        else {
+            throw new DataAccessException("token has never existed you tripping");
+        }
+
     }
 
     public Object getGames() throws DataAccessException {
@@ -89,5 +95,15 @@ public class MemoryDataAccess implements DataAccess {
             GameData newGame = new GameData(currentGame.gameID(), currentGame.whiteUsername(), username, currentGame.gameName(), currentGame.game());
             gameTokens.put(currentGame.gameName(), newGame); // keep the same game name
         }
+    }
+    public int getAuthSize() {
+        return authenticationTokens.size();
+    }
+
+    public void addAuth(AuthData currentAuth) throws DataAccessException {
+        if(authenticationTokens.containsKey(currentAuth.userName())) {
+            throw new DataAccessException("that username is taken");
+        }
+        authenticationTokens.put(currentAuth.userName(), currentAuth);
     }
 }

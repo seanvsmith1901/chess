@@ -30,6 +30,9 @@ public interface DataAccess {
 
     void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException;
 
+    int getAuthSize() throws DataAccessException;
+
+    void addAuth(AuthData currentAuth) throws DataAccessException;
 //
 //    void createAuth(AuthData currentAuth) throws DataAccessException;
 //

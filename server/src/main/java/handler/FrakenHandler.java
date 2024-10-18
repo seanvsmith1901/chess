@@ -30,7 +30,7 @@ public class FrakenHandler {
 
 
     public Object clearDataBase() throws DataAccessException {
-        return authService.deleteEverything(dataAccess);
+        return authService.deleteEverything();
     }
 
     public Object registerUser(String username, String password, String email) throws DataAccessException {
