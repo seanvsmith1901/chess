@@ -92,6 +92,16 @@ public class handlerTests {
         assertNotNull(handler.getGames(authToken));
     }
 
+    @Test
+    void getGamesNegative() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> handler.getGames("111111")); // tries to grab games with a nonexistent auth token.
+    }
+
+    @Test
+    void createGame() throws DataAccessException {
+        handler.registerUser("West", "12345", "West@gmail.com");
+    }
+
 
 }
 
