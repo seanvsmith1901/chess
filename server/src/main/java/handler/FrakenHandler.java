@@ -13,7 +13,6 @@ import javax.xml.crypto.Data;
 import java.util.HashMap;
 import java.util.Objects;
 
-import
 
 
 public class FrakenHandler {
@@ -31,18 +30,13 @@ public class FrakenHandler {
 
 
     public Object clearDataBase() throws DataAccessException {
-        return authService.deleteEverything(dataAccess);
+        return authService.deleteEverything();
     }
 
     public Object registerUser(String username, String password, String email) throws DataAccessException {
-        if (userService.getUser(username) != null) {
-            throw new DataAccessException("User already exists");
-        }
-        else {
-            userService.createUser(username, password, email);
-            return authService.createAuthToken(username);
-        }
 
+        userService.createUser(username, password, email);
+        return authService.createAuthToken(username);
     }
 
     public Object createSession(String username, String password) throws DataAccessException {
@@ -64,9 +58,6 @@ public class FrakenHandler {
         else {
             throw new DataAccessException("Wrong auth token");
         }
-
-
-
     }
 
     public Object getGames(String authToken) throws DataAccessException {
@@ -81,10 +72,7 @@ public class FrakenHandler {
 
     public Object createGame(String authToken, String gameName) throws DataAccessException {
         AuthData currentAuth = authService.getAuthObject(authToken);
-        var currentGame = gameService.getGame(gameName);
-        if (currentGame != null) {
-            throw new DataAccessException("Game already exists");
-        }
+
         gameService.createGame(gameName);
 
 
@@ -94,18 +82,28 @@ public class FrakenHandler {
         return newMap;
     }
 
-    public Object joinGame(String authToken, String playerColor, int gameID) throws DataAccessException {
+    public Object joinGame(String authToken, String playerColor, String gameID) throws DataAccessException {
 
         AuthData currentAuth = authService.getAuthObject(authToken);
         var username = currentAuth.userName();
         var currentGame = gameService.getGameFromID(gameID);
         userService.replaceUserInGame(currentGame, username, playerColor);
-        return deez nuts
-
+        return gameService.getGame(currentGame.gameName());
     }
 
+    // helper functions that only exists for tests, and might be used at a higher level.
 
+    public UserData getUser(String username) throws DataAccessException {
+        return userService.getUser(username);
+    }
 
-    // here we can write functions that will pass off things downstream to get other things done.
+    public AuthData getAuth(String username) throws DataAccessException {
+        return authService.getAuthObjectFromUserName(username);
+    }
+
+    public GameData getGame(String gameName) throws DataAccessException {
+        return gameService.getGame(gameName);
+    }
+
 
 }

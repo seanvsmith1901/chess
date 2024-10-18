@@ -3,6 +3,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.MemoryDataAccess;
 import handler.*;
 import spark.*;
 
@@ -13,10 +14,11 @@ import java.util.Map;
 public class Server {
 
     private FrakenHandler handler;
-    private Gson Serializer = new Gson();
+    private Gson serializer = new Gson();
 
 
     public Server() {
+        this.handler = new FrakenHandler(new MemoryDataAccess());
     }
 
     public int run(int desiredPort) {
@@ -29,7 +31,7 @@ public class Server {
         // Register your endpoints and handle exceptions here.
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
-        //Spark.init();
+        Spark.init();
 
         //Im an idiot, we will be passing a full authToken object in these functions when we delete and whatnot.
 
@@ -56,7 +58,7 @@ public class Server {
 
    private Object clearDataBase(Request req, Response res)  throws DataAccessException {
         res.status(200);
-        return handler.clearDataBase();
+        return serializer.toJson(handler.clearDataBase());
 
    }
 
@@ -65,6 +67,7 @@ public class Server {
         var newAuthenticationObject = handler.registerUser(req.attribute("username"), req.attribute("password"), req.attribute("email"));
         res.status(200);
         return new Gson().toJson(newAuthenticationObject);
+
    }
 
    private Object createSession(Request req, Response res)  throws DataAccessException {
@@ -81,7 +84,7 @@ public class Server {
    }
 
    private Object getGames(Request req, Response res)  throws DataAccessException {
-        return handler.getGames(req.attribute("authToken"));
+        return new Gson().toJson(handler.getGames(req.attribute("authToken")));
    }
 
     private void exceptionHandler(DataAccessException ex, Request req, Response res) {

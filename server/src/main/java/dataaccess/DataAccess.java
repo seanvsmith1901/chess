@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 
 import javax.management.monitor.GaugeMonitor;
 import java.util.Collection;
+import java.util.HashMap;
 
 public interface DataAccess {
 
@@ -20,16 +21,23 @@ public interface DataAccess {
 
     void deleteAuthToken(AuthData authToken) throws DataAccessException;
 
-    Object getGames() throws DataAccessException;
+    HashMap<String, GameData> getGames() throws DataAccessException;
 
     void createGame(String gameName) throws DataAccessException;
 
     GameData getGame(String gameName) throws DataAccessException;
 
-    GameData getGameFromID(Integer gameID) throws DataAccessException;
+    GameData getGameFromID(String gameID) throws DataAccessException;
 
     void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException;
 
+    int getAuthSize() throws DataAccessException;
+
+    void addAuth(AuthData currentAuth) throws DataAccessException;
+
+    AuthData getAuthObjectFromUsername(String username) throws DataAccessException;
+
+    int getUserCount() throws DataAccessException;
 //
 //    void createAuth(AuthData currentAuth) throws DataAccessException;
 //

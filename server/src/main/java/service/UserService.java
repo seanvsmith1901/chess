@@ -24,15 +24,15 @@ public class UserService {
         return dataAccess.getUser(username);
     }
 
-    public void replaceUserInGame(GameData currentGame, String username, String playerColor) {
+    public void replaceUserInGame(GameData currentGame, String username, String playerColor) throws DataAccessException {
         dataAccess.addUser(currentGame, username, playerColor);
     }
 
+    public int getUserCount() throws DataAccessException {
+        return dataAccess.getUserCount();
+    }
 
-//    public AuthData checkUser(UserData user) {}
-//    void logOutUser(AuthData authToken) {}
-//    public AuthData CheckUser(UserData user) {}
-//    void LogInUser(UserData newUser) {}
+
 
 
 

@@ -14,7 +14,7 @@ public class Main {
 
         DataAccess dataAccess = new MemoryDataAccess();
 
-        FrakenHandler handler = new FrakenHandler();
+        FrakenHandler handler = new FrakenHandler(dataAccess);
 
     }
 }
