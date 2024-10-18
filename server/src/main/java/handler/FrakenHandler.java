@@ -34,14 +34,9 @@ public class FrakenHandler {
     }
 
     public Object registerUser(String username, String password, String email) throws DataAccessException {
-        if (userService.getUser(username) != null) {
-            throw new DataAccessException("User already exists");
-        }
-        else {
-            userService.createUser(username, password, email);
-            return authService.createAuthToken(username);
-        }
 
+        userService.createUser(username, password, email);
+        return authService.createAuthToken(username);
     }
 
     public Object createSession(String username, String password) throws DataAccessException {
@@ -63,9 +58,6 @@ public class FrakenHandler {
         else {
             throw new DataAccessException("Wrong auth token");
         }
-
-
-
     }
 
     public Object getGames(String authToken) throws DataAccessException {
@@ -80,10 +72,7 @@ public class FrakenHandler {
 
     public Object createGame(String authToken, String gameName) throws DataAccessException {
         AuthData currentAuth = authService.getAuthObject(authToken);
-        var currentGame = gameService.getGame(gameName);
-        if (currentGame != null) {
-            throw new DataAccessException("Game already exists");
-        }
+
         gameService.createGame(gameName);
 
 
@@ -100,11 +89,15 @@ public class FrakenHandler {
         var currentGame = gameService.getGameFromID(gameID);
         userService.replaceUserInGame(currentGame, username, playerColor);
         return gameService.getGame(currentGame.gameName());
-
     }
 
+    public UserData getUser(String username) throws DataAccessException {
+        return userService.getUser(username);
+    }
 
+    public AuthData getAuth(String username) throws DataAccessException {
+        return authService.getAuthObjectFromUserName(username);
+    }
 
-    // here we can write functions that will pass off things downstream to get other things done.
 
 }

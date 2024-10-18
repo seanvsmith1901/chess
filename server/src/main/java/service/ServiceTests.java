@@ -1,24 +1,11 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.DataAccess;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryDataAccess;
+import dataaccess.*;
 import model.*;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import server.Server;
-import java.util.HashMap;
-
-
 import model.UserData;
-
-import javax.xml.crypto.Data;
-import java.util.Dictionary;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -125,16 +112,6 @@ public class ServiceTests {
         assertEquals(1, authService.getAuthSize());
     }
 
-//    @Test not sure how to write this test, as I don't know how returnAuthSuze could ever throw an exception.
-//    void checkAuthSize() throws DataAccessException {
-//        var newAuth = new AuthData("asdsfd", "West");
-//        authService.createAuthToken("West");
-//
-//    }
-
-    // ** end of the authServiceTests *
-    //GameData(1, "white", "black", "bestGame", new ChessGame())   fake game if you need it
-
     @Test
     void getGamesPositive() throws DataAccessException {
         var newGame = new GameData(1, null, null, "bestGame", new ChessGame());
@@ -214,7 +191,6 @@ public class ServiceTests {
 
     @Test
     void replaceUserInGamePositive() throws DataAccessException {
-        var newUser = new UserData("West", "password", "west@gmail.com");
         var expectedGame = new GameData(1, "West", null, "BestGame", new ChessGame());
         gameService.createGame("BestGame");
         var newGame = gameService.getGame("BestGame");
@@ -226,8 +202,6 @@ public class ServiceTests {
 
     @Test
     void replaceUserInGameNegativeColorTaken() throws DataAccessException {
-        var newUser = new UserData("West", "password", "west@gmail.com");
-        var expectedGame = new GameData(1, "West", null, "BestGame", new ChessGame());
         gameService.createGame("BestGame");
         var newGame = gameService.getGame("BestGame");
         userService.createUser("West", "password", "west@gmail.com");
@@ -241,18 +215,6 @@ public class ServiceTests {
         userService.createUser("West", "password", "west@gmail.com");
         assertEquals(userService.getUserCount(), 1);
     }
-
-
-
-
-
-
-
-
-
-    // we need two test cases for each of the above.
-
-//}
 
 
 
