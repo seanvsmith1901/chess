@@ -33,6 +33,13 @@ public class ServiceTests {
         authService.deleteEverything();
     }
 
+    @BeforeEach
+    void tearDown() throws DataAccessException {
+        authService.deleteEverything();
+    }
+
+
+
     @Test
     void deleteDataBase() throws DataAccessException { // positive test - add something to the data base and make sure it burns correctly.
         assertEquals((authService.deleteEverything()), 0);
@@ -58,7 +65,7 @@ public class ServiceTests {
     void getExistingAuthToken() throws DataAccessException {
         authService.createAuthToken("West");
         var expectedUserName = "West";
-        assertEquals((authService.getAuthObject(expectedUserName)).userName(), expectedUserName);
+        assertEquals((authService.getAuthObjectFromUserName(expectedUserName)).userName(), expectedUserName);
     }
 
     @Test
@@ -67,14 +74,61 @@ public class ServiceTests {
     }
 
     @Test
+    void grabNonExistentUserName() {
+        assertThrows(DataAccessException.class, () -> {authService.getAuthObjectFromUserName("West");});
+    }
+
+
+    @Test
     void deleteExistingAuthToken() throws DataAccessException {
-        var expectedLength = 0;
+        var thisShouldBeRight = 0;
         authService.createAuthToken("West");
-        AuthData currentAuth = authService.getAuthObject("West"); // IDK if that will work lol
+        AuthData currentAuth = authService.getAuthObjectFromUserName("West"); // IDK if that will work lol
         authService.deleteAuthObject(currentAuth);
-        assertEquals(authService.getAuthSize(), expectedLength);
+        assertEquals(0, authService.getAuthSize());
 
     }
+
+    @Test
+    void deleteExistingAuthTokenGivenUsername() throws DataAccessException {
+        authService.createAuthToken("West");
+        var authToken = authService.getAuthObjectFromUserName("West").authToken();
+        AuthData currentAuth = authService.getAuthObject(authToken);
+        authService.deleteAuthObject(currentAuth);
+        assertEquals(0, authService.getAuthSize());
+    }
+
+    @Test
+    void checkDeleteAuthObject() throws DataAccessException {
+        authService.createAuthToken("West");
+        authService.createAuthToken("East");
+        var currentAuth = authService.getAuthObjectFromUserName("West");
+        authService.deleteAuthObject(currentAuth);
+        assertEquals(1, authService.getAuthSize());
+    }
+
+    @Test
+    void checkDeleteAuthObjectNotThere() throws DataAccessException {
+        var newAuth = new AuthData("asdsfd", "West");
+        assertThrows(DataAccessException.class, () -> {authService.deleteAuthObject(newAuth);});
+    }
+
+    @Test
+    void checkAuthSize() throws DataAccessException {
+        var newAuth = new AuthData("asdsfd", "West");
+        authService.createAuthToken("West");
+        assertEquals(1, authService.getAuthSize());
+    }
+
+//    @Test not sure how to write this test, as I don't know how returnAuthSuze could ever throw an exception.
+//    void checkAuthSize() throws DataAccessException {
+//        var newAuth = new AuthData("asdsfd", "West");
+//        authService.createAuthToken("West");
+//
+//    }
+
+    
+
 
 
 

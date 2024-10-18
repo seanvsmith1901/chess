@@ -28,8 +28,12 @@ public class AuthService {
         return newAuthData; // returns the new authentication object
     }
 
-    public AuthData getAuthObject(String userName) throws DataAccessException {
-        return dataAccess.getAuthObject(userName);
+    public AuthData getAuthObject(String authToken) throws DataAccessException {
+        return dataAccess.getAuthObject(authToken);
+    }
+
+    public AuthData getAuthObjectFromUserName(String username) throws DataAccessException {
+        return dataAccess.getAuthObjectFromUsername(username);
     }
 
     public void deleteAuthObject(AuthData authToken) throws DataAccessException {

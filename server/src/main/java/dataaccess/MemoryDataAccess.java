@@ -44,12 +44,13 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public void deleteAuthToken(AuthData authToken) throws DataAccessException {
-        if (authenticationTokens.containsKey(authToken.userName())) {
-            authenticationTokens.remove(authToken.userName());
+        for(AuthData auth: authenticationTokens.values()) {
+            if (auth.equals(authToken)) {
+                authenticationTokens.remove(auth.authToken());
+                return;
+            }
         }
-        else {
-            throw new DataAccessException("token has never existed you tripping");
-        }
+        throw new DataAccessException("token has never existed you tripping");
 
     }
 
@@ -101,9 +102,20 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public void addAuth(AuthData currentAuth) throws DataAccessException {
-        if(authenticationTokens.containsKey(currentAuth.userName())) {
-            throw new DataAccessException("that username is taken");
+        for(AuthData auth: authenticationTokens.values()) {
+            if (auth.userName().equals(currentAuth.userName())) {
+                throw new DataAccessException("that username is taken");
+            }
         }
-        authenticationTokens.put(currentAuth.userName(), currentAuth);
+        authenticationTokens.put(currentAuth.authToken(), currentAuth);
+    }
+
+    public AuthData getAuthObjectFromUsername(String username) throws DataAccessException {
+        for(AuthData auth: authenticationTokens.values()) {
+            if (auth.userName().equals(username)) {
+                return auth;
+            }
+        }
+        throw new DataAccessException("username does not exist");
     }
 }
