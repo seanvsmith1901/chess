@@ -55,7 +55,7 @@ public class ServiceTests {
     void getExistingAuthToken() throws DataAccessException {
         authService.createAuthToken("West");
         var expectedUserName = "West";
-        assertEquals((authService.getAuthObjectFromUserName(expectedUserName)).userName(), expectedUserName);
+        assertEquals((authService.getAuthObjectFromUserName(expectedUserName)).username(), expectedUserName);
     }
 
     @Test
@@ -194,7 +194,7 @@ public class ServiceTests {
         var newGame = gameService.getGame("BestGame");
         userService.createUser("West", "password", "west@gmail.com");
         var currentUser = userService.getUser("West");
-        userService.replaceUserInGame(newGame, currentUser.name(), "white");
+        userService.replaceUserInGame(newGame, currentUser.name(), "WHITE");
         assertEquals(gameService.getGame("BestGame"), expectedGame);
     }
 
@@ -204,8 +204,8 @@ public class ServiceTests {
         var newGame = gameService.getGame("BestGame");
         userService.createUser("West", "password", "west@gmail.com");
         var currentUser = userService.getUser("West");
-        userService.replaceUserInGame(newGame, currentUser.name(), "white");
-        assertThrows(DataAccessException.class, () -> {userService.replaceUserInGame(gameService.getGame("BestGame"), currentUser.name(), "white");});
+        userService.replaceUserInGame(newGame, currentUser.name(), "WHITE");
+        assertThrows(DataAccessException.class, () -> {userService.replaceUserInGame(gameService.getGame("BestGame"), currentUser.name(), "WHITE");});
     }
 
     @Test

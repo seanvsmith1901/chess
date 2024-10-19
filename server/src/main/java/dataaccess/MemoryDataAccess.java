@@ -1,16 +1,11 @@
 package dataaccess;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import model.*;
-import service.AuthService;
-import service.GameService;
-import service.UserService;
 
-import javax.xml.crypto.Data;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 
 
 public class MemoryDataAccess implements DataAccess {
@@ -61,8 +56,10 @@ public class MemoryDataAccess implements DataAccess {
 
     }
 
-    public HashMap<String, GameData> getGames() throws DataAccessException {
-        return gameTokens; // should just return the whole fetching dictionary.
+    public HashSet<GameData> getGames() throws DataAccessException {
+        HashSet<GameData> gameData = new HashSet<GameData>();
+        gameData.addAll(gameTokens.values());
+        return gameData; // should just return the whole fetching dictionary.
     }
 
     public void createGame(String gameName) throws DataAccessException {
@@ -93,7 +90,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException {
-        if(playerColor.equals("white")){
+        if(playerColor.equals("WHITE")){
             if (currentGame.whiteUsername() != null) {
                 throw new DataAccessException("that color is taken");
             }
@@ -116,8 +113,9 @@ public class MemoryDataAccess implements DataAccess {
 
     public void addAuth(AuthData currentAuth) throws DataAccessException {
         for(AuthData auth: authenticationTokens.values()) {
-            if (auth.userName().equals(currentAuth.userName())) {
-                throw new DataAccessException("that username is taken");
+            if (auth.username().equals(currentAuth.username())) {
+                authenticationTokens.remove(auth.authToken()); // that was if the user is already in there it just updates him.
+                //throw new DataAccessException("that username is taken"); // this feels very wrong to me
             }
         }
         authenticationTokens.put(currentAuth.authToken(), currentAuth);
@@ -125,7 +123,7 @@ public class MemoryDataAccess implements DataAccess {
 
     public AuthData getAuthObjectFromUsername(String username) throws DataAccessException {
         for(AuthData auth: authenticationTokens.values()) {
-            if (auth.userName().equals(username)) {
+            if (auth.username().equals(username)) {
                 return auth;
             }
         }

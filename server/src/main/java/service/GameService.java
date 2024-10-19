@@ -5,8 +5,10 @@ import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import model.*;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class GameService {
 
@@ -16,7 +18,7 @@ public class GameService {
         this.dataAccess = dataAccess;
     }
 
-    public HashMap<String, GameData> getGames() throws DataAccessException {
+    public HashSet<GameData> getGames() throws DataAccessException {
         return dataAccess.getGames();
     }
 

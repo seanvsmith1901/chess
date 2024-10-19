@@ -21,7 +21,7 @@ public class AuthService {
         return dataAccess.deleteEverything();
     }
 
-    public Object createAuthToken(String username) throws DataAccessException {
+    public AuthData createAuthToken(String username) throws DataAccessException {
         var authentication = generateRandomString(8);
         var newAuthData = new AuthData(authentication, username);
         dataAccess.addAuth(newAuthData);

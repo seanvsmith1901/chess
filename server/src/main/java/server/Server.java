@@ -5,10 +5,11 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
 import handler.*;
-import model.RegisterData;
+import model.*;
 import spark.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 
@@ -36,13 +37,15 @@ public class Server {
 
         //Im an idiot, we will be passing a full authToken object in these functions when we delete and whatnot.
 
-        Spark.delete("/db", this::clearDataBase); // ok so check for stuff in the head vs. body, and understand how to access those elements. our handler is our service and our services are glorified data accessers. sweet.
-        Spark.post("/user", this::registerUser);
-        Spark.post("/session:username:password", this::createSession);
-        Spark.delete("/session:authToken", this::logOutUser);
-        Spark.get("/game:authToken", this::getGames);
-        Spark.post("/game:authToken:gameName", this::createGame);
-        Spark.put("/game:authToken:playerColor:gameID", this::joinGame);
+        // ok so check for stuff in the head vs. body, and understand how to access those elements. our handler is our service and our services are glorified data accessers. sweet.
+
+        Spark.delete("/db", this::clearDataBase); // clear application
+        Spark.post("/user", this::registerUser); // Register a new user (returns auth token)
+        Spark.post("/session", this::createSession); // logs in an existing user
+        Spark.delete("/session", this::logOutUser); // logs out a user represented by an auth token
+        Spark.get("/game", this::getGames); // gives a list of all the games
+        Spark.post("/game", this::createGame); // creates a new game
+        Spark.put("/game", this::joinGame); // verifies that game exists, and adds caller as the requested color.
 
 
         Spark.exception(DataAccessException.class, this::exceptionHandler);
@@ -65,34 +68,48 @@ public class Server {
 
    private Object registerUser(Request req, Response res)  throws DataAccessException {
        // first try to find the user, make sure thats null, create the user adn then create an auth token with that user, and return that authtoken.
-       //
+
        RegisterData data = new Gson().fromJson(req.body(), RegisterData.class);
        var username = data.username();
        var password = data.password();
+       Object newAuthenticationObject;
        var email = data.email();
+       newAuthenticationObject = handler.registerUser(username, password, email);
+       res.status(200);
+       return serializer.toJson(newAuthenticationObject);
 
-       //we
-        var newAuthenticationObject = handler.registerUser(username, password, email);
-        res.status(200);
-        return new Gson().toJson(newAuthenticationObject);
 
    }
 
    private Object createSession(Request req, Response res)  throws DataAccessException {
-        var newAuthenticationObject = handler.createSession(req.attribute("username"), req.attribute("password"));
-        res.status(200);
-        return new Gson().toJson(newAuthenticationObject);
+        LoginData data = new Gson().fromJson(req.body(), LoginData.class);
+        var username = data.username();
+        var password = data.password();
+        try {
+            var newAuthenticationObject = handler.createSession(username, password);
+            SessionData thisSession = new SessionData(newAuthenticationObject.username(), newAuthenticationObject.authToken());
+            res.status(200);
+            return serializer.toJson(thisSession);
+        }
+        catch (DataAccessException e) {
+            ;
+        }
+
+
+
    }
 
    private Object logOutUser(Request req, Response res)  throws DataAccessException {
-        handler.logOutUser(req.attribute("authToken"));
+        handler.logOutUser(req.headers("authorization"));
         res.status(200);
         Map<String, Integer> myDict = new HashMap<>();
-        return new Gson().toJson(myDict);
+        return new Gson().toJson(myDict); // no clue if that works
    }
 
    private Object getGames(Request req, Response res)  throws DataAccessException {
-        return new Gson().toJson(handler.getGames(req.attribute("authToken")));
+        var gameTokens = handler.getGames(req.headers("authorization"));
+        GamesList games = new GamesList(gameTokens);
+        return new Gson().toJson(games);
    }
 
     private void exceptionHandler(DataAccessException ex, Request req, Response res) {
@@ -102,14 +119,27 @@ public class Server {
 
     private Object createGame(Request req, Response res)  throws DataAccessException {
         // need to return the gamename and the gameID. lez go
+        GameCreationData data = new Gson().fromJson(req.body(), GameCreationData.class);
+
+        var authentication = req.headers("authorization");
+        var gameName = data.gameName();
+
         res.status(200);
-        return handler.createGame(req.attribute("authToken"), req.attribute("gameName"));
+        GameData newGame = (handler.createGame(authentication, gameName));
+        GameCreated returnObject = new GameCreated(newGame.gameID());
+        return serializer.toJson(returnObject);
 
     }
 
     private Object joinGame(Request req, Response res)  throws DataAccessException {
+
+        var authToken = req.headers("authorization");
+        JoinData data = new Gson().fromJson(req.body(), JoinData.class);
+        var playerColor = data.playerColor();
+        String gameID = String.valueOf(data.gameID());
+        handler.joinGame(authToken, playerColor, gameID);
         res.status(200);
-        return handler.joinGame(req.attribute("authToken"), req.attribute("playerColor"), req.attribute("gameID"));
+        return serializer.toJson(null);
     }
 
 

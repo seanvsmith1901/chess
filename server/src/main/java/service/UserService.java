@@ -3,6 +3,7 @@ package service;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import model.*;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.server.Authentication;
 
 import java.util.Dictionary;
@@ -16,6 +17,9 @@ public class UserService {
     }
 
     public void createUser(String username, String password, String email) throws DataAccessException {
+        if(password == null) {
+            throw new DataAccessException("password is null");
+        }
         var newUser = new UserData(username, password, email);
         dataAccess.createUser(newUser);
     }

@@ -121,7 +121,7 @@ public class handlerTests {
         var authToken = handler.getAuth("West").authToken();
         handler.createGame(authToken, "BestGame");
         int gameID = handler.getGame("BestGame").gameID();
-        handler.joinGame(authToken, "white", String.valueOf(gameID));
+        handler.joinGame(authToken, "WHITE", String.valueOf(gameID));
         var expectedGame = new GameData(1, "West", null, "BestGame", new ChessGame());
         assertEquals(expectedGame, handler.getGame("BestGame")); // checks to make sure that we really have joined the game as white.
     }
@@ -134,8 +134,8 @@ public class handlerTests {
         var authToken2 = handler.getAuth("East").authToken();
         handler.createGame(authToken, "BestGame");
         int gameID = handler.getGame("BestGame").gameID();
-        handler.joinGame(authToken, "white", String.valueOf(gameID));
-        assertThrows(DataAccessException.class, () -> handler.joinGame(authToken2, "white", String.valueOf(gameID)));
+        handler.joinGame(authToken, "WHITE", String.valueOf(gameID));
+        assertThrows(DataAccessException.class, () -> handler.joinGame(authToken2, "WHITE", String.valueOf(gameID)));
     }
 
 
