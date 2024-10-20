@@ -1,16 +1,11 @@
 package dataaccess;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import model.*;
-import service.AuthService;
-import service.GameService;
-import service.UserService;
 
-import javax.xml.crypto.Data;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 
 
 public class MemoryDataAccess implements DataAccess {
@@ -23,20 +18,20 @@ public class MemoryDataAccess implements DataAccess {
         authenticationTokens.clear();
         gameTokens.clear();
         userTokens.clear();
-        return authenticationTokens.toString() + gameTokens.toString() + userTokens.toString();
+        return null;
     }
 
     public UserData getUser(String username) throws DataAccessException {
         if(userTokens.containsKey(username)) {
             return userTokens.get(username);
         }
-        throw new DataAccessException("User not found");
+        throw new DataAccessException("unauthorized");
     }
 
     public void createUser(UserData currentUser) throws DataAccessException {
         var userName = currentUser.name();
         if(userTokens.containsKey(userName)) {
-            throw new DataAccessException("That username is already taken my guy, be more creative");
+            throw new DataAccessException("already taken");
         }
         userTokens.put(userName, currentUser);
     }
@@ -46,7 +41,7 @@ public class MemoryDataAccess implements DataAccess {
             return authenticationTokens.get(authToken);
         }
         else {
-            throw new DataAccessException("token does not exists");
+            throw new DataAccessException("unauthorized");
         }
     }
 
@@ -61,8 +56,10 @@ public class MemoryDataAccess implements DataAccess {
 
     }
 
-    public HashMap<String, GameData> getGames() throws DataAccessException {
-        return gameTokens; // should just return the whole fetching dictionary.
+    public HashSet<GameData> getGames() throws DataAccessException {
+        HashSet<GameData> gameData = new HashSet<GameData>();
+        gameData.addAll(gameTokens.values());
+        return gameData; // should just return the whole fetching dictionary.
     }
 
     public void createGame(String gameName) throws DataAccessException {
@@ -93,7 +90,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException {
-        if(playerColor.equals("white")){
+        if(playerColor.equals("WHITE")){
             if (currentGame.whiteUsername() != null) {
                 throw new DataAccessException("that color is taken");
             }
@@ -115,21 +112,16 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public void addAuth(AuthData currentAuth) throws DataAccessException {
-        for(AuthData auth: authenticationTokens.values()) {
-            if (auth.userName().equals(currentAuth.userName())) {
-                throw new DataAccessException("that username is taken");
-            }
-        }
-        authenticationTokens.put(currentAuth.authToken(), currentAuth);
+        authenticationTokens.put(currentAuth.authToken(), currentAuth); // just add it?? bro thats SO stupid
     }
 
     public AuthData getAuthObjectFromUsername(String username) throws DataAccessException {
         for(AuthData auth: authenticationTokens.values()) {
-            if (auth.userName().equals(username)) {
+            if (auth.username().equals(username)) {
                 return auth;
             }
         }
-        throw new DataAccessException("username does not exist");
+        throw new DataAccessException("unauthorized");
     }
 
     public int getUserCount() throws DataAccessException {

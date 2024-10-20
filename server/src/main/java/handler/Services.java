@@ -2,26 +2,26 @@ package handler;
 
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
-import org.eclipse.jetty.server.Authentication;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
 
 import model.*;
 
-import javax.xml.crypto.Data;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 
 
 
-public class FrakenHandler {
+public class Services {
     private AuthService authService;
     private GameService gameService;
     private UserService userService;
     private DataAccess dataAccess;
 
-    public FrakenHandler(DataAccess newDataAccess) { // remember to pass in the dataaccess objects and create new objects for the interface
+    public Services(DataAccess newDataAccess) { // remember to pass in the dataaccess objects and create new objects for the interface
         this.dataAccess = newDataAccess;
         authService = new AuthService(dataAccess);
         gameService = new GameService(dataAccess);
@@ -39,14 +39,14 @@ public class FrakenHandler {
         return authService.createAuthToken(username);
     }
 
-    public Object createSession(String username, String password) throws DataAccessException {
+    public AuthData createSession(String username, String password) throws DataAccessException {
         UserData currentUser = userService.getUser(username);
 
         if (Objects.equals(password, currentUser.password())) { // checks that the user checks out
             return authService.createAuthToken(username);
         }
         else {
-            throw new DataAccessException("Wrong password");
+            throw new DataAccessException("unauthorized");
         }
     }
 
@@ -60,7 +60,7 @@ public class FrakenHandler {
         }
     }
 
-    public Object getGames(String authToken) throws DataAccessException {
+    public HashSet<GameData> getGames(String authToken) throws DataAccessException {
         AuthData currentAuth = authService.getAuthObject(authToken);
         if (currentAuth != null) {
             return gameService.getGames();
@@ -70,7 +70,7 @@ public class FrakenHandler {
         }
     }
 
-    public Object createGame(String authToken, String gameName) throws DataAccessException {
+    public GameData createGame(String authToken, String gameName) throws DataAccessException {
         AuthData currentAuth = authService.getAuthObject(authToken);
 
         gameService.createGame(gameName);
@@ -79,16 +79,16 @@ public class FrakenHandler {
         GameData actualGame = gameService.getGame(gameName);
         HashMap<String, Integer> newMap = new HashMap<>();
         newMap.put(actualGame.gameName(), actualGame.gameID()); //
-        return newMap;
+        return actualGame;
     }
 
     public Object joinGame(String authToken, String playerColor, String gameID) throws DataAccessException {
 
         AuthData currentAuth = authService.getAuthObject(authToken);
-        var username = currentAuth.userName();
+        var username = currentAuth.username();
         var currentGame = gameService.getGameFromID(gameID);
         userService.replaceUserInGame(currentGame, username, playerColor);
-        return gameService.getGame(currentGame.gameName());
+        return null;
     }
 
     // helper functions that only exists for tests, and might be used at a higher level.

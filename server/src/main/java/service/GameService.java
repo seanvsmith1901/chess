@@ -5,30 +5,32 @@ import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import model.*;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class GameService {
 
     private DataAccess dataAccess;
 
-    public GameService(DataAccess dataAccess) {
+    public GameService(DataAccess dataAccess) { // sets the correct dataaccess module
         this.dataAccess = dataAccess;
     }
 
-    public HashMap<String, GameData> getGames() throws DataAccessException {
+    public HashSet<GameData> getGames() throws DataAccessException { // returns a hashset of all of the games
         return dataAccess.getGames();
     }
 
-    public void createGame(String gameName) throws DataAccessException {
+    public void createGame(String gameName) throws DataAccessException { // creates a new game
         dataAccess.createGame(gameName);
     }
 
-    public GameData getGame(String gameName) throws DataAccessException {
+    public GameData getGame(String gameName) throws DataAccessException { // gets a game from its game name
         return dataAccess.getGame(gameName);
     }
 
-    public GameData getGameFromID(String gameID) throws DataAccessException {
+    public GameData getGameFromID(String gameID) throws DataAccessException { // gets the game from ID
         return dataAccess.getGameFromID(gameID);
     }
 

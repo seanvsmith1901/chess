@@ -13,38 +13,41 @@ public class AuthService {
 
     private DataAccess dataAccess;
 
-    public AuthService(DataAccess dataAccess) {
+    public AuthService(DataAccess dataAccess) { // correct data access setting
         this.dataAccess = dataAccess;
     }
 
-    public Object deleteEverything() throws DataAccessException {
+    public Object deleteEverything() throws DataAccessException { // does exactly what you think it does
         return dataAccess.deleteEverything();
     }
 
-    public Object createAuthToken(String username) throws DataAccessException {
+    public AuthData createAuthToken(String username) throws DataAccessException { // creates a new authtoken for a given user
+        if(username == null || username.isEmpty()) {
+            throw new DataAccessException("Username cannot be null or empty");
+        }
         var authentication = generateRandomString(8);
         var newAuthData = new AuthData(authentication, username);
         dataAccess.addAuth(newAuthData);
         return newAuthData; // returns the new authentication object
     }
 
-    public AuthData getAuthObject(String authToken) throws DataAccessException {
+    public AuthData getAuthObject(String authToken) throws DataAccessException { // gets the authobject
         return dataAccess.getAuthObject(authToken);
     }
 
-    public AuthData getAuthObjectFromUserName(String username) throws DataAccessException {
+    public AuthData getAuthObjectFromUserName(String username) throws DataAccessException { // just returns it the other way around
         return dataAccess.getAuthObjectFromUsername(username);
     }
 
-    public void deleteAuthObject(AuthData authToken) throws DataAccessException {
+    public void deleteAuthObject(AuthData authToken) throws DataAccessException { // just blows it up
         dataAccess.deleteAuthToken(authToken);
     }
 
-    public int getAuthSize() throws DataAccessException {
+    public int getAuthSize() throws DataAccessException { // used for testing purposes
         return dataAccess.getAuthSize();
     }
 
-    private String generateRandomString(int length) {
+    private String generateRandomString(int length) { // used to help generate the random auth tokens
 
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         SecureRandom random = new SecureRandom();

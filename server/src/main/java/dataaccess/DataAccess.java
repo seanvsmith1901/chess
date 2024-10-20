@@ -6,8 +6,10 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 
 import javax.management.monitor.GaugeMonitor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public interface DataAccess {
 
@@ -21,7 +23,7 @@ public interface DataAccess {
 
     void deleteAuthToken(AuthData authToken) throws DataAccessException;
 
-    HashMap<String, GameData> getGames() throws DataAccessException;
+    HashSet<GameData> getGames() throws DataAccessException;
 
     void createGame(String gameName) throws DataAccessException;
 
