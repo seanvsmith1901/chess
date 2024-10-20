@@ -15,13 +15,13 @@ import java.util.Objects;
 
 
 
-public class FrakenHandler {
+public class Services {
     private AuthService authService;
     private GameService gameService;
     private UserService userService;
     private DataAccess dataAccess;
 
-    public FrakenHandler(DataAccess newDataAccess) { // remember to pass in the dataaccess objects and create new objects for the interface
+    public Services(DataAccess newDataAccess) { // remember to pass in the dataaccess objects and create new objects for the interface
         this.dataAccess = newDataAccess;
         authService = new AuthService(dataAccess);
         gameService = new GameService(dataAccess);

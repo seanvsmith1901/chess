@@ -17,12 +17,12 @@ import java.util.Objects;
 
 public class Server {
 
-    private FrakenHandler handler;
+    private Services services;
     private Gson serializer = new Gson();
 
 
     public Server() {
-        this.handler = new FrakenHandler(new MemoryDataAccess());
+        this.services = new Services(new MemoryDataAccess());
     }
 
     public int run(int desiredPort) {
@@ -53,12 +53,11 @@ public class Server {
    private Object clearDataBase(Request req, Response res) { // used a lot for testing, should require authentication though lol
         try {
             res.status(200); // everything has gone well
-            return serializer.toJson(handler.clearDataBase());
+            return serializer.toJson(services.clearDataBase());
         }
         catch (DataAccessException e) { // not really sure how you would end up here
             return serializer.toJson(new ErrorData("Error: you shouldn't ever get here")); // no idea how that could every come up
         }
-
    }
 
    private Object registerUser(Request req, Response res) { // registers a new, never before seen user.
@@ -72,7 +71,7 @@ public class Server {
            return serializer.toJson(new ErrorData("Error: Bad request"));
        }
        try {
-           var newAuthenticationObject = handler.registerUser(username, password, email);
+           var newAuthenticationObject = services.registerUser(username, password, email);
            res.status(200);
            return serializer.toJson(newAuthenticationObject);
        } catch (DataAccessException e) { // if that username is already taken
@@ -92,91 +91,91 @@ public class Server {
         var username = data.username();
         var password = data.password();
         try {
-            AuthData newAuthenticationObject = handler.createSession(username, password);
+            AuthData newAuthenticationObject = services.createSession(username, password);
             var thisSession = new SessionData(newAuthenticationObject.username(), newAuthenticationObject.authToken());
             res.status(200);
             return serializer.toJson(thisSession);
         }
         catch (DataAccessException e) {
-            if (Objects.equals(e.getMessage(), "unauthorized")) { // don't have the correct authentication.
-                res.status(500);
-                return serializer.toJson(new ErrorData("Error:" + e.getMessage()));
-            }
-            else {
+            if (Objects.equals(e.getMessage(), "unauthorized")) { // the user doesn't exist, so they are unauthorized
                 res.status(401);
                 return serializer.toJson(new ErrorData("Error: unauthorized"));
+            }
+            else {
+                res.status(500); // any other errors go here
+                return serializer.toJson(new ErrorData("Error:" + e.getMessage()));
             }
         }
    }
 
    private Object logOutUser(Request req, Response res) {
         try {
-            handler.logOutUser(req.headers("authorization"));
+            services.logOutUser(req.headers("authorization")); // make sure we can log them out
             res.status(200);
-            Map<String, Integer> myDict = new HashMap<>();
-            return new Gson().toJson(myDict); // no clue if that works
+            return new Gson().toJson(null); // just returns a null object
         }
         catch (DataAccessException e) {
-            if (Objects.equals(e.getMessage(), "unauthorized")) {
+            if (Objects.equals(e.getMessage(), "unauthorized")) { // trying to log out a nonexistent user
                 res.status(401);
                 var newErrorMessage = new ErrorData("Error: unauthorized");
                 return serializer.toJson(newErrorMessage);
             }
             else {
-                res.status(401);
+                res.status(500); // any other errors go here
                 var newErrorMessage = new ErrorData("Error:" + e.getMessage());
                 return serializer.toJson(newErrorMessage);
             }
-
         }
-
    }
 
-   private Object getGames(Request req, Response res) {
+   private Object getGames(Request req, Response res) { // returns all of the in action games
         try {
             res.status(200);
-            var gameTokens = handler.getGames(req.headers("authorization"));
+            var gameTokens = services.getGames(req.headers("authorization")); // gets the game tokens
             GamesList games = new GamesList(gameTokens);
             return new Gson().toJson(games);
         }
         catch (DataAccessException e) {
-            if (Objects.equals(e.getMessage(), "Unauthorized")) {
+            if (Objects.equals(e.getMessage(), "unauthorized")) { // checks for authorization
                 res.status(401);
                 var newErrorMessage = new ErrorData("Error: unauthorized");
                 return serializer.toJson(newErrorMessage);
             }
             else {
-                res.status(500);
+                res.status(500); // any other errors go here
                 var newErrorMessage = new ErrorData("Error:" + e.getMessage());
                 return serializer.toJson(newErrorMessage);
             }
         }
-
    }
 
 
-    private Object createGame(Request req, Response res) {
-        // need to return the gamename and the gameID. lez go
+    private Object createGame(Request req, Response res) { // creates a new chess game
         try {
-            GameCreationData data = new Gson().fromJson(req.body(), GameCreationData.class);
+            GameCreationData data = new Gson().fromJson(req.body(), GameCreationData.class); // parses data
 
             var authentication = req.headers("authorization");
             var gameName = data.gameName();
 
-            res.status(200);
-            GameData newGame = (handler.createGame(authentication, gameName));
+            if(gameName == null) {
+                res.status(400);
+                return serializer.toJson(new ErrorData("Error: Bad request"));
+            }
+
+            res.status(200); // sets a good status
+            GameData newGame = services.createGame(authentication, gameName); // creates the game
             GameCreated returnObject = new GameCreated(newGame.gameID());
             return serializer.toJson(returnObject);
         }
         catch(DataAccessException e) {
-            if (Objects.equals(e.getMessage(), "unauthorized")) {
+            if (Objects.equals(e.getMessage(), "unauthorized")) { // not the right authentication token
                 res.status(401);
                 var newErrorMessage = new ErrorData("Error: unauthorized");
                 return serializer.toJson(newErrorMessage);
             }
             else {
-                res.status(401);
-                var newErrorMessage = new ErrorData("Error: unauthorized");
+                res.status(500); // any other errors
+                var newErrorMessage = new ErrorData("Error: " + e.getMessage());
                 return serializer.toJson(newErrorMessage);
             }
         }
@@ -188,29 +187,35 @@ public class Server {
         JoinData data = new Gson().fromJson(req.body(), JoinData.class);
         var playerColor = data.playerColor();
         String gameID = String.valueOf(data.gameID());
-        if (authToken == null || gameID == null || playerColor == null) {
+        ErrorData newErrorMessage = new ErrorData("Error: bad request");
+        if (authToken == null || gameID == null || playerColor == null) { // makes sure everything is there
             res.status(400);
             return serializer.toJson(new ErrorData("Error: bad request"));
         }
         try {
-            handler.joinGame(authToken, playerColor, gameID);
+            services.joinGame(authToken, playerColor, gameID);
             res.status(200);
             return serializer.toJson(null);
         }
         catch (DataAccessException e) {
-            if (Objects.equals(e.getMessage(), "Unauthorized")) {
+            if (Objects.equals(e.getMessage(), "unauthorized")) { // bad authentication token
                 res.status(401); // 401
-                var newErrorMessage = new ErrorData("Error: unauthorized");
+                newErrorMessage = new ErrorData("Error: unauthorized");
+                return serializer.toJson(newErrorMessage); // i tried breaking this up like 3 times and it bricked everytime lol
+            }
+            if (Objects.equals(e.getMessage(), "that color is taken")) { // trying to join an already claimed color
+                res.status(403); // 403
+                newErrorMessage = new ErrorData("Error: already taken");
                 return serializer.toJson(newErrorMessage);
             }
-            if (Objects.equals(e.getMessage(), "that color is taken")) {
-                res.status(403); // 403
-                var newErrorMessage = new ErrorData("Error: already taken");
+            if (Objects.equals(e.getMessage(), "Game does not exist")) {
+                res.status(400);
+                newErrorMessage = new ErrorData("Error: Bad request");
                 return serializer.toJson(newErrorMessage);
             }
             else {
-                res.status(400); // 500
-                var newErrorMessage = new ErrorData("Error: Bad request");
+                res.status(500); // 500
+                newErrorMessage = new ErrorData("Error:" + e.getMessage());
                 return serializer.toJson(newErrorMessage);
             }
         }

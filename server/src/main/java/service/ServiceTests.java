@@ -9,16 +9,14 @@ import model.UserData;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class ServiceTests {
+
+public class ServiceTests { // note to self: these are actually dataaccess tests, to make sure that I can access the data alright. my structure is wonky.
 
     static final DataAccess dataAccess = new MemoryDataAccess();
-
     static final AuthService authService = new AuthService(dataAccess);
     static final GameService gameService = new GameService(dataAccess);
     static final UserService userService = new UserService(dataAccess);
 
-
-    static private Server server;
 
     @BeforeAll
     static void clear() throws DataAccessException {
@@ -36,46 +34,51 @@ public class ServiceTests {
 
     }
 
-    // auth service ones first for no other reason that
+    // ** Start with auth tests
 
     @Test
-    void createAuthToken() throws DataAccessException {
+    void createAuthToken() throws DataAccessException { // makes sure we add an authtoken
         var expectedAuthLength = 1;
         authService.createAuthToken("West");
         assertEquals(authService.getAuthSize(), expectedAuthLength);
     }
 
     @Test
-    void createAuthTokenNegative() throws DataAccessException {
+    void createAuthTokenNegative() throws DataAccessException { // if the username is null we brick
         assertThrows(DataAccessException.class, () -> authService.createAuthToken(null));
     }
 
     @Test
-    void getExistingAuthToken() throws DataAccessException {
+    void getExistingAuthToken() throws DataAccessException { // finds the auth token
         authService.createAuthToken("West");
         var expectedUserName = "West";
         assertEquals((authService.getAuthObjectFromUserName(expectedUserName)).username(), expectedUserName);
     }
 
     @Test
-    void grabNonexistentAuthToken() {
+    void grabNonexistentAuthToken() { // tries to grab a bad auth token
         assertThrows(DataAccessException.class, () -> {authService.getAuthObject("West");});
     }
 
     @Test
-    void grabNonExistentUserName() {
+    void grabNonExistentUserName() { // trues to grab a user that doesn't exist
         assertThrows(DataAccessException.class, () -> {authService.getAuthObjectFromUserName("West");});
     }
 
-
     @Test
-    void deleteExistingAuthToken() throws DataAccessException {
+    void deleteExistingAuthToken() throws DataAccessException { // deletes a real authtoken
         var thisShouldBeRight = 0;
         authService.createAuthToken("West");
         AuthData currentAuth = authService.getAuthObjectFromUserName("West"); // IDK if that will work lol
         authService.deleteAuthObject(currentAuth);
         assertEquals(0, authService.getAuthSize());
 
+    }
+
+    @Test
+    void deleteNonExistentAuthToken() throws DataAccessException {
+        AuthData fakeAuthentication = new AuthData("111111", "West");
+        assertThrows(DataAccessException.class, () -> {authService.deleteAuthObject(fakeAuthentication);});
     }
 
     @Test
@@ -86,6 +89,7 @@ public class ServiceTests {
         authService.deleteAuthObject(currentAuth);
         assertEquals(0, authService.getAuthSize());
     }
+
 
     @Test
     void checkDeleteAuthObject() throws DataAccessException {
@@ -108,6 +112,9 @@ public class ServiceTests {
         authService.createAuthToken("West");
         assertEquals(1, authService.getAuthSize());
     }
+
+    // ** End of Auth Tests ** ** Start of games tests **
+
 
     @Test
     void getGamesPositive() throws DataAccessException {
@@ -158,9 +165,7 @@ public class ServiceTests {
         assertThrows(DataAccessException.class, () -> {gameService.createGame("goodGame");});
     }
 
-    // ** END OF GAME TESTS **
-
-    // ** Start of user Test **
+    // ** END OF GAME TESTS ** ** Start of user Tests **
 
     @Test
     void createUserPositive() throws DataAccessException {
@@ -212,6 +217,8 @@ public class ServiceTests {
         userService.createUser("West", "password", "west@gmail.com");
         assertEquals(userService.getUserCount(), 1);
     }
+
+    // ** end of user tests **
 
 
 

@@ -25,7 +25,7 @@ public class MemoryDataAccess implements DataAccess {
         if(userTokens.containsKey(username)) {
             return userTokens.get(username);
         }
-        throw new DataAccessException("User not found");
+        throw new DataAccessException("unauthorized");
     }
 
     public void createUser(UserData currentUser) throws DataAccessException {
@@ -41,7 +41,7 @@ public class MemoryDataAccess implements DataAccess {
             return authenticationTokens.get(authToken);
         }
         else {
-            throw new DataAccessException("Unauthorized");
+            throw new DataAccessException("unauthorized");
         }
     }
 
