@@ -4,6 +4,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
+import dataaccess.ResponseException;
 import handler.*;
 import model.*;
 import spark.*;
@@ -11,6 +12,7 @@ import spark.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class Server {
@@ -61,8 +63,13 @@ public class Server {
     }
 
    private Object clearDataBase(Request req, Response res)  throws DataAccessException {
-        res.status(200);
-        return serializer.toJson(handler.clearDataBase());
+        try {
+            res.status(200);
+            return serializer.toJson(handler.clearDataBase());
+        }
+        catch (DataAccessException e) {
+            return serializer.toJson(new ErrorData("Message", "nothing to clear my guy")); // no idea how that could every come up
+        }
 
    }
 
@@ -74,9 +81,25 @@ public class Server {
        var password = data.password();
        Object newAuthenticationObject;
        var email = data.email();
-       newAuthenticationObject = handler.registerUser(username, password, email);
-       res.status(200);
-       return serializer.toJson(newAuthenticationObject);
+       if (username == null || password == null || email == null) {
+           res.status(400);
+           return serializer.toJson(new ErrorData("Message", "bad request"));
+       }
+       try {
+           newAuthenticationObject = handler.registerUser(username, password, email);
+           res.status(200);
+           return serializer.toJson(newAuthenticationObject);
+       } catch (DataAccessException e) {
+           if(Objects.equals(e.getMessage(), "already taken")){
+               res.status(403);
+               return serializer.toJson(new ErrorData("Message", "username already taken"));
+           }
+           else {
+               return serializer.toJson(new ErrorData("Message", e.getMessage()));
+           }
+       }
+
+
 
 
    }
@@ -92,43 +115,89 @@ public class Server {
             return serializer.toJson(thisSession);
         }
         catch (DataAccessException e) {
-            ;
+            if (Objects.equals(e.getMessage(), "unauthorized")) {
+                res.status(401);
+                var newErrorMessage = new ErrorData("message", "Error: unauthorized");
+                return serializer.toJson(newErrorMessage);
+            }
+            else {
+                res.status(500);
+                var newErrorMessage = new ErrorData("message", e.getMessage());
+                return serializer.toJson(newErrorMessage);
+            }
         }
-
-
-
    }
 
    private Object logOutUser(Request req, Response res)  throws DataAccessException {
-        handler.logOutUser(req.headers("authorization"));
-        res.status(200);
-        Map<String, Integer> myDict = new HashMap<>();
-        return new Gson().toJson(myDict); // no clue if that works
+        try {
+            handler.logOutUser(req.headers("authorization"));
+            res.status(200);
+            Map<String, Integer> myDict = new HashMap<>();
+            return new Gson().toJson(myDict); // no clue if that works
+        }
+        catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "unauthorized")) {
+                res.status(401);
+                var newErrorMessage = new ErrorData("message", "Error: unauthorized");
+                return serializer.toJson(newErrorMessage);
+            }
+            else {
+                res.status(500);
+                var newErrorMessage = new ErrorData("message", e.getMessage());
+                return serializer.toJson(newErrorMessage);
+            }
+
+        }
+
    }
 
    private Object getGames(Request req, Response res)  throws DataAccessException {
-        var gameTokens = handler.getGames(req.headers("authorization"));
-        GamesList games = new GamesList(gameTokens);
-        return new Gson().toJson(games);
+        try {
+            var gameTokens = handler.getGames(req.headers("authorization"));
+            GamesList games = new GamesList(gameTokens);
+            return new Gson().toJson(games);
+        }
+        catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "unauthorized")) {
+                res.status(401);
+                var newErrorMessage = new ErrorData("message", "Error: unauthorized");
+                return serializer.toJson(newErrorMessage);
+            }
+            else {
+                res.status(500);
+                var newErrorMessage = new ErrorData("message", e.getMessage());
+                return serializer.toJson(newErrorMessage);
+            }
+        }
+
    }
 
-    private void exceptionHandler(DataAccessException ex, Request req, Response res) {
-        //res.status(ex.StatusCode());
-        System.out.println("Something went wrong :(");
-    }
 
     private Object createGame(Request req, Response res)  throws DataAccessException {
         // need to return the gamename and the gameID. lez go
-        GameCreationData data = new Gson().fromJson(req.body(), GameCreationData.class);
+        try {
+            GameCreationData data = new Gson().fromJson(req.body(), GameCreationData.class);
 
-        var authentication = req.headers("authorization");
-        var gameName = data.gameName();
+            var authentication = req.headers("authorization");
+            var gameName = data.gameName();
 
-        res.status(200);
-        GameData newGame = (handler.createGame(authentication, gameName));
-        GameCreated returnObject = new GameCreated(newGame.gameID());
-        return serializer.toJson(returnObject);
-
+            res.status(200);
+            GameData newGame = (handler.createGame(authentication, gameName));
+            GameCreated returnObject = new GameCreated(newGame.gameID());
+            return serializer.toJson(returnObject);
+        }
+        catch(DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "unauthorized")) {
+                res.status(401);
+                var newErrorMessage = new ErrorData("message", "Error: unauthorized");
+                return serializer.toJson(newErrorMessage);
+            }
+            else {
+                res.status(500);
+                var newErrorMessage = new ErrorData("message", e.getMessage());
+                return serializer.toJson(newErrorMessage);
+            }
+        }
     }
 
     private Object joinGame(Request req, Response res)  throws DataAccessException {
@@ -140,7 +209,16 @@ public class Server {
         handler.joinGame(authToken, playerColor, gameID);
         res.status(200);
         return serializer.toJson(null);
+
+
+
     }
+
+    private void exceptionHandler(DataAccessException ex, Request req, Response res) {
+        //res.status(ex.StatusCode());
+        System.out.println("Something went wrong :(");
+    }
+
 
 
 
