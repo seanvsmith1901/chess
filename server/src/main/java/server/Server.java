@@ -154,12 +154,13 @@ public class Server {
 
    private Object getGames(Request req, Response res)  throws DataAccessException {
         try {
+            res.status(200);
             var gameTokens = handler.getGames(req.headers("authorization"));
             GamesList games = new GamesList(gameTokens);
             return new Gson().toJson(games);
         }
         catch (DataAccessException e) {
-            if (Objects.equals(e.getMessage(), "unauthorized")) {
+            if (Objects.equals(e.getMessage(), "Unauthorized")) {
                 res.status(401);
                 var newErrorMessage = new ErrorData("Error: unauthorized");
                 return serializer.toJson(newErrorMessage);
@@ -217,8 +218,8 @@ public class Server {
             return serializer.toJson(null);
         }
         catch (DataAccessException e) {
-            if (Objects.equals(e.getMessage(), "unauthorized")) {
-                res.status(400); // 401
+            if (Objects.equals(e.getMessage(), "Unauthorized")) {
+                res.status(401); // 401
                 var newErrorMessage = new ErrorData("Error: unauthorized");
                 return serializer.toJson(newErrorMessage);
             }

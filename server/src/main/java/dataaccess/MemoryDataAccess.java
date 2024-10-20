@@ -41,7 +41,7 @@ public class MemoryDataAccess implements DataAccess {
             return authenticationTokens.get(authToken);
         }
         else {
-            throw new DataAccessException("token does not exists");
+            throw new DataAccessException("Unauthorized");
         }
     }
 
@@ -112,13 +112,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public void addAuth(AuthData currentAuth) throws DataAccessException {
-        for(AuthData auth: authenticationTokens.values()) {
-            if (auth.username().equals(currentAuth.username())) {
-                authenticationTokens.remove(auth.authToken()); // that was if the user is already in there it just updates him.
-                //throw new DataAccessException("that username is taken"); // this feels very wrong to me
-            }
-        }
-        authenticationTokens.put(currentAuth.authToken(), currentAuth);
+        authenticationTokens.put(currentAuth.authToken(), currentAuth); // just add it?? bro thats SO stupid
     }
 
     public AuthData getAuthObjectFromUsername(String username) throws DataAccessException {
@@ -127,7 +121,7 @@ public class MemoryDataAccess implements DataAccess {
                 return auth;
             }
         }
-        throw new DataAccessException("username does not exist");
+        throw new DataAccessException("unauthorized");
     }
 
     public int getUserCount() throws DataAccessException {
