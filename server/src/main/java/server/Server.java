@@ -29,18 +29,9 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-
-
-
-        // Register your endpoints and handle exceptions here.
-
-        //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
-        //Im an idiot, we will be passing a full authToken object in these functions when we delete and whatnot.
-
-        // ok so check for stuff in the head vs. body, and understand how to access those elements. our handler is our service and our services are glorified data accessers. sweet.
-
+        // set up all of our curl paths
         Spark.delete("/db", this::clearDataBase); // clear application
         Spark.post("/user", this::registerUser); // Register a new user (returns auth token)
         Spark.post("/session", this::createSession); // logs in an existing user
@@ -50,86 +41,75 @@ public class Server {
         Spark.put("/game", this::joinGame); // verifies that game exists, and adds caller as the requested color.
 
 
-        Spark.exception(DataAccessException.class, this::exceptionHandler);
-
-
         Spark.awaitInitialization();
-        return Spark.port();
+        return Spark.port(); // required for TA tests
     }
 
-    public void stop() {
+    public void stop() { // shuts down the server so it doesn't cycle infinitely
         Spark.stop();
         Spark.awaitStop();
     }
 
-   private Object clearDataBase(Request req, Response res)  throws DataAccessException {
+   private Object clearDataBase(Request req, Response res) { // used a lot for testing, should require authentication though lol
         try {
-            res.status(200);
+            res.status(200); // everything has gone well
             return serializer.toJson(handler.clearDataBase());
         }
-        catch (DataAccessException e) {
+        catch (DataAccessException e) { // not really sure how you would end up here
             return serializer.toJson(new ErrorData("Error: you shouldn't ever get here")); // no idea how that could every come up
         }
 
    }
 
-   private Object registerUser(Request req, Response res)  throws DataAccessException {
-       // first try to find the user, make sure thats null, create the user adn then create an auth token with that user, and return that authtoken.
+   private Object registerUser(Request req, Response res) { // registers a new, never before seen user.
 
-       RegisterData data = new Gson().fromJson(req.body(), RegisterData.class);
+       RegisterData data = new Gson().fromJson(req.body(), RegisterData.class); // parses the data into a record class
        var username = data.username();
        var password = data.password();
-       Object newAuthenticationObject;
        var email = data.email();
-       if (username == null || password == null || email == null) {
+       if (username == null || password == null || email == null) { // make sure we have the data we need before we proceed
            res.status(400);
            return serializer.toJson(new ErrorData("Error: Bad request"));
        }
        try {
-           newAuthenticationObject = handler.registerUser(username, password, email);
+           var newAuthenticationObject = handler.registerUser(username, password, email);
            res.status(200);
            return serializer.toJson(newAuthenticationObject);
-       } catch (DataAccessException e) {
+       } catch (DataAccessException e) { // if that username is already taken
            if(Objects.equals(e.getMessage(), "already taken")){
                res.status(403);
                return serializer.toJson(new ErrorData("Error: username already taken"));
            }
            else {
-               res.status(403);
+               res.status(500); // catches any other errors
                return serializer.toJson(new ErrorData("Error" + e.getMessage()));
            }
        }
-
-
-
-
    }
 
-   private Object createSession(Request req, Response res)  throws DataAccessException {
+   private Object createSession(Request req, Response res) { // logs in an existing user and returns a new auth token (doesn't delete the old ones which I find odd)
         LoginData data = new Gson().fromJson(req.body(), LoginData.class);
         var username = data.username();
         var password = data.password();
-        SessionData thisSession = new SessionData(null, null);
         try {
             AuthData newAuthenticationObject = handler.createSession(username, password);
-            thisSession = new SessionData(newAuthenticationObject.username(), newAuthenticationObject.authToken());
+            var thisSession = new SessionData(newAuthenticationObject.username(), newAuthenticationObject.authToken());
             res.status(200);
             return serializer.toJson(thisSession);
         }
         catch (DataAccessException e) {
-            if (Objects.equals(e.getMessage(), "unauthorized")) {
+            if (Objects.equals(e.getMessage(), "unauthorized")) { // don't have the correct authentication.
                 res.status(500);
                 return serializer.toJson(new ErrorData("Error:" + e.getMessage()));
             }
             else {
                 res.status(401);
-                thisSession = new SessionData(null, null);
                 return serializer.toJson(new ErrorData("Error: unauthorized"));
             }
         }
    }
 
-   private Object logOutUser(Request req, Response res)  throws DataAccessException {
+   private Object logOutUser(Request req, Response res) {
         try {
             handler.logOutUser(req.headers("authorization"));
             res.status(200);
@@ -152,7 +132,7 @@ public class Server {
 
    }
 
-   private Object getGames(Request req, Response res)  throws DataAccessException {
+   private Object getGames(Request req, Response res) {
         try {
             res.status(200);
             var gameTokens = handler.getGames(req.headers("authorization"));
@@ -175,7 +155,7 @@ public class Server {
    }
 
 
-    private Object createGame(Request req, Response res)  throws DataAccessException {
+    private Object createGame(Request req, Response res) {
         // need to return the gamename and the gameID. lez go
         try {
             GameCreationData data = new Gson().fromJson(req.body(), GameCreationData.class);
@@ -202,7 +182,7 @@ public class Server {
         }
     }
 
-    private Object joinGame(Request req, Response res)  throws DataAccessException {
+    private Object joinGame(Request req, Response res) {
 
         var authToken = req.headers("authorization");
         JoinData data = new Gson().fromJson(req.body(), JoinData.class);
@@ -234,18 +214,5 @@ public class Server {
                 return serializer.toJson(newErrorMessage);
             }
         }
-
-
-
-
     }
-
-    private void exceptionHandler(DataAccessException ex, Request req, Response res) {
-        //res.status(ex.StatusCode());
-        System.out.println("Something went wrong :(");
-    }
-
-
-
-
 }

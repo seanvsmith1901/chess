@@ -112,7 +112,6 @@ public class handlerTests {
         var authToken = handler.getAuth("West").authToken();
         handler.createGame(authToken, "BestGame");
         assertThrows(DataAccessException.class, () -> handler.createGame(authToken, "BestGame")); // checks to see if that game already exists when we create it
-
     }
 
     @Test

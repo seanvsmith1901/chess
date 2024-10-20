@@ -31,7 +31,7 @@ public class MemoryDataAccess implements DataAccess {
     public void createUser(UserData currentUser) throws DataAccessException {
         var userName = currentUser.name();
         if(userTokens.containsKey(userName)) {
-            throw new DataAccessException("That username is already taken my guy, be more creative");
+            throw new DataAccessException("already taken");
         }
         userTokens.put(userName, currentUser);
     }

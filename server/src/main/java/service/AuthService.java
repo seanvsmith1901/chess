@@ -22,6 +22,9 @@ public class AuthService {
     }
 
     public AuthData createAuthToken(String username) throws DataAccessException {
+        if(username == null || username.isEmpty()) {
+            throw new DataAccessException("Username cannot be null or empty");
+        }
         var authentication = generateRandomString(8);
         var newAuthData = new AuthData(authentication, username);
         dataAccess.addAuth(newAuthData);

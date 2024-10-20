@@ -46,9 +46,8 @@ public class ServiceTests {
     }
 
     @Test
-    void tryToOverwriteUserName() throws DataAccessException {
-        authService.createAuthToken("West");
-        assertThrows(DataAccessException.class, () -> {authService.createAuthToken("West");});
+    void createAuthTokenNegative() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> authService.createAuthToken(null));
     }
 
     @Test
