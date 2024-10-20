@@ -1,3 +1,3 @@
 package model;
 
-public record ErrorData (String message, String error){}
+public record ErrorData (String message){}

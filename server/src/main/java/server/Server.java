@@ -68,7 +68,7 @@ public class Server {
             return serializer.toJson(handler.clearDataBase());
         }
         catch (DataAccessException e) {
-            return serializer.toJson(new ErrorData("Message", "nothing to clear my guy")); // no idea how that could every come up
+            return serializer.toJson(new ErrorData("Error: you shouldn't ever get here")); // no idea how that could every come up
         }
 
    }
@@ -83,7 +83,7 @@ public class Server {
        var email = data.email();
        if (username == null || password == null || email == null) {
            res.status(400);
-           return serializer.toJson(new ErrorData("Message", "bad request"));
+           return serializer.toJson(new ErrorData("Error: Bad request"));
        }
        try {
            newAuthenticationObject = handler.registerUser(username, password, email);
@@ -92,10 +92,11 @@ public class Server {
        } catch (DataAccessException e) {
            if(Objects.equals(e.getMessage(), "already taken")){
                res.status(403);
-               return serializer.toJson(new ErrorData("Message", "username already taken"));
+               return serializer.toJson(new ErrorData("Error: username already taken"));
            }
            else {
-               return serializer.toJson(new ErrorData("Message", e.getMessage()));
+               res.status(403);
+               return serializer.toJson(new ErrorData("Error" + e.getMessage()));
            }
        }
 
@@ -108,23 +109,22 @@ public class Server {
         LoginData data = new Gson().fromJson(req.body(), LoginData.class);
         var username = data.username();
         var password = data.password();
-        SessionData thisSession = new SessionData(null, null, null);
+        SessionData thisSession = new SessionData(null, null);
         try {
             AuthData newAuthenticationObject = handler.createSession(username, password);
-            thisSession = new SessionData(newAuthenticationObject.username(), newAuthenticationObject.authToken(), null);
+            thisSession = new SessionData(newAuthenticationObject.username(), newAuthenticationObject.authToken());
             res.status(200);
             return serializer.toJson(thisSession);
         }
         catch (DataAccessException e) {
             if (Objects.equals(e.getMessage(), "unauthorized")) {
-                res.status(401);
-                thisSession = new SessionData(null, null, "Error: unauthorized");
-                return serializer.toJson(thisSession);
+                res.status(500);
+                return serializer.toJson(new ErrorData("Error:" + e.getMessage()));
             }
             else {
                 res.status(401);
-                thisSession = new SessionData(null, null, "Error: unauthorized");
-                return serializer.toJson(thisSession);
+                thisSession = new SessionData(null, null);
+                return serializer.toJson(new ErrorData("Error: unauthorized"));
             }
         }
    }
@@ -139,12 +139,12 @@ public class Server {
         catch (DataAccessException e) {
             if (Objects.equals(e.getMessage(), "unauthorized")) {
                 res.status(401);
-                var newErrorMessage = new ErrorData("message", "Error: unauthorized");
+                var newErrorMessage = new ErrorData("Error: unauthorized");
                 return serializer.toJson(newErrorMessage);
             }
             else {
-                res.status(500);
-                var newErrorMessage = new ErrorData("message", e.getMessage());
+                res.status(401);
+                var newErrorMessage = new ErrorData("Error:" + e.getMessage());
                 return serializer.toJson(newErrorMessage);
             }
 
@@ -161,12 +161,12 @@ public class Server {
         catch (DataAccessException e) {
             if (Objects.equals(e.getMessage(), "unauthorized")) {
                 res.status(401);
-                var newErrorMessage = new ErrorData("message", "Error: unauthorized");
+                var newErrorMessage = new ErrorData("Error: unauthorized");
                 return serializer.toJson(newErrorMessage);
             }
             else {
                 res.status(500);
-                var newErrorMessage = new ErrorData("message", e.getMessage());
+                var newErrorMessage = new ErrorData("Error:" + e.getMessage());
                 return serializer.toJson(newErrorMessage);
             }
         }
@@ -190,12 +190,12 @@ public class Server {
         catch(DataAccessException e) {
             if (Objects.equals(e.getMessage(), "unauthorized")) {
                 res.status(401);
-                var newErrorMessage = new ErrorData("message", "Error: unauthorized");
+                var newErrorMessage = new ErrorData("Error: unauthorized");
                 return serializer.toJson(newErrorMessage);
             }
             else {
-                res.status(500);
-                var newErrorMessage = new ErrorData("message", e.getMessage());
+                res.status(401);
+                var newErrorMessage = new ErrorData("Error: unauthorized");
                 return serializer.toJson(newErrorMessage);
             }
         }
@@ -209,7 +209,7 @@ public class Server {
         String gameID = String.valueOf(data.gameID());
         if (authToken == null || gameID == null || playerColor == null) {
             res.status(400);
-            return serializer.toJson(new ErrorData("Message", "bad request"));
+            return serializer.toJson(new ErrorData("Error: bad request"));
         }
         try {
             handler.joinGame(authToken, playerColor, gameID);
@@ -218,18 +218,18 @@ public class Server {
         }
         catch (DataAccessException e) {
             if (Objects.equals(e.getMessage(), "unauthorized")) {
-                res.status(401);
-                var newErrorMessage = new ErrorData("message", "Error: unauthorized");
+                res.status(400); // 401
+                var newErrorMessage = new ErrorData("Error: unauthorized");
                 return serializer.toJson(newErrorMessage);
             }
             if (Objects.equals(e.getMessage(), "that color is taken")) {
-                res.status(403);
-                var newErrorMessage = new ErrorData("message", "Error: that color is taken");
+                res.status(403); // 403
+                var newErrorMessage = new ErrorData("Error: already taken");
                 return serializer.toJson(newErrorMessage);
             }
             else {
-                res.status(500);
-                var newErrorMessage = new ErrorData("message", e.getMessage());
+                res.status(400); // 500
+                var newErrorMessage = new ErrorData("Error: Bad request");
                 return serializer.toJson(newErrorMessage);
             }
         }
