@@ -108,22 +108,23 @@ public class Server {
         LoginData data = new Gson().fromJson(req.body(), LoginData.class);
         var username = data.username();
         var password = data.password();
+        SessionData thisSession = new SessionData(null, null, null);
         try {
-            var newAuthenticationObject = handler.createSession(username, password);
-            SessionData thisSession = new SessionData(newAuthenticationObject.username(), newAuthenticationObject.authToken());
+            AuthData newAuthenticationObject = handler.createSession(username, password);
+            thisSession = new SessionData(newAuthenticationObject.username(), newAuthenticationObject.authToken(), null);
             res.status(200);
             return serializer.toJson(thisSession);
         }
         catch (DataAccessException e) {
             if (Objects.equals(e.getMessage(), "unauthorized")) {
                 res.status(401);
-                var newErrorMessage = new ErrorData("message", "Error: unauthorized");
-                return serializer.toJson(newErrorMessage);
+                thisSession = new SessionData(null, null, "Error: unauthorized");
+                return serializer.toJson(thisSession);
             }
             else {
-                res.status(500);
-                var newErrorMessage = new ErrorData("message", e.getMessage());
-                return serializer.toJson(newErrorMessage);
+                res.status(401);
+                thisSession = new SessionData(null, null, "Error: unauthorized");
+                return serializer.toJson(thisSession);
             }
         }
    }
@@ -206,9 +207,33 @@ public class Server {
         JoinData data = new Gson().fromJson(req.body(), JoinData.class);
         var playerColor = data.playerColor();
         String gameID = String.valueOf(data.gameID());
-        handler.joinGame(authToken, playerColor, gameID);
-        res.status(200);
-        return serializer.toJson(null);
+        if (authToken == null || gameID == null || playerColor == null) {
+            res.status(400);
+            return serializer.toJson(new ErrorData("Message", "bad request"));
+        }
+        try {
+            handler.joinGame(authToken, playerColor, gameID);
+            res.status(200);
+            return serializer.toJson(null);
+        }
+        catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "unauthorized")) {
+                res.status(401);
+                var newErrorMessage = new ErrorData("message", "Error: unauthorized");
+                return serializer.toJson(newErrorMessage);
+            }
+            if (Objects.equals(e.getMessage(), "that color is taken")) {
+                res.status(403);
+                var newErrorMessage = new ErrorData("message", "Error: that color is taken");
+                return serializer.toJson(newErrorMessage);
+            }
+            else {
+                res.status(500);
+                var newErrorMessage = new ErrorData("message", e.getMessage());
+                return serializer.toJson(newErrorMessage);
+            }
+        }
+
 
 
 
