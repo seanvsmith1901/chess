@@ -53,29 +53,29 @@ public class ChessPiece {
 
         // I really should make this a match statement but I am lazy
         if (currentPiece.getPieceType() == PieceType.BISHOP) {
-            newArrayList = BishopMoves(myPosition, board);
+            newArrayList = bishopMoves(myPosition, board);
         }
         if (currentPiece.getPieceType() == PieceType.QUEEN) {
-            newArrayList = QueenMoves(myPosition, board);
+            newArrayList = queenMoves(myPosition, board);
         }
         if (currentPiece.getPieceType() == PieceType.ROOK) {
-            newArrayList = RookMoves(myPosition, board);
+            newArrayList = rookMoves(myPosition, board);
         }
         if (currentPiece.getPieceType() == PieceType.KING) {
-            newArrayList = KingMoves(myPosition, board);
+            newArrayList = kingMoves(myPosition, board);
         }
         if (currentPiece.getPieceType() == PieceType.KNIGHT) {
-            newArrayList = KnightMoves(myPosition, board);
+            newArrayList = knightMoves(myPosition, board);
         }
         if (currentPiece.getPieceType() == PieceType.PAWN) {
-            newArrayList = PawnMoves(myPosition, board);
+            newArrayList = pawnMoves(myPosition, board);
         }
         // if the piece is null we return an empty list, which is jsut right
         return newArrayList;
     }
 
     // this one is by far the most complicated.
-    public ArrayList<ChessMove> PawnMoves(ChessPosition myPosition, ChessBoard board) {
+    public ArrayList<ChessMove> pawnMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         var currColumn = myPosition.getColumn();
         var currRow = myPosition.getRow();
@@ -87,7 +87,7 @@ public class ChessPiece {
                     var intermediateChessPosition = new ChessPosition(currRow+1, currColumn);
                     if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.addAll(MultiplyPawn(newChessMove));
+                        possibleMoves.addAll(multiplyPawn(newChessMove));
                     }
                 }
                 currRow++; // either way we can try advancing one (if we are white)
@@ -98,7 +98,7 @@ public class ChessPiece {
                     var intermediateChessPosition = new ChessPosition(currRow-1, currColumn);
                     if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.addAll(MultiplyPawn(newChessMove));
+                        possibleMoves.addAll(multiplyPawn(newChessMove));
                     }
                 }
                 currRow--; // either way we can try moving only one
@@ -108,7 +108,7 @@ public class ChessPiece {
                 var newChessPosition = new ChessPosition(currRow, currColumn); // for our new position
                 if (board.getPiece(newChessPosition) == null) { // if no one is there
                     var newChessMove = new ChessMove(myPosition, newChessPosition, null); // create the chess move
-                    possibleMoves.addAll(MultiplyPawn(newChessMove)); // this checks for promotions and returns all possible promotiosn
+                    possibleMoves.addAll(multiplyPawn(newChessMove)); // this checks for promotions and returns all possible promotiosn
                 }
 
                 // test the left and right stuff
@@ -119,7 +119,7 @@ public class ChessPiece {
                     if (board.getPiece(newChessPosition) != null) { // check to see if there is a piece to the diagonal
                         if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) { // peice and wrong color?
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                            possibleMoves.addAll(MultiplyPawn(newChessMove)); // helper function
+                            possibleMoves.addAll(multiplyPawn(newChessMove)); // helper function
                         }
                     }
                 }
@@ -131,7 +131,7 @@ public class ChessPiece {
                     if (board.getPiece(newChessPosition) != null) {
                         if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                            possibleMoves.addAll(MultiplyPawn(newChessMove));
+                            possibleMoves.addAll(multiplyPawn(newChessMove));
                         }
                     }
                 }
@@ -141,7 +141,7 @@ public class ChessPiece {
     }
 
     // checks for promotions and returns all possible promotions
-    public ArrayList<ChessMove> MultiplyPawn(ChessMove currentMove) {
+    public ArrayList<ChessMove> multiplyPawn(ChessMove currentMove) {
         var newMoves = new ArrayList<ChessMove>();
         // checks if we are in a promition spot (there's probably a less costly version of this)
         if (((currentMove.getEndPosition().getRow() == 1) && (getTeamColor() == ChessGame.TeamColor.BLACK)) || (currentMove.getEndPosition().getRow() == 8) && (getTeamColor() == ChessGame.TeamColor.WHITE)) {
@@ -170,7 +170,7 @@ public class ChessPiece {
     }
 
     // king time
-    public ArrayList<ChessMove> KingMoves(ChessPosition myPosition, ChessBoard board) {
+    public ArrayList<ChessMove> kingMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         // so we need to check 8 directions
         // but only run once
@@ -226,7 +226,7 @@ public class ChessPiece {
     }
 
     // I thought this one was going to be hard but he was easy money
-    public ArrayList<ChessMove> KnightMoves(ChessPosition myPosition, ChessBoard board) {
+    public ArrayList<ChessMove> knightMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         // so we need to check 8 directions, but only run once
         for (var i = 0; i < 8; i++) {
@@ -287,7 +287,7 @@ public class ChessPiece {
     }
 
     // our first infinite scaler - follow this format for bisohp queen and rook
-    public ArrayList<ChessMove> BishopMoves(ChessPosition myPosition, ChessBoard board) {
+    public ArrayList<ChessMove> bishopMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         for (var i = 0; i < 4; i++) { // check all directions (4)
             var currColumn = myPosition.getColumn();
@@ -332,7 +332,7 @@ public class ChessPiece {
     }
 
     // basically the same as the bishop
-    public ArrayList<ChessMove> QueenMoves(ChessPosition myPosition, ChessBoard board) {
+    public ArrayList<ChessMove> queenMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         for (var i = 0; i < 8; i++) {
             var currColumn = myPosition.getColumn();
@@ -390,7 +390,7 @@ public class ChessPiece {
     }
 
     // basically the same as the bishop
-    public ArrayList<ChessMove> RookMoves(ChessPosition myPosition, ChessBoard board) {
+    public ArrayList<ChessMove> rookMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         for (var i = 0; i < 4; i++) {
             var currColumn = myPosition.getColumn();
