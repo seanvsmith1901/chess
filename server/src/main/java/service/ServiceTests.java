@@ -18,7 +18,7 @@ public class ServiceTests {
     static final DataAccess dataAccess = new MemoryDataAccess();
 
     static final Services services = new Services(dataAccess);
-    
+
     static private Server server;
 
     @BeforeAll
