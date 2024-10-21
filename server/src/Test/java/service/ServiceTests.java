@@ -1,15 +1,15 @@
-package handler;
+package service;
 
 import chess.ChessGame;
-import dataaccess.*;
-import model.*;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.condition.DisabledForJreRange;
-import server.Server;
+import dataaccess.DataAccess;
+import dataaccess.DataAccessException;
+import dataaccess.MemoryDataAccess;
+import model.GameData;
 import model.UserData;
-import service.AuthService;
-import service.GameService;
-import service.UserService;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import server.Server;
 
 import static org.junit.jupiter.api.Assertions.*;
 

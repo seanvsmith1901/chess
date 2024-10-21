@@ -1,14 +1,10 @@
-package handler;
+package service;
 
-import dataaccess.DataAccess;
-import dataaccess.DataAccessException;
-import service.AuthService;
-import service.GameService;
-import service.UserService;
+import dataaccess.*;
+import model.AuthData;
+import model.GameData;
+import model.UserData;
 
-import model.*;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;

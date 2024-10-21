@@ -1,13 +1,7 @@
-package service;
+package dataaccess;
 
-import com.google.gson.Gson;
-import dataaccess.DataAccess;
-import dataaccess.DataAccessException;
-import model.*;
+import model.GameData;
 
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class GameService {

@@ -1,11 +1,11 @@
 package server;
 
-// adding this comment so I can figure out what is missing. 
+// adding this comment so I can figure out what is missing.
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
-import handler.*;
+import service.*;
 import model.*;
 import spark.*;
 

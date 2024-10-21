@@ -1,12 +1,7 @@
-package service;
+package dataaccess;
 
-import dataaccess.DataAccess;
-import dataaccess.DataAccessException;
-import model.*;
-import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.server.Authentication;
-
-import java.util.Dictionary;
+import model.GameData;
+import model.UserData;
 
 public class UserService {
 

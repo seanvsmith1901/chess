@@ -1,12 +1,8 @@
-package service;
+package dataaccess;
 
-import model.*;
-
-import java.util.Collection;
+import model.AuthData;
 
 import java.security.SecureRandom;
-
-import dataaccess.*;
 
 
 public class AuthService {
