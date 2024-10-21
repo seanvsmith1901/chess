@@ -83,19 +83,18 @@ public class ChessPiece {
         if ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
             if (this.teamColor == ChessGame.TeamColor.WHITE) {
                 if (currRow == 2) { // if we are in the starting position we can try to double jump so check all that
-                    var newChessPosition = new ChessPosition(currRow+2, currColumn);
-                    var intermediateChessPosition = new ChessPosition(currRow+1, currColumn);
+                    var newChessPosition = new ChessPosition(currRow + 2, currColumn);
+                    var intermediateChessPosition = new ChessPosition(currRow + 1, currColumn);
                     if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.addAll(multiplyPawn(newChessMove));
                     }
                 }
                 currRow++; // either way we can try advancing one (if we are white)
-            }
-            else {
+            } else {
                 if (currRow == 7) { // we are in the black starting position
-                    var newChessPosition = new ChessPosition(currRow-2, currColumn);
-                    var intermediateChessPosition = new ChessPosition(currRow-1, currColumn);
+                    var newChessPosition = new ChessPosition(currRow - 2, currColumn);
+                    var intermediateChessPosition = new ChessPosition(currRow - 1, currColumn);
                     if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.addAll(multiplyPawn(newChessMove));
@@ -162,8 +161,7 @@ public class ChessPiece {
                 var newChessMove = new ChessMove(currentMove.getStartPosition(), currentMove.getEndPosition(), newPieceType);
                 newMoves.add(newChessMove);
             }
-        }
-        else { // if no promotion possible, return the normal move with a null promotion
+        } else { // if no promotion possible, return the normal move with a null promotion
             newMoves.add(currentMove);
         }
         return newMoves; // returns all possible stubbins
@@ -184,7 +182,7 @@ public class ChessPiece {
                     currColumn += 1;
                 }
                 if (i == 1) {
-                    currRow -=1 ;
+                    currRow -= 1;
                     currColumn += 1;
                 }
                 if (i == 2) {
@@ -214,8 +212,7 @@ public class ChessPiece {
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                             possibleMoves.add(newChessMove);
                         }
-                    }
-                    else { // no capture possible? just move forward.
+                    } else { // no capture possible? just move forward.
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
@@ -273,8 +270,7 @@ public class ChessPiece {
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                             possibleMoves.add(newChessMove);
                         }
-                    }
-                    else { // just add the move
+                    } else { // just add the move
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
@@ -298,7 +294,7 @@ public class ChessPiece {
                     currColumn += 1;
                 }
                 if (i == 1) {
-                    currRow -=1 ;
+                    currRow -= 1;
                     currColumn += 1;
                 }
                 if (i == 2) {
@@ -316,12 +312,10 @@ public class ChessPiece {
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                             possibleMoves.add(newChessMove);
                             break; // we can't move any further forward
-                        }
-                        else {
+                        } else {
                             break; // have to explicitly break on infinite repeaters otherwise we WILL keep moving
                         }
-                    }
-                    else { // no piece just keep moving forward
+                    } else { // no piece just keep moving forward
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
@@ -343,7 +337,7 @@ public class ChessPiece {
                     currColumn += 1;
                 }
                 if (i == 1) {
-                    currRow -=1 ;
+                    currRow -= 1;
                     currColumn += 1;
                 }
                 if (i == 2) {
@@ -373,12 +367,10 @@ public class ChessPiece {
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                             possibleMoves.add(newChessMove);
                             break;
-                        }
-                        else {
+                        } else {
                             break;
                         }
-                    }
-                    else {
+                    } else {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
@@ -400,7 +392,7 @@ public class ChessPiece {
                     currRow += 1;
                 }
                 if (i == 1) {
-                    currRow -=1 ;
+                    currRow -= 1;
                 }
                 if (i == 2) {
                     currColumn += 1;
@@ -415,12 +407,10 @@ public class ChessPiece {
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                             possibleMoves.add(newChessMove);
                             break;
-                        }
-                        else {
+                        } else {
                             break;
                         }
-                    }
-                    else {
+                    } else {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
