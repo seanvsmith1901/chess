@@ -1,9 +1,6 @@
 package chess;
 
-import com.sun.source.tree.NewArrayTree;
 
-import java.lang.reflect.Array;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -152,43 +149,14 @@ public class ChessPiece {
             var currColumn = myPosition.getColumn();
             var currRow = myPosition.getRow();
             if ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) { // check bounds
-                // check each of the possible 8 moves
-                if (i == 0) {
-                    currRow += 1;
-                    currColumn += 1;
-                }
-                if (i == 1) {
-                    currRow -= 1;
-                    currColumn += 1;
-                }
-                if (i == 2) {
-                    currRow -= 1;
-                    currColumn -= 1;
-                }
-                if (i == 3) {
-                    currRow += 1;
-                    currColumn -= 1;
-                }
-                if (i == 4) {
-                    currRow += 1;
-                }
-                if (i == 5) {
-                    currRow -= 1;
-                }
-                if (i == 6) {
-                    currColumn += 1;
-                }
-                if (i == 7) {
-                    currColumn -= 1;
-                }
-                finiteScalarCheck(myPosition, board, possibleMoves, currColumn, currRow);
+                int[] rowColTuple = allMoves(i, currRow, currColumn);
+                boundCheck(myPosition, board, possibleMoves, rowColTuple);
             }
         }
         return possibleMoves;
     }
 
-
-
+    
     // I thought this one was going to be hard but he was easy money
     public ArrayList<ChessMove> knightMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
@@ -229,7 +197,10 @@ public class ChessPiece {
                     currRow -= 1;
                     currColumn -= 2;
                 }
-                finiteScalarCheck(myPosition, board, possibleMoves, currColumn, currRow);
+                var rowColTuple = new int[2];
+                rowColTuple[0] = currRow;
+                rowColTuple[1] = currColumn;
+                boundCheck(myPosition, board, possibleMoves, rowColTuple); // finite
             }
         }
 
@@ -241,83 +212,16 @@ public class ChessPiece {
     public ArrayList<ChessMove> bishopMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         for (var i = 0; i < 4; i++) { // check all directions (4)
-            var currColumn = myPosition.getColumn();
-            var currRow = myPosition.getRow();
-            while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) { // while bc break for stop
-                if (i == 0) { // check each of the 4 combinations
-                    currRow += 1;
-                    currColumn += 1;
-                }
-                if (i == 1) {
-                    currRow -= 1;
-                    currColumn += 1;
-                }
-                if (i == 2) {
-                    currRow -= 1;
-                    currColumn -= 1;
-                }
-                if (i == 3) {
-                    currRow += 1;
-                    currColumn -= 1;
-                }
-                if (infiniteScalarCheck(myPosition, board, possibleMoves, currColumn, currRow))
-                    break; // have to explicitly break on infinite repeaters otherwise we WILL keep moving
-            }
+            generatesMoves(myPosition, board, possibleMoves, i);
         }
         return possibleMoves; // return the moves
     }
-
-
 
     // basically the same as the bishop
     public ArrayList<ChessMove> queenMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
         for (var i = 0; i < 8; i++) {
-            var currColumn = myPosition.getColumn();
-            var currRow = myPosition.getRow();
-            while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
-                if (i == 0) {
-                    currRow += 1;
-                    currColumn += 1;
-                }
-                if (i == 1) {
-                    currRow -= 1;
-                    currColumn += 1;
-                }
-                if (i == 2) {
-                    currRow -= 1;
-                    currColumn -= 1;
-                }
-                if (i == 3) {
-                    currRow += 1;
-                    currColumn -= 1;
-                }
-                if (i == 4) {
-                    currRow += 1;
-                }
-                if (i == 5) {
-                    currRow -= 1;
-                }
-                if (i == 6) {
-                    currColumn += 1;
-                }
-                if (i == 7) {
-                    currColumn -= 1;
-                }
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
-                    var newChessPosition = new ChessPosition(currRow, currColumn);
-                    if (board.getPiece(newChessPosition) != null) {
-                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
-                            var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                            possibleMoves.add(newChessMove);
-                        }
-                        break;
-                    } else {
-                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
-                    }
-                }
-            }
+            generatesMoves(myPosition, board, possibleMoves, i);
         }
         return possibleMoves;
     }
@@ -325,51 +229,65 @@ public class ChessPiece {
     // basically the same as the bishop
     public ArrayList<ChessMove> rookMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
-        for (var i = 0; i < 4; i++) {
-            var currColumn = myPosition.getColumn();
-            var currRow = myPosition.getRow();
-            while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) {
-                if (i == 0) {
-                    currRow += 1;
-                }
-                if (i == 1) {
-                    currRow -= 1;
-                }
-                if (i == 2) {
-                    currColumn += 1;
-                }
-                if (i == 3) {
-                    currColumn -= 1;
-                }
-                if (infiniteScalarCheck(myPosition, board, possibleMoves, currColumn, currRow)) break;
-            }
+        for (var i = 4; i < 8; i++) {
+            generatesMoves(myPosition, board, possibleMoves, i);
         }
         return possibleMoves;
     }
 
-//    private int[] bishopProceeds(int i, int currRow, int currColumn) {
-//        if (i == 0) { // check each of the 4 combinations
-//            currRow += 1;
-//            currColumn += 1;
-//        }
-//        if (i == 1) {
-//            currRow -= 1;
-//            currColumn += 1;
-//        }
-//        if (i == 2) {
-//            currRow -= 1;
-//            currColumn -= 1;
-//        }
-//        if (i == 3) {
-//            currRow += 1;
-//            currColumn -= 1;
-//        }
-//        int[] newTuple = new int[2];
-//        newTupl
-//    }
+    private int[] allMoves(int i, int currRow, int currColumn) {
+        if (i == 0) { // check each of the 4 combinations
+            currRow += 1;
+            currColumn += 1;
+        }
+        if (i == 1) {
+            currRow -= 1;
+            currColumn += 1;
+        }
+        if (i == 2) {
+            currRow -= 1;
+            currColumn -= 1;
+        }
+        if (i == 3) {
+            currRow += 1;
+            currColumn -= 1;
+        }
+        if (i == 4) {
+            currRow += 1;
+        }
+        if (i == 5) {
+            currRow -= 1;
+        }
+        if (i == 6) {
+            currColumn += 1;
+        }
+        if (i == 7) {
+            currColumn -= 1;
+        }
 
+        int[] newTuple = new int[2];
+        newTuple[0] = currRow;
+        newTuple[1] = currColumn;
+        return newTuple;
+    }
 
-    private boolean infiniteScalarCheck(ChessPosition myPosition, ChessBoard board, ArrayList<ChessMove> possibleMoves, int currColumn, int currRow) {
+    private void generatesMoves(ChessPosition myPosition, ChessBoard board, ArrayList<ChessMove> possibleMoves, int i) {
+        var currColumn = myPosition.getColumn();
+        var currRow = myPosition.getRow();
+        while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) { // while bc break for stop
+
+            int[] rowColTuple = allMoves(i, currRow, currColumn);
+            currRow = rowColTuple[0];
+            currColumn = rowColTuple[1];
+
+            if (boundCheck(myPosition, board, possibleMoves, rowColTuple))
+                break; // have to explicitly break on infinite repeaters otherwise we WILL keep moving
+        }
+    }
+
+    private boolean boundCheck(ChessPosition myPosition, ChessBoard board, ArrayList<ChessMove> possibleMoves, int[] rowColTuple) {
+        var currRow = rowColTuple[0];
+        var currColumn = rowColTuple[1];
         if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // in bounds?
             var newChessPosition = new ChessPosition(currRow, currColumn);
             if (board.getPiece(newChessPosition) != null) { // if there is a piece
@@ -386,20 +304,6 @@ public class ChessPiece {
         return false;
     }
 
-    private void finiteScalarCheck(ChessPosition myPosition, ChessBoard board, ArrayList<ChessMove> possibleMoves, int currColumn, int currRow) {
-        if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // bounds check again
-            var newChessPosition = new ChessPosition(currRow, currColumn);
-            if (board.getPiece(newChessPosition) != null) { // if there is a capture possible
-                if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
-                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                    possibleMoves.add(newChessMove);
-                }
-            } else { // no capture possible? just move forward.
-                var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                possibleMoves.add(newChessMove);
-            }
-        }
-    }
 
     private static ChessMove getPromotionPieceType(ChessMove currentMove, int j) {
         var newPieceType = PieceType.PAWN;
@@ -415,9 +319,7 @@ public class ChessPiece {
         if (j == 3) {
             newPieceType = PieceType.BISHOP;
         }
-        var newChessMove =
-                new ChessMove(currentMove.getStartPosition(), currentMove.getEndPosition(), newPieceType);
-        return newChessMove;
+        return new ChessMove(currentMove.getStartPosition(), currentMove.getEndPosition(), newPieceType);
     }
 
     private void newChessPositionReset(ChessPosition myPosition, ChessBoard board, ArrayList<ChessMove> possibleMoves, int currColumn, int currRow) {
