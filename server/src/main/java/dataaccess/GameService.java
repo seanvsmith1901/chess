@@ -6,7 +6,7 @@ import java.util.HashSet;
 
 public class GameService {
 
-    private DataAccess DATA_ACCESS;
+    private static DataAccess DATA_ACCESS;
 
     public GameService(DataAccess dataAccess) { // sets the correct dataaccess module
         this.DATA_ACCESS = dataAccess;

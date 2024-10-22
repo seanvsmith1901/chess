@@ -7,7 +7,7 @@ import java.security.SecureRandom;
 
 public class AuthService {
 
-    private DataAccess DATA_ACCESS;
+    private static DataAccess DATA_ACCESS;
 
     public AuthService(DataAccess dataAccess) { // correct data access setting
         this.DATA_ACCESS = dataAccess;

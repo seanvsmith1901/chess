@@ -5,7 +5,7 @@ import model.UserData;
 
 public class UserService {
 
-    private DataAccess DATA_ACCESS;
+    private static DataAccess DATA_ACCESS;
 
     public UserService(DataAccess dataAccess) { // sets the correct data access class
         this.DATA_ACCESS = dataAccess;
