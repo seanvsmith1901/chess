@@ -41,14 +41,6 @@ public class ChessBoard {
         return positions;
     }
 
-    public ArrayList<ChessPosition> getOtherTeamPositions(ChessGame.TeamColor teamColor) {
-        ArrayList<ChessPosition> positions = new ArrayList<>();
-        for (ChessPosition newPosition : getOtherTeamPieces(teamColor).keySet()) {
-            positions.add(newPosition);
-        }
-        return positions;
-    }
-
     public HashMap<ChessPosition, ChessPiece> getOtherTeamPieces(ChessGame.TeamColor teamColor) {
         HashMap<ChessPosition, ChessPiece> positions = new HashMap<>();
         for(var row = 1; row < 9; row++) {

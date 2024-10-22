@@ -366,17 +366,14 @@ public class ChessPiece {
                         if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                             possibleMoves.add(newChessMove);
-                            break;
-                        } else {
-                            break;
                         }
+                        break;
                     } else {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.add(newChessMove);
                     }
                 }
             }
-
         }
         return possibleMoves;
     }

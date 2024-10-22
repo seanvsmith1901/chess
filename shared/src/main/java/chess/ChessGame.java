@@ -87,11 +87,11 @@ public class ChessGame {
      * @param move chess move to preform
      * @throws InvalidMoveException if move is invalid
      */
-    public boolean checkMove(ChessMove move) throws InvalidMoveException { // given a move from a valid move list, check to make sure we can in fact move there.
+    public boolean checkMove(ChessMove move) throws InvalidMoveException { // from valid moves, can move there?
 
         ChessPiece currentPiece = board.getPiece(move.getStartPosition()); // gets the piece of interest
-        var teamColor = currentPiece.getTeamColor(); // we are just checking, not executing, make sure we can move where we want.
-        Collection<ChessMove> validMoves = currentPiece.pieceMoves(board, move.getStartPosition()); // creates all the valid moves for that piece
+        var teamColor = currentPiece.getTeamColor(); // we are just checking to see if we can move there
+        Collection<ChessMove> validMoves = currentPiece.pieceMoves(board, move.getStartPosition()); // get valid moves
 
         if (validMoves.contains(move)) { // if our move IS, in fact, a valid move
             if(teamColor == getTeamTurn()) { // checks if its our turn
@@ -101,13 +101,14 @@ public class ChessGame {
                         unExecuteMove(move, possiblePiece); // undo that move and throw the exception
                         throw new InvalidMoveException("You're still in check and that doesn't get you out! beware!");
                     }
-                    unExecuteMove(move, possiblePiece); // move is valid and we will execute it at the end of the function
+                    unExecuteMove(move, possiblePiece); // move is valid and will execute upon completion
                 }
                 else {
                     // check for pawn position and promotion piece (make sure promotion is valid)
                     if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
                         if (move.getPromotionPiece() != null) {
-                            if (!((teamColor == TeamColor.BLACK && move.getEndPosition().getRow() == 1) || (teamColor == TeamColor.WHITE && move.getEndPosition().getRow() == 8))) {
+                            if (!((teamColor == TeamColor.BLACK && move.getEndPosition().getRow() == 1) ||
+                                    (teamColor == TeamColor.WHITE && move.getEndPosition().getRow() == 8))) {
                                 throw new InvalidMoveException("You can't promote a pawn there, don't do that");
                             }
                         }
@@ -117,43 +118,42 @@ public class ChessGame {
                 ChessPiece possiblePiece = executeMove(move);
                 if(isInCheck(teamColor)) { // if that move puts us in check,
                     unExecuteMove(move, possiblePiece); // we need to walk it back
-                    throw new InvalidMoveException("that move puts your king in check so don't do that"); // and throw the exception
+                    throw new InvalidMoveException("that move puts your king in check so don't do that"); // throw error
                 }
                 unExecuteMove(move, possiblePiece); // undoes the above move, walks it back to where we started.
             }
             else {
-                throw new InvalidMoveException("Not your turn yet fetcher"); // this never goes off IIRC, just under make move.
+                throw new InvalidMoveException("Not your turn yet fetcher"); // not your turn!
             }
         }
         else {
-            throw new InvalidMoveException("Not a valid move, try again"); // your move is not in the valid moves list for that piece.
+            throw new InvalidMoveException("Not a valid move, try again"); //
         }
         return true;
     }
 
 
 
-    public void makeMove(ChessMove move) throws InvalidMoveException { // this actually makes the user requested move, if it can
+    public void makeMove(ChessMove move) throws InvalidMoveException { // tries to make user request move
         if (board != null) {
             if (board.getPiece(move.getStartPosition()) != null) { // makes sure we are dealing with a valid piece
                 if(checkMove(move)) { // if that move is a valid move (using what we used above
-                    executeMove(move); // we don't care about the promotion piece that will get stored on the board as appropriate
-                    changeTeamTurn(board.getPiece(move.getEndPosition()).getTeamColor()); // gets the color of the piece that we JUST moved, and changes the board turn appropriately.
+                    executeMove(move); // we don't care about return value cause this is going through for sure.
+                    changeTeamTurn(board.getPiece(move.getEndPosition()).getTeamColor()); // changes turn from our color
                 }
             }
             else {
-                throw new InvalidMoveException("brotha there aint no piece there!"); // i mean there ain't no pieces there
+                throw new InvalidMoveException("brotha there aint no piece there!");
             }
         }
         else {
-            throw new InvalidMoveException("there ain't not board!"); // i mean there ain't no board, nothing has been set.
+            throw new InvalidMoveException("there ain't not board!");
         }
-
     }
 
 
     public Boolean getOutOfCheck(TeamColor teamColor) { // wants to see if the king CAN get out of check.
-        if (!(canKingMove(teamColor))) { // if the king can't move, we need to test to see if any of the other pieces can save him
+        if (!(canKingMove(teamColor))) { // can the king more or nah
             ArrayList<ChessPosition> myPieces = board.getTeamPositions(teamColor); // gets all of our pieces.
 
             for(ChessPosition myPiecePosition : myPieces) {  // for every piece on the board
@@ -169,7 +169,7 @@ public class ChessGame {
                     if(!(isInCheck(teamColor))) { // if after that move we are no longer in check
                         return true; // we can get out of check, return true.
                     }
-                    unExecuteMove(currentMove, possiblePiece); // walk that move back, we were just worried about it as a concept.
+                    unExecuteMove(currentMove, possiblePiece); // walk that move back
                 }
             }
         }
@@ -178,22 +178,22 @@ public class ChessGame {
 
 
 
-    public ChessPosition getKingPosition(TeamColor teamColor) { // long fetching funciton to just find out where our team's king is on the board.
-        HashMap<ChessPosition, ChessPiece> currentPieces = board.getTeamPieces(teamColor); // gets all of our team pieces off of the board.
-        ChessPosition checkPosition = new ChessPosition(-1,-1); // not even on the board, will never show up under valid moves. (THIS IS ASSUMING WE ALWAYS HAVE A KING ON THE BOARD
+    public ChessPosition getKingPosition(TeamColor teamColor) { // find where our king is
+        HashMap<ChessPosition, ChessPiece> currentPieces = board.getTeamPieces(teamColor); // gets all of our pieces
+        ChessPosition checkPosition = new ChessPosition(-1,-1); // if no king, at invalid position
         for (ChessPosition currentPosition : currentPieces.keySet()) { // for every piece that we have in our vector
-            if(currentPieces.get(currentPosition).getPieceType() == ChessPiece.PieceType.KING) { // if that piece type is a king
+            if(currentPieces.get(currentPosition).getPieceType() == ChessPiece.PieceType.KING) { // if is king
                 checkPosition = currentPosition; // return the kiugns position up
             }
         }
-        return checkPosition; // needs a return statement - if we don't have a king, we can never be checkmated so we return him as being off the board.
+        return checkPosition; // no king? return invalid position we can't be checked or checkmated.
     }
 
-    public ChessPiece executeMove(ChessMove move) { // just picks up the piece, puts him in the new spot and handles a couple of edgecases in the meantime
+    public ChessPiece executeMove(ChessMove move) { // moves piece and returns peice we killed
         ChessPiece currentPiece = board.getPiece(move.getStartPosition()); // gets the piece of interest
-        ChessPiece possiblePiece = null; // if we capture a piece, we need to be able to put him back when we are done adn we gotta put him somewhere.
+        ChessPiece possiblePiece = null; // if we capture a piece, we need to be able to put him back and store him
         if(board.getPiece(move.getEndPosition()) != null) {
-            possiblePiece = board.getPiece(move.getEndPosition()); // sets him to non-null if we accidentally capturd a peep.
+            possiblePiece = board.getPiece(move.getEndPosition()); // keep track of this dude
         }
         board.deletePiece(move.getStartPosition()); // deletes the piece that we are moving
         if(move.getPromotionPiece() != null) { // if we need to promote, put down that piecetype piece instead
@@ -207,7 +207,7 @@ public class ChessGame {
         return possiblePiece; // returns the possibly captured piece
     }
 
-    public void unExecuteMove(ChessMove move, ChessPiece oldPiece) { // walks back our move, and puts back the piece that we might have captured
+    public void unExecuteMove(ChessMove move, ChessPiece oldPiece) { // walks back move, puts back killed peice
         ChessPiece currentPiece = board.getPiece(move.getEndPosition()); // gets the piece we need to walk back
         board.deletePiece(move.getEndPosition()); // deletes where he was
         board.addPiece(move.getStartPosition(), currentPiece); // puts him back where he started
@@ -217,7 +217,7 @@ public class ChessGame {
     }
 
 
-    public void changeTeamTurn(TeamColor teamColor) { // Criss-cross! changes from white to black and vice versa, represents turn shifting.
+    public void changeTeamTurn(TeamColor teamColor) { // Criss-cross! changes from white to black and vice versa
         if (teamColor == TeamColor.BLACK) {
             turn = TeamColor.WHITE;
         }
@@ -235,11 +235,12 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         if (this.board != null) { // gotta make sure we got a board first and foremost.
-            var checkPosition = getKingPosition(teamColor); // gets our kings position and we need to see if that position is in danger
-            var currentPieces = board.getOtherTeamPieces(teamColor); // gets all of the pieces that could attack the king
+            var checkPosition = getKingPosition(teamColor); // checks if king is in danger from his position
+            var currentPieces = board.getOtherTeamPieces(teamColor); // gets all the pieces that could attack the king
 
-            for (ChessPosition currentPosition : currentPieces.keySet()) { // for all of the pieces that could attakc the king
-                Collection<ChessMove> currentPieceMoves = currentPieces.get(currentPosition).pieceMoves(board, currentPosition); // gets all of their valid moves
+            for (ChessPosition currentPosition : currentPieces.keySet()) { // for all dangerous pieces
+                Collection<ChessMove> currentPieceMoves =
+                        currentPieces.get(currentPosition).pieceMoves(board, currentPosition);
                 // need to get all teh end posiitons in order for this to work.
                 Collection<ChessPosition> endPositions = new ArrayList<>();
 
@@ -247,7 +248,7 @@ public class ChessGame {
                     endPositions.add(currentMove.getEndPosition());
                 }
 
-                if (endPositions.contains(checkPosition)) { // if any of those generated moves contains the endposition that is the same as the kings position, he can be captured and we gotta help him.
+                if (endPositions.contains(checkPosition)) { // if any of those generated moves contains the endposition
                     return true; // we are in check!
                 }
             }
@@ -258,11 +259,12 @@ public class ChessGame {
 
 
 
-    public boolean isPositionAvaliable(TeamColor teamColor, ChessPosition checkPosition) { // I have no idea what this does. I wrote this as a one off IG?
+    public boolean isPositionAvaliable(TeamColor teamColor, ChessPosition checkPosition) { // no clue what this does
         HashMap<ChessPosition, ChessPiece> currentPieces = board.getOtherTeamPieces(teamColor);
 
         for (ChessPosition currentPosition : currentPieces.keySet()) {
-            Collection<ChessMove> currentPieceMoves = currentPieces.get(currentPosition).pieceMoves(board, currentPosition);
+            Collection<ChessMove> currentPieceMoves =
+                    currentPieces.get(currentPosition).pieceMoves(board, currentPosition);
             if (!(currentPieceMoves.contains(checkPosition))) {
                 return false;
             }
@@ -271,7 +273,7 @@ public class ChessGame {
     }
     
 
-    public boolean canKingMove(TeamColor teamColor) { // checks to see if the king can move to any of the positions around him without escapitn check
+    public boolean canKingMove(TeamColor teamColor) { // can king escape by moving himself
         // used under checkmate stalemate and get out of check.
         HashMap<ChessPosition, ChessPiece> currentPieces = board.getTeamPieces(teamColor);
         // first we need to get the king and find his valid moves
@@ -301,7 +303,7 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) { // once the underlying logic was down this was easy
 
         if (this.board != null) {
-            if (!(canKingMove(teamColor)) && !(getOutOfCheck(teamColor)) && isInCheck(teamColor)) { // if he can't move, he can't get out of check and he is in check
+            if (!(canKingMove(teamColor)) && !(getOutOfCheck(teamColor)) && isInCheck(teamColor)) {
                 return true;
             }
             else {
@@ -333,7 +335,7 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if(this.board != null) {
-            if  (!(canKingMove(teamColor)) && !(getOutOfCheck(teamColor)) && !(isInCheck(teamColor))) { // if he can't move or get out of check but hes not IN check
+            if  (!(canKingMove(teamColor)) && !(getOutOfCheck(teamColor)) && !(isInCheck(teamColor))) {
                 return true;
             }
             return false;

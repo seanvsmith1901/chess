@@ -27,11 +27,4 @@ public class GameService {
     public GameData getGameFromID(String gameID) throws DataAccessException { // gets the game from ID
         return dataAccess.getGameFromID(gameID);
     }
-
-
-//    public Object getGames(AuthData authToken) {}
-//    public Object createGame (AuthData authToken, String gameName) {}
-//    public Object joinGame (AuthData authToken, String playerColor, int gameID) {}
-
-
 }
