@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class DataAccessTests { // note to self: these are actually dataaccess tests, to make sure that I can access the data alright. my structure is wonky.
+public class DataAccessTests { // these have been renamed appropraitely.
 
     static final DataAccess dataAccess = new MemoryDataAccess();
     static final AuthService AuthService = new AuthService(dataAccess);
@@ -31,7 +31,7 @@ public class DataAccessTests { // note to self: these are actually dataaccess te
     }
 
     @Test
-    void deleteDataBase() throws DataAccessException { // positive test - add something to the data base and make sure it burns correctly.
+    void deleteDataBase() throws DataAccessException { // positive test - makes sure it returns nothing
         assertEquals((AuthService.deleteEverything()), null);
 
     }
@@ -120,7 +120,6 @@ public class DataAccessTests { // note to self: these are actually dataaccess te
 
     @Test
     void getGamesPositive() throws DataAccessException {
-        var newGame = new GameData(1, null, null, "bestGame", new ChessGame());
         GameService.createGame("bestGame");
         assertEquals((GameService.getGames()).size(), 1);
     }
@@ -128,9 +127,9 @@ public class DataAccessTests { // note to self: these are actually dataaccess te
     @Test
     void getGameNamePositive() throws DataAccessException {
         AuthService.deleteEverything();
-        var size = GameService.getGames().size();
-        var newGame = new GameData(1, null, null, "goodGame", new ChessGame()); // gonna be honest no clue as to why thats happening
-        GameService.createGame("goodGame"); // had to overwrite teh freaking chessgames equal operator for this one lol
+        var newGame =
+                new GameData(1, null, null, "goodGame", new ChessGame());
+        GameService.createGame("goodGame"); // had to overwrite the chessgames equal operator for this one lol
         assertEquals(GameService.getGame("goodGame"), newGame);
     }
 
@@ -143,7 +142,8 @@ public class DataAccessTests { // note to self: these are actually dataaccess te
 
     @Test
     void getGameFromIDPositive() throws DataAccessException {
-        var newGame = new GameData(1, null, null, "bestGame", new ChessGame());
+        var newGame =
+                new GameData(1, null, null, "bestGame", new ChessGame());
         GameService.createGame("bestGame");
         assertEquals(GameService.getGameFromID("1"), newGame);
     }
@@ -156,16 +156,17 @@ public class DataAccessTests { // note to self: these are actually dataaccess te
 
     @Test
     void createGamePositive() throws DataAccessException {
-        var newGame = new GameData(1, null, null, "bestGame", new ChessGame());
         GameService.createGame("bestGame");
         assertEquals((GameService.getGames()).size(), 1);
     }
 
     @Test
     void createGameNegative() throws DataAccessException {
-        var newGame = new GameData(1, null, null, "goodGame", new ChessGame());
+        var newGame =
+                new GameData(1, null, null, "goodGame", new ChessGame());
         GameService.createGame("goodGame");
-        var anotherGame =  new GameData(2, null, null, "goodGame", new ChessGame());
+        var anotherGame =
+                new GameData(2, null, null, "goodGame", new ChessGame());
         assertThrows(DataAccessException.class, () -> {
             GameService.createGame("goodGame");});
     }
@@ -182,7 +183,7 @@ public class DataAccessTests { // note to self: these are actually dataaccess te
     void createUserNegative() throws DataAccessException {
         UserService.createUser("West", "password", "west@gmail.com");
         assertThrows(DataAccessException.class, () -> {
-            UserService.createUser("West", "password", "bad@gmail.com");}); // should just to see if they have the same username
+            UserService.createUser("West", "password", "bad@gmail.com");});
     }
 
     @Test
@@ -200,7 +201,8 @@ public class DataAccessTests { // note to self: these are actually dataaccess te
 
     @Test
     void replaceUserInGamePositive() throws DataAccessException {
-        var expectedGame = new GameData(1, "West", null, "BestGame", new ChessGame());
+        var expectedGame =
+                new GameData(1, "West", null, "BestGame", new ChessGame());
         GameService.createGame("BestGame");
         var newGame = GameService.getGame("BestGame");
         UserService.createUser("West", "password", "west@gmail.com");
@@ -216,8 +218,9 @@ public class DataAccessTests { // note to self: these are actually dataaccess te
         UserService.createUser("West", "password", "west@gmail.com");
         var currentUser = UserService.getUser("West");
         UserService.replaceUserInGame(newGame, currentUser.name(), "WHITE");
+        var currName = currentUser.name();
         assertThrows(DataAccessException.class, () -> {
-            UserService.replaceUserInGame(GameService.getGame("BestGame"), currentUser.name(), "WHITE");});
+            UserService.replaceUserInGame(GameService.getGame("BestGame"), currName, "WHITE");});
     }
 
     @Test

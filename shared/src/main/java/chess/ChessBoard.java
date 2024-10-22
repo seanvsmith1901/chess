@@ -88,7 +88,8 @@ public class ChessBoard {
 
     public void resetMaps() {
 
-        // color is implied through name but we can always double check, but here we just have the positions of all the pieces of each color and then the piece itself.
+        // color is implied through name but we can always double check,
+        // but here we just have the positions of all the pieces of each color and then the piece itself.
         HashMap<ChessPosition, ChessPiece> newWhitePieces = new HashMap<>();
         HashMap<ChessPosition, ChessPiece> newBlackPieces = new HashMap<>();
 

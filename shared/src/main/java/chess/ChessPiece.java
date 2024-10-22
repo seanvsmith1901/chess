@@ -85,7 +85,8 @@ public class ChessPiece {
                 if (currRow == 2) { // if we are in the starting position we can try to double jump so check all that
                     var newChessPosition = new ChessPosition(currRow + 2, currColumn);
                     var intermediateChessPosition = new ChessPosition(currRow + 1, currColumn);
-                    if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
+                    if ((board.getPiece(newChessPosition) == null) &&
+                            (board.getPiece(intermediateChessPosition) == null)) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.addAll(multiplyPawn(newChessMove));
                     }
@@ -95,7 +96,8 @@ public class ChessPiece {
                 if (currRow == 7) { // we are in the black starting position
                     var newChessPosition = new ChessPosition(currRow - 2, currColumn);
                     var intermediateChessPosition = new ChessPosition(currRow - 1, currColumn);
-                    if ((board.getPiece(newChessPosition) == null) && (board.getPiece(intermediateChessPosition) == null)) {
+                    if ((board.getPiece(newChessPosition) == null) &&
+                            (board.getPiece(intermediateChessPosition) == null)) {
                         var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                         possibleMoves.addAll(multiplyPawn(newChessMove));
                     }
@@ -107,7 +109,7 @@ public class ChessPiece {
                 var newChessPosition = new ChessPosition(currRow, currColumn); // for our new position
                 if (board.getPiece(newChessPosition) == null) { // if no one is there
                     var newChessMove = new ChessMove(myPosition, newChessPosition, null); // create the chess move
-                    possibleMoves.addAll(multiplyPawn(newChessMove)); // this checks for promotions and returns all possible promotiosn
+                    possibleMoves.addAll(multiplyPawn(newChessMove)); // promotion? return all promotions
                 }
 
                 // test the left and right stuff
@@ -116,7 +118,7 @@ public class ChessPiece {
                 newChessPosition = new ChessPosition(currRow, currColumn);
                 if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // check bounds
                     if (board.getPiece(newChessPosition) != null) { // check to see if there is a piece to the diagonal
-                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) { // peice and wrong color?
+                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) { // piece and w color?
                             var newChessMove = new ChessMove(myPosition, newChessPosition, null);
                             possibleMoves.addAll(multiplyPawn(newChessMove)); // helper function
                         }
@@ -143,7 +145,9 @@ public class ChessPiece {
     public ArrayList<ChessMove> multiplyPawn(ChessMove currentMove) {
         var newMoves = new ArrayList<ChessMove>();
         // checks if we are in a promition spot (there's probably a less costly version of this)
-        if (((currentMove.getEndPosition().getRow() == 1) && (getTeamColor() == ChessGame.TeamColor.BLACK)) || (currentMove.getEndPosition().getRow() == 8) && (getTeamColor() == ChessGame.TeamColor.WHITE)) {
+        if (((currentMove.getEndPosition().getRow() == 1) &&
+                (getTeamColor() == ChessGame.TeamColor.BLACK)) || (currentMove.getEndPosition().getRow() == 8)
+                && (getTeamColor() == ChessGame.TeamColor.WHITE)) {
             for (var j = 0; j < 4; j++) {
                 var newPieceType = PieceType.PAWN;
                 if (j == 0) {
@@ -158,7 +162,8 @@ public class ChessPiece {
                 if (j == 3) {
                     newPieceType = PieceType.BISHOP;
                 }
-                var newChessMove = new ChessMove(currentMove.getStartPosition(), currentMove.getEndPosition(), newPieceType);
+                var newChessMove =
+                        new ChessMove(currentMove.getStartPosition(), currentMove.getEndPosition(), newPieceType);
                 newMoves.add(newChessMove);
             }
         } else { // if no promotion possible, return the normal move with a null promotion
@@ -263,7 +268,7 @@ public class ChessPiece {
                     currColumn -= 2;
                 }
 
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // bounds checking again
+                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // bounds checking 2
                     var newChessPosition = new ChessPosition(currRow, currColumn);
                     if (board.getPiece(newChessPosition) != null) { // if there is a capture possible
                         if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
@@ -288,7 +293,7 @@ public class ChessPiece {
         for (var i = 0; i < 4; i++) { // check all directions (4)
             var currColumn = myPosition.getColumn();
             var currRow = myPosition.getRow();
-            while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) { // this is a while bc we can move till edge of board
+            while ((currRow < 9) && (currColumn < 9) && (currRow > 0) && (currColumn > 0)) { // while bc break for stop
                 if (i == 0) { // check each of the 4 combinations
                     currRow += 1;
                     currColumn += 1;
@@ -305,7 +310,7 @@ public class ChessPiece {
                     currRow += 1;
                     currColumn -= 1;
                 }
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // make sure new move is in bounds
+                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // in bounds?
                     var newChessPosition = new ChessPosition(currRow, currColumn);
                     if (board.getPiece(newChessPosition) != null) { // if there is a piece
                         if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {

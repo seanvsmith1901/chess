@@ -47,13 +47,13 @@ public class Server {
         Spark.awaitStop();
     }
 
-   private Object clearDataBase(Request req, Response res) { // used a lot for testing, should require authentication though lol
+   private Object clearDataBase(Request req, Response res) { // testing stuff, should require authentication though lol
         try {
             res.status(200); // everything has gone well
             return serializer.toJson(services.clearDataBase());
         }
         catch (DataAccessException e) { // not really sure how you would end up here
-            return serializer.toJson(new ErrorData("Error: you shouldn't ever get here")); // no idea how that could every come up
+            return serializer.toJson(new ErrorData("Error: you shouldn't ever get here")); // should never come up
         }
    }
 
@@ -63,7 +63,7 @@ public class Server {
        var username = data.username();
        var password = data.password();
        var email = data.email();
-       if (username == null || password == null || email == null) { // make sure we have the data we need before we proceed
+       if (username == null || password == null || email == null) { // make sure we have the data we need before we go
            res.status(400);
            return serializer.toJson(new ErrorData("Error: Bad request"));
        }
@@ -83,7 +83,7 @@ public class Server {
        }
    }
 
-   private Object createSession(Request req, Response res) { // logs in an existing user and returns a new auth token (doesn't delete the old ones which I find odd)
+   private Object createSession(Request req, Response res) { // logs in an existing user and returns a new auth token
         LoginData data = new Gson().fromJson(req.body(), LoginData.class);
         var username = data.username();
         var password = data.password();
@@ -198,7 +198,7 @@ public class Server {
             if (Objects.equals(e.getMessage(), "unauthorized")) { // bad authentication token
                 res.status(401); // 401
                 newErrorMessage = new ErrorData("Error: unauthorized");
-                return serializer.toJson(newErrorMessage); // i tried breaking this up like 3 times and it bricked everytime lol
+                return serializer.toJson(newErrorMessage); // i tried breaking this up and it bricked everytime lol
             }
             if (Objects.equals(e.getMessage(), "that color is taken")) { // trying to join an already claimed color
                 res.status(403); // 403

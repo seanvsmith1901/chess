@@ -11,7 +11,8 @@ public class UserService {
         this.dataAccess = dataAccess;
     }
 
-    public void createUser(String username, String password, String email) throws DataAccessException { // creates a new user and inserts it
+    // creates a new user and inserts it
+    public void createUser(String username, String password, String email) throws DataAccessException {
         var newUser = new UserData(username, password, email);
         dataAccess.createUser(newUser);
     }
@@ -20,8 +21,9 @@ public class UserService {
         return dataAccess.getUser(username);
     }
 
-    public void replaceUserInGame(GameData currentGame, String username, String playerColor) throws DataAccessException { // replaces the null with a username
-        dataAccess.addUser(currentGame, username, playerColor);
+    // replaces the null with a username
+    public void replaceUserInGame(GameData currGame, String username, String playerColor) throws DataAccessException {
+        dataAccess.addUser(currGame, username, playerColor);
     }
 
     public int getUserCount() throws DataAccessException { // just used for testing

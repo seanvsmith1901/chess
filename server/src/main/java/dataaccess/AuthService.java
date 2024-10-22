@@ -17,7 +17,7 @@ public class AuthService {
         return dataAccess.deleteEverything();
     }
 
-    public AuthData createAuthToken(String username) throws DataAccessException { // creates a new authtoken for a given user
+    public AuthData createAuthToken(String username) throws DataAccessException { // creates a new authtoken for a user
         if(username == null || username.isEmpty()) {
             throw new DataAccessException("Username cannot be null or empty");
         }
@@ -31,7 +31,7 @@ public class AuthService {
         return dataAccess.getAuthObject(authToken);
     }
 
-    public AuthData getAuthObjectFromUserName(String username) throws DataAccessException { // just returns it the other way around
+    public AuthData getAuthObjectFromUserName(String username) throws DataAccessException { // return it other way
         return dataAccess.getAuthObjectFromUsername(username);
     }
 

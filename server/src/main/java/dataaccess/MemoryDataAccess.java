@@ -95,7 +95,10 @@ public class MemoryDataAccess implements DataAccess {
                 throw new DataAccessException("that color is taken");
             }
             gameTokens.remove(currentGame.gameName());
-            GameData newGame = new GameData(currentGame.gameID(), username, currentGame.blackUsername(), currentGame.gameName(), currentGame.game());
+            var currGameID = currentGame.gameID();
+            var blackUserName = currentGame.blackUsername();
+            GameData newGame =
+                    new GameData(currGameID, username, blackUserName, currentGame.gameName(), currentGame.game());
             gameTokens.put(currentGame.gameName(), newGame);
         }
         else {
@@ -103,7 +106,10 @@ public class MemoryDataAccess implements DataAccess {
                 throw new DataAccessException("that color is taken");
             }
             gameTokens.remove(currentGame.gameName());
-            GameData newGame = new GameData(currentGame.gameID(), currentGame.whiteUsername(), username, currentGame.gameName(), currentGame.game());
+            var currGameID = currentGame.gameID();
+            var whiteUserName = currentGame.whiteUsername();
+            GameData newGame =
+                    new GameData(currGameID, whiteUserName, username, currentGame.gameName(), currentGame.game());
             gameTokens.put(currentGame.gameName(), newGame); // keep the same game name
         }
     }
