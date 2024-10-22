@@ -115,31 +115,16 @@ public class ChessPiece {
                 // test the left and right stuff
                 currColumn = myPosition.getColumn(); // reset cause this is color neutral
                 currColumn++; // check to our right
-                newChessPosition = new ChessPosition(currRow, currColumn);
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // check bounds
-                    if (board.getPiece(newChessPosition) != null) { // check to see if there is a piece to the diagonal
-                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) { // piece and w color?
-                            var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                            possibleMoves.addAll(multiplyPawn(newChessMove)); // helper function
-                        }
-                    }
-                }
+                newChessPositionReset(myPosition, board, possibleMoves, currColumn, currRow);
                 // same thing as the above but to the left
                 currColumn = myPosition.getColumn();
                 currColumn--;
-                newChessPosition = new ChessPosition(currRow, currColumn);
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
-                    if (board.getPiece(newChessPosition) != null) {
-                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
-                            var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                            possibleMoves.addAll(multiplyPawn(newChessMove));
-                        }
-                    }
-                }
+                newChessPositionReset(myPosition, board, possibleMoves, currColumn, currRow);
             }
         }
         return possibleMoves; // return the possible moves
     }
+
 
     // checks for promotions and returns all possible promotions
     public ArrayList<ChessMove> multiplyPawn(ChessMove currentMove) {
@@ -149,21 +134,7 @@ public class ChessPiece {
                 (getTeamColor() == ChessGame.TeamColor.BLACK)) || (currentMove.getEndPosition().getRow() == 8)
                 && (getTeamColor() == ChessGame.TeamColor.WHITE)) {
             for (var j = 0; j < 4; j++) {
-                var newPieceType = PieceType.PAWN;
-                if (j == 0) {
-                    newPieceType = PieceType.QUEEN;
-                }
-                if (j == 1) {
-                    newPieceType = PieceType.ROOK;
-                }
-                if (j == 2) {
-                    newPieceType = PieceType.KNIGHT;
-                }
-                if (j == 3) {
-                    newPieceType = PieceType.BISHOP;
-                }
-                var newChessMove =
-                        new ChessMove(currentMove.getStartPosition(), currentMove.getEndPosition(), newPieceType);
+                var newChessMove = getPromotionPieceType(currentMove, j);
                 newMoves.add(newChessMove);
             }
         } else { // if no promotion possible, return the normal move with a null promotion
@@ -210,22 +181,13 @@ public class ChessPiece {
                 if (i == 7) {
                     currColumn -= 1;
                 }
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // bounds check again
-                    var newChessPosition = new ChessPosition(currRow, currColumn);
-                    if (board.getPiece(newChessPosition) != null) { // if there is a capture possible
-                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
-                            var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                            possibleMoves.add(newChessMove);
-                        }
-                    } else { // no capture possible? just move forward.
-                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
-                    }
-                }
+                finiteScalarCheck(myPosition, board, possibleMoves, currColumn, currRow);
             }
         }
         return possibleMoves;
     }
+
+
 
     // I thought this one was going to be hard but he was easy money
     public ArrayList<ChessMove> knightMoves(ChessPosition myPosition, ChessBoard board) {
@@ -267,19 +229,7 @@ public class ChessPiece {
                     currRow -= 1;
                     currColumn -= 2;
                 }
-
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // bounds checking 2
-                    var newChessPosition = new ChessPosition(currRow, currColumn);
-                    if (board.getPiece(newChessPosition) != null) { // if there is a capture possible
-                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
-                            var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                            possibleMoves.add(newChessMove);
-                        }
-                    } else { // just add the move
-                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
-                    }
-                }
+                finiteScalarCheck(myPosition, board, possibleMoves, currColumn, currRow);
             }
         }
 
@@ -310,25 +260,14 @@ public class ChessPiece {
                     currRow += 1;
                     currColumn -= 1;
                 }
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // in bounds?
-                    var newChessPosition = new ChessPosition(currRow, currColumn);
-                    if (board.getPiece(newChessPosition) != null) { // if there is a piece
-                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
-                            var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                            possibleMoves.add(newChessMove);
-                            break; // we can't move any further forward
-                        } else {
-                            break; // have to explicitly break on infinite repeaters otherwise we WILL keep moving
-                        }
-                    } else { // no piece just keep moving forward
-                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
-                    }
-                }
+                if (infiniteScalarCheck(myPosition, board, possibleMoves, currColumn, currRow))
+                    break; // have to explicitly break on infinite repeaters otherwise we WILL keep moving
             }
         }
         return possibleMoves; // return the moves
     }
+
+
 
     // basically the same as the bishop
     public ArrayList<ChessMove> queenMoves(ChessPosition myPosition, ChessBoard board) {
@@ -402,24 +341,96 @@ public class ChessPiece {
                 if (i == 3) {
                     currColumn -= 1;
                 }
-                if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) {
-                    var newChessPosition = new ChessPosition(currRow, currColumn);
-                    if (board.getPiece(newChessPosition) != null) {
-                        if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
-                            var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                            possibleMoves.add(newChessMove);
-                            break;
-                        } else {
-                            break;
-                        }
-                    } else {
-                        var newChessMove = new ChessMove(myPosition, newChessPosition, null);
-                        possibleMoves.add(newChessMove);
-                    }
-                }
+                if (infiniteScalarCheck(myPosition, board, possibleMoves, currColumn, currRow)) break;
             }
         }
         return possibleMoves;
+    }
+
+//    private int[] bishopProceeds(int i, int currRow, int currColumn) {
+//        if (i == 0) { // check each of the 4 combinations
+//            currRow += 1;
+//            currColumn += 1;
+//        }
+//        if (i == 1) {
+//            currRow -= 1;
+//            currColumn += 1;
+//        }
+//        if (i == 2) {
+//            currRow -= 1;
+//            currColumn -= 1;
+//        }
+//        if (i == 3) {
+//            currRow += 1;
+//            currColumn -= 1;
+//        }
+//        int[] newTuple = new int[2];
+//        newTupl
+//    }
+
+
+    private boolean infiniteScalarCheck(ChessPosition myPosition, ChessBoard board, ArrayList<ChessMove> possibleMoves, int currColumn, int currRow) {
+        if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // in bounds?
+            var newChessPosition = new ChessPosition(currRow, currColumn);
+            if (board.getPiece(newChessPosition) != null) { // if there is a piece
+                if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
+                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                    possibleMoves.add(newChessMove);
+                }
+                return true;
+            } else { // no piece just keep moving forward
+                var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                possibleMoves.add(newChessMove);
+            }
+        }
+        return false;
+    }
+
+    private void finiteScalarCheck(ChessPosition myPosition, ChessBoard board, ArrayList<ChessMove> possibleMoves, int currColumn, int currRow) {
+        if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // bounds check again
+            var newChessPosition = new ChessPosition(currRow, currColumn);
+            if (board.getPiece(newChessPosition) != null) { // if there is a capture possible
+                if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) {
+                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                    possibleMoves.add(newChessMove);
+                }
+            } else { // no capture possible? just move forward.
+                var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                possibleMoves.add(newChessMove);
+            }
+        }
+    }
+
+    private static ChessMove getPromotionPieceType(ChessMove currentMove, int j) {
+        var newPieceType = PieceType.PAWN;
+        if (j == 0) {
+            newPieceType = PieceType.QUEEN;
+        }
+        if (j == 1) {
+            newPieceType = PieceType.ROOK;
+        }
+        if (j == 2) {
+            newPieceType = PieceType.KNIGHT;
+        }
+        if (j == 3) {
+            newPieceType = PieceType.BISHOP;
+        }
+        var newChessMove =
+                new ChessMove(currentMove.getStartPosition(), currentMove.getEndPosition(), newPieceType);
+        return newChessMove;
+    }
+
+    private void newChessPositionReset(ChessPosition myPosition, ChessBoard board, ArrayList<ChessMove> possibleMoves, int currColumn, int currRow) {
+        ChessPosition newChessPosition;
+        newChessPosition = new ChessPosition(currRow, currColumn);
+        if (!((currRow > 8) || (currColumn > 8) || (currRow < 1) || (currColumn < 1))) { // check bounds
+            if (board.getPiece(newChessPosition) != null) { // check to see if there is a piece to the diagonal
+                if (board.getPiece(newChessPosition).getTeamColor() != this.teamColor) { // piece and w color?
+                    var newChessMove = new ChessMove(myPosition, newChessPosition, null);
+                    possibleMoves.addAll(multiplyPawn(newChessMove)); // helper function
+                }
+            }
+        }
     }
 
 
