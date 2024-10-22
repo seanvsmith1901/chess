@@ -15,133 +15,133 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServiceTests {
-    static final DataAccess dataAccess = new MemoryDataAccess();
+    static final DataAccess DATA_ACCESS = new MemoryDataAccess();
 
-    static final Services services = new Services(dataAccess);
+    static final Services SERVICES = new Services(DATA_ACCESS);
 
 
     static private Server server;
 
     @BeforeAll
     static void clear() throws DataAccessException {
-        services.clearDataBase();
+        SERVICES.clearDataBase();
     }
 
     @BeforeEach
     void tearDown() throws DataAccessException {
-        services.clearDataBase();
+        SERVICES.clearDataBase();
     }
 
     @Test
     void checkClearDataBasePositive() throws DataAccessException {
-        services.registerUser("West", "12345", "West@gmail.com");
-        var currentUser = services.getUser("West");
-        var currentAuth = services.getAuth(services.getUser("West").name());
-        services.createGame(currentAuth.authToken(), "BestGame");
-        services.clearDataBase();
-        assertThrows(DataAccessException.class, () -> services.getGames(currentAuth.authToken()));
+        SERVICES.registerUser("West", "12345", "West@gmail.com");
+        var currentUser = SERVICES.getUser("West");
+        var currentAuth = SERVICES.getAuth(SERVICES.getUser("West").name());
+        SERVICES.createGame(currentAuth.authToken(), "BestGame");
+        SERVICES.clearDataBase();
+        assertThrows(DataAccessException.class, () -> SERVICES.getGames(currentAuth.authToken()));
     }
 
 
     @Test
     void registerUserPositive() throws DataAccessException {
-        services.registerUser("West", "12345", "West@gmail.com");
+        SERVICES.registerUser("West", "12345", "West@gmail.com");
         var expectedUser = new UserData("West", "12345", "West@gmail.com");
-        assertEquals(expectedUser, services.getUser("West"));
+        assertEquals(expectedUser, SERVICES.getUser("West"));
     }
 
     @Test
     void registerUserNegative() throws DataAccessException {
-        services.registerUser("West", "12345", "West@gmail.com");
+        SERVICES.registerUser("West", "12345", "West@gmail.com");
         assertThrows(DataAccessException.class, () ->
-                services.registerUser("West", "12124", "we@gmail.com"));
+                SERVICES.registerUser("West", "12124", "we@gmail.com"));
     }
 
     @Test
     void createSession() throws DataAccessException {
-        services.registerUser("West", "12345", "West@gmail.com");
-        services.logOutUser(services.getAuth("West").authToken()); // logs the user out
-        services.createSession("West", "12345");
-        assertNotNull(services.getAuth("West")); // creates an auth and certifies that auth returns
+        SERVICES.registerUser("West", "12345", "West@gmail.com");
+        SERVICES.logOutUser(SERVICES.getAuth("West").authToken()); // logs the user out
+        SERVICES.createSession("West", "12345");
+        assertNotNull(SERVICES.getAuth("West")); // creates an auth and certifies that auth returns
     }
 
     @Test
     void createSessionNegative() throws DataAccessException {
-        services.registerUser("West", "12345", "West@gmail.com");
-        services.logOutUser(services.getAuth("West").authToken());
-        assertThrows(DataAccessException.class, () -> services.createSession("West", "14232"));
+        SERVICES.registerUser("West", "12345", "West@gmail.com");
+        SERVICES.logOutUser(SERVICES.getAuth("West").authToken());
+        assertThrows(DataAccessException.class, () -> SERVICES.createSession("West", "14232"));
     }
 
     @Test
     void logOutUserPositive() throws DataAccessException { // pretty sure this is doing what I think its doing.
-        services.registerUser("West", "12345", "West@gmail.com");
-        services.logOutUser(services.getAuth("West").authToken());
-        assertThrows(DataAccessException.class, () -> services.getAuth("West").authToken());
+        SERVICES.registerUser("West", "12345", "West@gmail.com");
+        SERVICES.logOutUser(SERVICES.getAuth("West").authToken());
+        assertThrows(DataAccessException.class, () -> SERVICES.getAuth("West").authToken());
     }
 
     @Test
     void logOutUserNegative() throws DataAccessException {
-        assertThrows(DataAccessException.class, () -> services.logOutUser("111111"));
+        assertThrows(DataAccessException.class, () -> SERVICES.logOutUser("111111"));
     }
 
     @Test
     void getGamesPositive() throws DataAccessException {
-        services.registerUser("West", "12345", "West@gmail.com");
-        var authToken = services.getAuth("West").authToken();
-        services.createGame(authToken, "BestGame");
-        var currentGames = services.getGames(authToken);
-        assertNotNull(services.getGames(authToken));
+        SERVICES.registerUser("West", "12345", "West@gmail.com");
+        var authToken = SERVICES.getAuth("West").authToken();
+        SERVICES.createGame(authToken, "BestGame");
+        var currentGames = SERVICES.getGames(authToken);
+        assertNotNull(SERVICES.getGames(authToken));
     }
 
     @Test
     void getGamesNegative() throws DataAccessException {
         // tries to grab games with a nonexistent auth token.
-        assertThrows(DataAccessException.class, () -> services.getGames("111111"));
+        assertThrows(DataAccessException.class, () -> SERVICES.getGames("111111"));
     }
 
     @Test
     void createGamePositive() throws DataAccessException {
-        services.registerUser("West", "12345", "West@gmail.com");
-        var authToken = services.getAuth("West").authToken();
-        services.createGame(authToken, "BestGame");
+        SERVICES.registerUser("West", "12345", "West@gmail.com");
+        var authToken = SERVICES.getAuth("West").authToken();
+        SERVICES.createGame(authToken, "BestGame");
         var newGame =
                 new GameData(1, null, null, "BestGame", new ChessGame());
-        assertEquals(services.getGame("BestGame"), newGame);
+        assertEquals(SERVICES.getGame("BestGame"), newGame);
     }
 
     @Test
     void createGamesNegative() throws DataAccessException { // doesn't let you overwrite a game
-        services.registerUser("West", "12345", "West@gmail.com");
-        var authToken = services.getAuth("West").authToken();
-        services.createGame(authToken, "BestGame");
+        SERVICES.registerUser("West", "12345", "West@gmail.com");
+        var authToken = SERVICES.getAuth("West").authToken();
+        SERVICES.createGame(authToken, "BestGame");
         // checks to see if that game already exists when we create it
-        assertThrows(DataAccessException.class, () -> services.createGame(authToken, "BestGame"));
+        assertThrows(DataAccessException.class, () -> SERVICES.createGame(authToken, "BestGame"));
     }
 
     @Test
     void joinGamePostitive() throws DataAccessException {
-        services.registerUser("West", "12345", "West@gmail.com");
-        var authToken = services.getAuth("West").authToken();
-        services.createGame(authToken, "BestGame");
-        int gameID = services.getGame("BestGame").gameID();
-        services.joinGame(authToken, "WHITE", String.valueOf(gameID));
+        SERVICES.registerUser("West", "12345", "West@gmail.com");
+        var authToken = SERVICES.getAuth("West").authToken();
+        SERVICES.createGame(authToken, "BestGame");
+        int gameID = SERVICES.getGame("BestGame").gameID();
+        SERVICES.joinGame(authToken, "WHITE", String.valueOf(gameID));
         var expectedGame =
                 new GameData(1, "West", null, "BestGame", new ChessGame());
         // checks to make sure that we really have joined the game as white.
-        assertEquals(expectedGame, services.getGame("BestGame"));
+        assertEquals(expectedGame, SERVICES.getGame("BestGame"));
     }
 
     @Test
     void joinGameNegative() throws DataAccessException {
-        services.registerUser("West", "12345", "West@gmail.com");
-        services.registerUser("East", "11111", "East@gmail.com");
-        var authToken = services.getAuth("West").authToken();
-        var authToken2 = services.getAuth("East").authToken();
-        services.createGame(authToken, "BestGame");
-        int gameID = services.getGame("BestGame").gameID();
-        services.joinGame(authToken, "WHITE", String.valueOf(gameID));
+        SERVICES.registerUser("West", "12345", "West@gmail.com");
+        SERVICES.registerUser("East", "11111", "East@gmail.com");
+        var authToken = SERVICES.getAuth("West").authToken();
+        var authToken2 = SERVICES.getAuth("East").authToken();
+        SERVICES.createGame(authToken, "BestGame");
+        int gameID = SERVICES.getGame("BestGame").gameID();
+        SERVICES.joinGame(authToken, "WHITE", String.valueOf(gameID));
         assertThrows(DataAccessException.class, () ->
-                services.joinGame(authToken2, "WHITE", String.valueOf(gameID)));
+                SERVICES.joinGame(authToken2, "WHITE", String.valueOf(gameID)));
     }
 
 

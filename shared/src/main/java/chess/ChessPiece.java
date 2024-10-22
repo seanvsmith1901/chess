@@ -426,8 +426,8 @@ public class ChessPiece {
     // override the equals and hashcode for tests, and the toString for debugging
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessPiece that = (ChessPiece) o;
         return type == that.type && teamColor == that.teamColor;
     }
