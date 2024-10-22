@@ -156,7 +156,7 @@ public class ChessPiece {
         return possibleMoves;
     }
 
-    
+
     // I thought this one was going to be hard but he was easy money
     public ArrayList<ChessMove> knightMoves(ChessPosition myPosition, ChessBoard board) {
         var possibleMoves = new ArrayList<ChessMove>();
@@ -280,8 +280,10 @@ public class ChessPiece {
             currRow = rowColTuple[0];
             currColumn = rowColTuple[1];
 
-            if (boundCheck(myPosition, board, possibleMoves, rowColTuple))
+            if (boundCheck(myPosition, board, possibleMoves, rowColTuple)) {
                 break; // have to explicitly break on infinite repeaters otherwise we WILL keep moving
+            }
+
         }
     }
 

@@ -98,6 +98,11 @@ public class Server {
                 res.status(401);
                 return serializer.toJson(new ErrorData("Error: unauthorized"));
             }
+            if (Objects.equals(e.getMessage(), "differentMessage")) {
+                res.status(403);
+                var newErrorMessage = new ErrorData("Error: totally different message");
+                return serializer.toJson(newErrorMessage);
+            }
             else {
                 res.status(500); // any other errors go here
                 return serializer.toJson(new ErrorData("Error:" + e.getMessage()));
@@ -115,6 +120,11 @@ public class Server {
             if (Objects.equals(e.getMessage(), "unauthorized")) { // trying to log out a nonexistent user
                 res.status(401);
                 var newErrorMessage = new ErrorData("Error: unauthorized");
+                return serializer.toJson(newErrorMessage);
+            }
+            if (Objects.equals(e.getMessage(), "randomMessage")) {
+                res.status(402);
+                var newErrorMessage = new ErrorData("Error: random message");
                 return serializer.toJson(newErrorMessage);
             }
             else {
@@ -184,7 +194,7 @@ public class Server {
         JoinData data = new Gson().fromJson(req.body(), JoinData.class);
         var playerColor = data.playerColor();
         String gameID = String.valueOf(data.gameID());
-        ErrorData newErrorMessage = new ErrorData("Error: bad request");
+        ErrorData newErrorMessage;
         if (authToken == null || gameID == null || playerColor == null) { // makes sure everything is there
             res.status(400);
             return serializer.toJson(new ErrorData("Error: bad request"));

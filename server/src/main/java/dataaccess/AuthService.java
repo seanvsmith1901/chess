@@ -7,14 +7,14 @@ import java.security.SecureRandom;
 
 public class AuthService {
 
-    private static DataAccess DATA_ACCESS;
+    private static DataAccess dataAccess;
 
     public AuthService(DataAccess dataAccess) { // correct data access setting
-        this.DATA_ACCESS = dataAccess;
+        this.dataAccess = dataAccess;
     }
 
     public Object deleteEverything() throws DataAccessException { // does exactly what you think it does
-        return DATA_ACCESS.deleteEverything();
+        return dataAccess.deleteEverything();
     }
 
     public AuthData createAuthToken(String username) throws DataAccessException { // creates a new authtoken for a user
@@ -23,24 +23,24 @@ public class AuthService {
         }
         var authentication = generateRandomString(8);
         var newAuthData = new AuthData(authentication, username);
-        DATA_ACCESS.addAuth(newAuthData);
+        dataAccess.addAuth(newAuthData);
         return newAuthData; // returns the new authentication object
     }
 
     public AuthData getAuthObject(String authToken) throws DataAccessException { // gets the authobject
-        return DATA_ACCESS.getAuthObject(authToken);
+        return dataAccess.getAuthObject(authToken);
     }
 
     public AuthData getAuthObjectFromUserName(String username) throws DataAccessException { // return it other way
-        return DATA_ACCESS.getAuthObjectFromUsername(username);
+        return dataAccess.getAuthObjectFromUsername(username);
     }
 
     public void deleteAuthObject(AuthData authToken) throws DataAccessException { // just blows it up
-        DATA_ACCESS.deleteAuthToken(authToken);
+        dataAccess.deleteAuthToken(authToken);
     }
 
     public int getAuthSize() throws DataAccessException { // used for testing purposes
-        return DATA_ACCESS.getAuthSize();
+        return dataAccess.getAuthSize();
     }
 
     private String generateRandomString(int length) { // used to help generate the random auth tokens

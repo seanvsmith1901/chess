@@ -6,25 +6,25 @@ import java.util.HashSet;
 
 public class GameService {
 
-    private static DataAccess DATA_ACCESS;
+    private static DataAccess dataAccess;
 
     public GameService(DataAccess dataAccess) { // sets the correct dataaccess module
-        this.DATA_ACCESS = dataAccess;
+        this.dataAccess = dataAccess;
     }
 
     public HashSet<GameData> getGames() throws DataAccessException { // returns a hashset of all of the games
-        return DATA_ACCESS.getGames();
+        return dataAccess.getGames();
     }
 
     public void createGame(String gameName) throws DataAccessException { // creates a new game
-        DATA_ACCESS.createGame(gameName);
+        dataAccess.createGame(gameName);
     }
 
     public GameData getGame(String gameName) throws DataAccessException { // gets a game from its game name
-        return DATA_ACCESS.getGame(gameName);
+        return dataAccess.getGame(gameName);
     }
 
     public GameData getGameFromID(String gameID) throws DataAccessException { // gets the game from ID
-        return DATA_ACCESS.getGameFromID(gameID);
+        return dataAccess.getGameFromID(gameID);
     }
 }
