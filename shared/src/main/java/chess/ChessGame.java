@@ -87,49 +87,52 @@ public class ChessGame {
      * @param move chess move to preform
      * @throws InvalidMoveException if move is invalid
      */
-    public boolean checkMove(ChessMove move) throws InvalidMoveException { // from valid moves, can move there?
+    public boolean checkMove(ChessMove move) throws InvalidMoveException {
+        ChessPiece currentPiece = board.getPiece(move.getStartPosition());
+        TeamColor teamColor = currentPiece.getTeamColor();
+        Collection<ChessMove> validMoves = currentPiece.pieceMoves(board, move.getStartPosition());
 
-        ChessPiece currentPiece = board.getPiece(move.getStartPosition()); // gets the piece of interest
-        var teamColor = currentPiece.getTeamColor(); // we are just checking to see if we can move there
-        Collection<ChessMove> validMoves = currentPiece.pieceMoves(board, move.getStartPosition()); // get valid moves
+        // check if its our turn
+        if (teamColor != getTeamTurn()) {
+            throw new InvalidMoveException("Not your turn yet fetcher");
+        }
 
-        if (validMoves.contains(move)) { // if our move IS, in fact, a valid move
-            if(teamColor == getTeamTurn()) { // checks if its our turn
-                if (isInCheck(teamColor)) { // if we are in check, make sure we get out of check
-                    ChessPiece possiblePiece = executeMove(move);
-                    if(isInCheck(teamColor)) { // we are still in check boys, that move did NOT save us
-                        unExecuteMove(move, possiblePiece); // undo that move and throw the exception
-                        throw new InvalidMoveException("You're still in check and that doesn't get you out! beware!");
-                    }
-                    unExecuteMove(move, possiblePiece); // move is valid and will execute upon completion
-                }
-                else {
-                    // check for pawn position and promotion piece (make sure promotion is valid)
-                    if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                        if (move.getPromotionPiece() != null) {
-                            if (!((teamColor == TeamColor.BLACK && move.getEndPosition().getRow() == 1) ||
-                                    (teamColor == TeamColor.WHITE && move.getEndPosition().getRow() == 8))) {
-                                throw new InvalidMoveException("You can't promote a pawn there, don't do that");
-                            }
-                        }
-                    }
-                }
-                // if we have cleard everything, make the move
-                ChessPiece possiblePiece = executeMove(move);
-                if(isInCheck(teamColor)) { // if that move puts us in check,
-                    unExecuteMove(move, possiblePiece); // we need to walk it back
-                    throw new InvalidMoveException("that move puts your king in check so don't do that"); // throw error
-                }
-                unExecuteMove(move, possiblePiece); // undoes the above move, walks it back to where we started.
+        // make sure that that move is actually a valid move
+        if (!validMoves.contains(move)) {
+            throw new InvalidMoveException("Not a valid move, try again");
+        }
+
+        // if it puts us in check, bad, need to make sure it gets us out of check
+        if (isInCheck(teamColor)) {
+            ChessPiece possiblePiece = executeMove(move);
+            if (isInCheck(teamColor)) {
+                unExecuteMove(move, possiblePiece);
+                throw new InvalidMoveException("You're still in check and that doesn't get you out! beware!");
             }
-            else {
-                throw new InvalidMoveException("Not your turn yet fetcher"); // not your turn!
+            unExecuteMove(move, possiblePiece);
+        }
+
+        // check for pawn promotion possibility
+        if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            if (move.getPromotionPiece() != null &&
+                    !isValidPawnPromotion(teamColor, move.getEndPosition().getRow())) {
+                throw new InvalidMoveException("You can't promote a pawn there, don't do that");
             }
         }
-        else {
-            throw new InvalidMoveException("Not a valid move, try again"); //
+
+        // makes move and checks to see if you are still in check
+        ChessPiece possiblePiece = executeMove(move);
+        if (isInCheck(teamColor)) {
+            unExecuteMove(move, possiblePiece);
+            throw new InvalidMoveException("That move puts your king in check so don't do that");
         }
+        
+        unExecuteMove(move, possiblePiece);
         return true;
+    }
+
+    private boolean isValidPawnPromotion(TeamColor teamColor, int row) {
+        return (teamColor == TeamColor.BLACK && row == 1) || (teamColor == TeamColor.WHITE && row == 8);
     }
 
 
