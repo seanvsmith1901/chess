@@ -7,9 +7,7 @@ public interface DataAccess {
 
     // gotta reimplement these fetchers one by one, such just start from the top IG.
 
-    // Object deleteEverything() throws DataAccessException;
-
-    // special note on that fetcher - make sure that we just erase the contents of the tables, not teh whole table lol.
+    Object deleteEverything() throws DataAccessException;
 
 //    UserData getUser(String userName) throws DataAccessException;
 //

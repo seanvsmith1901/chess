@@ -22,6 +22,32 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public Object deleteEverything() throws DataAccessException {
+        var statement = "TRUNCATE userData";
+        var statement2 = "TRUNCATE gameData";
+        var statement3 = "TRUNCATE authData";
+        executeUpdate(statement);
+        executeUpdate(statement2);
+        executeUpdate(statement3);
+        return null;
+    }
+
+    public UserData getUser(String userName) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT userName, json FROM userData WHERE userName = ?";
+            try (var stmt = conn.prepareStatement(statement)) {
+                stmt.setString(1, userName);
+                try (var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
+                    }
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
 
     }
 
@@ -97,4 +123,10 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException("Error: 500, Unable to configure database: " + ex.getMessage());
         }
     }
+
+    private UserData readUser(ResultSet rs) throws DataAccessException {
+        var username = rs.get("name"); // not sure how this wokrs
+
+    }
+
 }
