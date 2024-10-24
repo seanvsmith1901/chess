@@ -29,7 +29,7 @@ public interface DataAccess {
 //
 //    int getAuthSize() throws DataAccessException;
 //
-//    void addAuth(AuthData currentAuth) throws DataAccessException;
+    void addAuth(AuthData currentAuth) throws DataAccessException;
 //
 //    AuthData getAuthObjectFromUsername(String username) throws DataAccessException;
 //

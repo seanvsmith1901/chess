@@ -65,17 +65,17 @@ public class MySqlDataAccess implements DataAccess {
             try (var stmt = conn.prepareStatement(statement)) {
                 stmt.setString(1, newAuth.authToken());
                 stmt.setString(2, newAuth.username());
-                try (var rs = stmt.executeQuery()) {
-//                    if (rs.next()) {
-//                        return readUser(rs);
-//                    }
-                }
+                stmt.executeUpdate(statement);
             }
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
         throw new DataAccessException("Literally no clue how you got here. abor");
+
+    }
+
+    public void getAuthSize() throws DataAccessException {
 
     }
 
