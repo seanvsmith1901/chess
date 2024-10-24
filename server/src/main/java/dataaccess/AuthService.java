@@ -27,22 +27,22 @@ public class AuthService {
         return newAuthData; // returns the new authentication object
     }
 
-    public AuthData getAuthObject(String authToken) throws DataAccessException { // gets the authobject
-        return dataAccess.getAuthObject(authToken);
-    }
-
-    public AuthData getAuthObjectFromUserName(String username) throws DataAccessException { // return it other way
-        return dataAccess.getAuthObjectFromUsername(username);
-    }
-
-    public void deleteAuthObject(AuthData authToken) throws DataAccessException { // just blows it up
-        dataAccess.deleteAuthToken(authToken);
-    }
-
-    public int getAuthSize() throws DataAccessException { // used for testing purposes
-        return dataAccess.getAuthSize();
-    }
-
+//    public AuthData getAuthObject(String authToken) throws DataAccessException { // gets the authobject
+//        return dataAccess.getAuthObject(authToken);
+//    }
+//
+//    public AuthData getAuthObjectFromUserName(String username) throws DataAccessException { // return it other way
+//        return dataAccess.getAuthObjectFromUsername(username);
+//    }
+//
+//    public void deleteAuthObject(AuthData authToken) throws DataAccessException { // just blows it up
+//        dataAccess.deleteAuthToken(authToken);
+//    }
+//
+//    public int getAuthSize() throws DataAccessException { // used for testing purposes
+//        return dataAccess.getAuthSize();
+//    }
+//
     private String generateRandomString(int length) { // used to help generate the random auth tokens
 
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

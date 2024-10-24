@@ -9,9 +9,9 @@ public interface DataAccess {
 
     Object deleteEverything() throws DataAccessException;
 
-//    UserData getUser(String userName) throws DataAccessException;
-//
-//    void createUser(UserData currentUser) throws DataAccessException;
+    UserData getUser(String userName) throws DataAccessException;
+
+    void createUser(UserData currentUser) throws DataAccessException;
 //
 //    AuthData getAuthObject(String authToken) throws DataAccessException;
 //

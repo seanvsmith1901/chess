@@ -15,7 +15,7 @@ public class Main {
 
             Services services = new Services(dataAccess);
         }
-        catch (DataAccessException e) {
+        catch (Exception e) {
             e.printStackTrace(); // just a generic to make sure it gets handled.
         }
 
