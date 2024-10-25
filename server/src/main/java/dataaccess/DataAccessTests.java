@@ -122,11 +122,11 @@ public class DataAccessTests { // these have been renamed appropraitely.
 //    // ** End of Auth Tests ** ** Start of games tests **
 //
 //
-//    @Test
-//    void getGamesPositive() throws DataAccessException {
-//        GAME_SERVICE.createGame("bestGame");
-//        assertEquals((GAME_SERVICE.getGames()).size(), 1);
-//    }
+    @Test
+    void getGamesPositive() throws DataAccessException {
+        GAME_SERVICE.createGame("bestGame");
+        assertEquals((GAME_SERVICE.getGames()).size(), 1);
+    }
 //
 //    @Test
 //    void getGameNamePositive() throws DataAccessException {

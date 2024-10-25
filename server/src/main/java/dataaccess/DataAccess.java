@@ -16,9 +16,9 @@ public interface DataAccess {
     AuthData getAuthObject(String authToken) throws DataAccessException;
 //
     void deleteAuthToken(AuthData authToken) throws DataAccessException;
-//
+////
 //    HashSet<GameData> getGames() throws DataAccessException;
-//
+////
 //    void createGame(String gameName) throws DataAccessException;
 //
 //    GameData getGame(String gameName) throws DataAccessException;

@@ -78,12 +78,6 @@ public class MySqlDataAccess implements DataAccess {
                 }
             }
         }
-
-
-
-
-
-
         catch (SQLException e) {
             e.printStackTrace();
         }
@@ -134,9 +128,8 @@ public class MySqlDataAccess implements DataAccess {
         var authToken = currentAuth.authToken();
         var statement = "DELETE FROM authData WHERE authToken = ?"; // actually deletes the authToken.
         executeUpdate(statement, authToken);
-
-
     }
+
 
 
 
