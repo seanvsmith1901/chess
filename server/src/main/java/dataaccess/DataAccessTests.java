@@ -45,79 +45,79 @@ public class DataAccessTests { // these have been renamed appropraitely.
         assertEquals(AUTH_SERVICE.getAuthSize(), expectedAuthLength);
     }
 
-//    @Test
-//    void createAuthTokenNegative() throws DataAccessException { // if the username is null we brick
-//        assertThrows(DataAccessException.class, () -> AUTH_SERVICE.createAuthToken(null));
-//    }
+    @Test
+    void createAuthTokenNegative() throws DataAccessException { // if the username is null we brick
+        assertThrows(DataAccessException.class, () -> AUTH_SERVICE.createAuthToken(null));
+    }
 //
-//    @Test
-//    void getExistingAuthToken() throws DataAccessException { // finds the auth token
-//        AUTH_SERVICE.createAuthToken("West");
-//        var expectedUserName = "West";
-//        assertEquals((AUTH_SERVICE.getAuthObjectFromUserName(expectedUserName)).username(), expectedUserName);
-//    }
+    @Test
+    void getExistingAuthToken() throws DataAccessException { // finds the auth token
+        AUTH_SERVICE.createAuthToken("West");
+        var expectedUserName = "West";
+        assertEquals((AUTH_SERVICE.getAuthObjectFromUserName(expectedUserName)).username(), expectedUserName);
+    }
 //
-//    @Test
-//    void grabNonexistentAuthToken() { // tries to grab a bad auth token
-//        assertThrows(DataAccessException.class, () -> {
-//            AUTH_SERVICE.getAuthObject("West");});
-//    }
+    @Test
+    void grabNonexistentAuthToken() { // tries to grab a bad auth token
+        assertThrows(DataAccessException.class, () -> {
+            AUTH_SERVICE.getAuthObject("West");});
+    }
 //
-//    @Test
-//    void grabNonExistentUserName() { // trues to grab a user that doesn't exist
-//        assertThrows(DataAccessException.class, () -> {
-//            AUTH_SERVICE.getAuthObjectFromUserName("West");});
-//    }
+    @Test
+    void grabNonExistentUserName() { // trues to grab a user that doesn't exist
+        assertThrows(DataAccessException.class, () -> {
+            AUTH_SERVICE.getAuthObjectFromUserName("West");});
+    }
 //
-//    @Test
-//    void deleteExistingAuthToken() throws DataAccessException { // deletes a real authtoken
-//        var thisShouldBeRight = 0;
-//        AUTH_SERVICE.createAuthToken("West");
-//        AuthData currentAuth = AUTH_SERVICE.getAuthObjectFromUserName("West"); // IDK if that will work lol
-//        AUTH_SERVICE.deleteAuthObject(currentAuth);
-//        assertEquals(0, AUTH_SERVICE.getAuthSize());
+    @Test
+    void deleteExistingAuthToken() throws DataAccessException { // deletes a real authtoken
+        var thisShouldBeRight = 0;
+        AUTH_SERVICE.createAuthToken("West");
+        AuthData currentAuth = AUTH_SERVICE.getAuthObjectFromUserName("West"); // IDK if that will work lol
+        AUTH_SERVICE.deleteAuthObject(currentAuth);
+        assertEquals(0, AUTH_SERVICE.getAuthSize());
+
+    }
 //
-//    }
+    @Test
+    void deleteNonExistentAuthToken() throws DataAccessException {
+        AuthData fakeAuthentication = new AuthData("111111", "West");
+        assertThrows(DataAccessException.class, () -> {
+            AUTH_SERVICE.deleteAuthObject(fakeAuthentication);});
+    }
+
+    @Test
+    void deleteExistingAuthTokenGivenUsername() throws DataAccessException {
+        AUTH_SERVICE.createAuthToken("West");
+        var authToken = AUTH_SERVICE.getAuthObjectFromUserName("West").authToken();
+        AuthData currentAuth = AUTH_SERVICE.getAuthObject(authToken);
+        AUTH_SERVICE.deleteAuthObject(currentAuth);
+        assertEquals(0, AUTH_SERVICE.getAuthSize());
+    }
+
 //
-//    @Test
-//    void deleteNonExistentAuthToken() throws DataAccessException {
-//        AuthData fakeAuthentication = new AuthData("111111", "West");
-//        assertThrows(DataAccessException.class, () -> {
-//            AUTH_SERVICE.deleteAuthObject(fakeAuthentication);});
-//    }
+    @Test
+    void checkDeleteAuthObject() throws DataAccessException {
+        AUTH_SERVICE.createAuthToken("West");
+        AUTH_SERVICE.createAuthToken("East");
+        var currentAuth = AUTH_SERVICE.getAuthObjectFromUserName("West");
+        AUTH_SERVICE.deleteAuthObject(currentAuth);
+        assertEquals(1, AUTH_SERVICE.getAuthSize());
+    }
 //
-//    @Test
-//    void deleteExistingAuthTokenGivenUsername() throws DataAccessException {
-//        AUTH_SERVICE.createAuthToken("West");
-//        var authToken = AUTH_SERVICE.getAuthObjectFromUserName("West").authToken();
-//        AuthData currentAuth = AUTH_SERVICE.getAuthObject(authToken);
-//        AUTH_SERVICE.deleteAuthObject(currentAuth);
-//        assertEquals(0, AUTH_SERVICE.getAuthSize());
-//    }
-//
-//
-//    @Test
-//    void checkDeleteAuthObject() throws DataAccessException {
-//        AUTH_SERVICE.createAuthToken("West");
-//        AUTH_SERVICE.createAuthToken("East");
-//        var currentAuth = AUTH_SERVICE.getAuthObjectFromUserName("West");
-//        AUTH_SERVICE.deleteAuthObject(currentAuth);
-//        assertEquals(1, AUTH_SERVICE.getAuthSize());
-//    }
-//
-//    @Test
-//    void checkDeleteAuthObjectNotThere() throws DataAccessException {
-//        var newAuth = new AuthData("asdsfd", "West");
-//        assertThrows(DataAccessException.class, () -> {
-//            AUTH_SERVICE.deleteAuthObject(newAuth);});
-//    }
-//
-//    @Test
-//    void checkAuthSize() throws DataAccessException {
-//        var newAuth = new AuthData("asdsfd", "West");
-//        AUTH_SERVICE.createAuthToken("West");
-//        assertEquals(1, AUTH_SERVICE.getAuthSize());
-//    }
+    @Test
+    void checkDeleteAuthObjectNotThere() throws DataAccessException {
+        var newAuth = new AuthData("asdsfd", "West");
+        assertThrows(DataAccessException.class, () -> {
+            AUTH_SERVICE.deleteAuthObject(newAuth);});
+    }
+
+    @Test
+    void checkAuthSize() throws DataAccessException {
+        var newAuth = new AuthData("asdsfd", "West");
+        AUTH_SERVICE.createAuthToken("West");
+        assertEquals(1, AUTH_SERVICE.getAuthSize());
+    }
 //
 //    // ** End of Auth Tests ** ** Start of games tests **
 //

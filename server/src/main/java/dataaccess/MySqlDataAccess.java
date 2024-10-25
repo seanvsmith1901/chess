@@ -60,13 +60,10 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public void addAuth(AuthData newAuth) throws DataAccessException {
-
         var statement = "INSERT INTO authData (authToken, username) VALUES (?, ?)";
         //var json = new Gson().toJson(newAuth);
         executeUpdate(statement, newAuth.authToken(), newAuth.username());
         //return new Pet(id, pet.name(), pet.type());
-
-
     }
 
     public int getAuthSize() throws DataAccessException {
@@ -81,10 +78,64 @@ public class MySqlDataAccess implements DataAccess {
                 }
             }
         }
+
+
+
+
+
+
         catch (SQLException e) {
             e.printStackTrace();
         }
         return result.size();
+    }
+
+    public AuthData getAuthObject(String authToken) throws DataAccessException {
+        var statement = "SELECT * FROM authData WHERE authToken = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var stmt = conn.prepareStatement(statement)) {
+                stmt.setString(1, authToken);
+                try (var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuth(rs);
+                    }
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        throw new DataAccessException("Literally no clue how you got here.");
+    }
+
+    public AuthData getAuthObjectFromUsername(String username) throws DataAccessException {
+        //var statement = "SELECT * FROM authData WHERE username = ?";
+        var result = "";
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT authToken, username FROM authData";
+            try (var stmt = conn.prepareStatement(statement)) {
+                try (var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuth(rs);
+                    }
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        throw new DataAccessException("Literally no clue how you got here.");
+
+    }
+
+    public void deleteAuthToken(AuthData currentAuth) throws DataAccessException {
+        AuthData checkAuth = getAuthObject(currentAuth.authToken()); // make sure auth exists
+
+        var authToken = currentAuth.authToken();
+        var statement = "DELETE FROM authData WHERE authToken = ?"; // actually deletes the authToken.
+        executeUpdate(statement, authToken);
+
+
     }
 
 

@@ -13,9 +13,9 @@ public interface DataAccess {
 
     void createUser(UserData currentUser) throws DataAccessException;
 //
-//    AuthData getAuthObject(String authToken) throws DataAccessException;
+    AuthData getAuthObject(String authToken) throws DataAccessException;
 //
-//    void deleteAuthToken(AuthData authToken) throws DataAccessException;
+    void deleteAuthToken(AuthData authToken) throws DataAccessException;
 //
 //    HashSet<GameData> getGames() throws DataAccessException;
 //
@@ -31,7 +31,7 @@ public interface DataAccess {
 //
     void addAuth(AuthData currentAuth) throws DataAccessException;
 //
-//    AuthData getAuthObjectFromUsername(String username) throws DataAccessException;
+    AuthData getAuthObjectFromUsername(String username) throws DataAccessException;
 //
 //    int getUserCount() throws DataAccessException;
 //
