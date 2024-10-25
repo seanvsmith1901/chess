@@ -12,13 +12,13 @@ public class GameService {
         this.dataAccess = dataAccess;
     }
 
-//    public HashSet<GameData> getGames() throws DataAccessException { // returns a hashset of all of the games
-//        return dataAccess.getGames();
-//    }
+    public HashSet<GameData> getGames() throws DataAccessException { // returns a hashset of all of the games
+        return dataAccess.getGames();
+    }
 //
-//    public void createGame(String gameName) throws DataAccessException { // creates a new game
-//        dataAccess.createGame(gameName);
-//    }
+    public void createGame(String gameName) throws DataAccessException { // creates a new game
+        dataAccess.createGame(gameName);
+    }
 //
 //    public GameData getGame(String gameName) throws DataAccessException { // gets a game from its game name
 //        return dataAccess.getGame(gameName);

@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 
 import model.AuthData;
@@ -9,6 +10,7 @@ import model.UserData;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.sql.*;
+import java.util.HashSet;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -130,6 +132,32 @@ public class MySqlDataAccess implements DataAccess {
         executeUpdate(statement, authToken);
     }
 
+    public HashSet<model.GameData> getGames() throws DataAccessException {
+        var result = new HashSet<GameData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, whiteUserName, blackUserName, gameName, chessGame FROM gameData";
+            try (var stmt = conn.prepareStatement(statement)) {
+                try (var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        result.add(readGame(rs));
+                    }
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public void createGame(String gameName) throws DataAccessException {
+        var statement = "INSERT INTO gameData (whiteUserName, blackUserName, gameName, chessGame) VALUES (?, ?, ?, ?)";
+        var json = new Gson().toJson(new ChessGame());
+        //var json = new ChessGame().toString();
+
+        executeUpdate(statement, "null", "null", gameName, json);
+    }
+
 
 
 
@@ -170,10 +198,10 @@ public class MySqlDataAccess implements DataAccess {
             """
     CREATE TABLE IF NOT EXISTS gameData (
       id INT NOT NULL AUTO_INCREMENT,
-      gameName VARCHAR(256) NOT NULL,
       whiteUserName VARCHAR(256) DEFAULT NULL,
       blackUserName VARCHAR(256) DEFAULT NULL,
-      chessGame VARCHAR(256),
+      gameName VARCHAR(256) NOT NULL,
+      chessGame TEXT NOT NULL,
       PRIMARY KEY (id),
       INDEX idx_gameName (gameName),
       INDEX idx_whiteUserName (whiteUserName),
@@ -217,6 +245,16 @@ public class MySqlDataAccess implements DataAccess {
         var authToken = rs.getString("authToken");
         var username = rs.getString("username");
         return new AuthData(authToken, username);
+    }
+
+    private GameData readGame(ResultSet rs) throws SQLException {
+        int gameID = rs.getInt("id");
+        var whiteUserName = rs.getString("whiteUserName");
+        var blackUsername = rs.getString("blackUserName");
+        var gameName = rs.getString("gameName");
+        var json = rs.getString("chessGame");
+        var chessGame = new Gson().fromJson(json, ChessGame.class);
+        return new GameData(gameID, whiteUserName, blackUsername, gameName, chessGame);
     }
 
 }
