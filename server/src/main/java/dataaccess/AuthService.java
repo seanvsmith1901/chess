@@ -39,9 +39,9 @@ public class AuthService {
 //        dataAccess.deleteAuthToken(authToken);
 //    }
 //
-//    public int getAuthSize() throws DataAccessException { // used for testing purposes
-//        return dataAccess.getAuthSize();
-//    }
+    public int getAuthSize() throws DataAccessException { // used for testing purposes
+        return dataAccess.getAuthSize();
+    }
 //
     private String generateRandomString(int length) { // used to help generate the random auth tokens
 

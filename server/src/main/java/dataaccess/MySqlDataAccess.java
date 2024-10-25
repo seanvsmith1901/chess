@@ -60,24 +60,33 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public void addAuth(AuthData newAuth) throws DataAccessException {
+
+        var statement = "INSERT INTO authData (authToken, username) VALUES (?, ?)";
+        //var json = new Gson().toJson(newAuth);
+        executeUpdate(statement, newAuth.authToken(), newAuth.username());
+        //return new Pet(id, pet.name(), pet.type());
+
+
+    }
+
+    public int getAuthSize() throws DataAccessException {
+        var result = new ArrayList<AuthData>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "INSERT INTO authData (authToken, username) VALUES (?, ?)";
+            var statement = "SELECT authToken, username FROM authData";
             try (var stmt = conn.prepareStatement(statement)) {
-                stmt.setString(1, newAuth.authToken());
-                stmt.setString(2, newAuth.username());
-                stmt.executeUpdate(statement);
+                try (var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        result.add(readAuth(rs));
+                    }
+                }
             }
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
-        throw new DataAccessException("Literally no clue how you got here. abor");
-
+        return result.size();
     }
 
-    public void getAuthSize() throws DataAccessException {
-
-    }
 
 
 
@@ -158,7 +167,12 @@ public class MySqlDataAccess implements DataAccess {
         var password = rs.getString("password");
         var email = rs.getString("email");
         return new UserData(userName, password, email); // creates the new user object and returns it.
+    }
 
+    private AuthData readAuth(ResultSet rs) throws SQLException {
+        var authToken = rs.getString("authToken");
+        var username = rs.getString("username");
+        return new AuthData(authToken, username);
     }
 
 }
