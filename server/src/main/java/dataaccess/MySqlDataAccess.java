@@ -58,8 +58,11 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public void createUser(UserData newUser) throws DataAccessException {
-        var statement = "INSERT INTO userData (username, password) VALUES (?, ?)";
-        executeUpdate(statement, newUser);
+        var statement = "INSERT INTO userData (name, password, email) VALUES (?, ?, ?)";
+        var username = newUser.name();
+        var password = newUser.password();
+        var email = newUser.email();
+        executeUpdate(statement, username, password, email);
     }
 
     public UserData getUser(String userName) throws DataAccessException {
@@ -187,7 +190,23 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public int getUserCount() throws DataAccessException {
-    return 1;
+
+        var result = 0;
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM userData";
+            try (var stmt = conn.prepareStatement(statement)) {
+                try (var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        result += 1;
+                    }
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+
     }
 
     public GameData getGame(String gameName) throws DataAccessException {

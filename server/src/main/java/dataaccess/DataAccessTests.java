@@ -177,12 +177,12 @@ public class DataAccessTests { // these have been renamed appropraitely.
 //
 //    // ** END OF GAME TESTS ** ** Start of user Tests **
 //
-//    @Test
-//    void createUserPositive() throws DataAccessException {
-//        USER_SERVICE.createUser("West", "password", "west@gmail.com");
-//        assertEquals(USER_SERVICE.getUserCount(), 1);
-//    }
-//
+    @Test
+    void createUserPositive() throws DataAccessException {
+        USER_SERVICE.createUser("West", "password", "west@gmail.com");
+        assertEquals(USER_SERVICE.getUserCount(), 1);
+    }
+
 //    @Test
 //    void createUserNegative() throws DataAccessException {
 //        USER_SERVICE.createUser("West", "password", "west@gmail.com");
