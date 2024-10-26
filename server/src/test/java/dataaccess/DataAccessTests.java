@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import org.mindrot.jbcrypt.BCrypt;
 
 public class DataAccessTests { // these have been renamed appropraitely.
 
@@ -49,26 +49,26 @@ public class DataAccessTests { // these have been renamed appropraitely.
     void createAuthTokenNegative() throws DataAccessException { // if the username is null we brick
         assertThrows(DataAccessException.class, () -> AUTH_SERVICE.createAuthToken(null));
     }
-//
+    //
     @Test
     void getExistingAuthToken() throws DataAccessException { // finds the auth token
         AUTH_SERVICE.createAuthToken("West");
         var expectedUserName = "West";
         assertEquals((AUTH_SERVICE.getAuthObjectFromUserName(expectedUserName)).username(), expectedUserName);
     }
-//
+    //
     @Test
     void grabNonexistentAuthToken() { // tries to grab a bad auth token
         assertThrows(DataAccessException.class, () -> {
             AUTH_SERVICE.getAuthObject("West");});
     }
-//
+    //
     @Test
     void grabNonExistentUserName() { // trues to grab a user that doesn't exist
         assertThrows(DataAccessException.class, () -> {
             AUTH_SERVICE.getAuthObjectFromUserName("West");});
     }
-//
+    //
     @Test
     void deleteExistingAuthToken() throws DataAccessException { // deletes a real authtoken
         var thisShouldBeRight = 0;
@@ -78,7 +78,7 @@ public class DataAccessTests { // these have been renamed appropraitely.
         assertEquals(0, AUTH_SERVICE.getAuthSize());
 
     }
-//
+    //
     @Test
     void deleteNonExistentAuthToken() throws DataAccessException {
         AuthData fakeAuthentication = new AuthData("111111", "West");
@@ -95,7 +95,7 @@ public class DataAccessTests { // these have been renamed appropraitely.
         assertEquals(0, AUTH_SERVICE.getAuthSize());
     }
 
-//
+    //
     @Test
     void checkDeleteAuthObject() throws DataAccessException {
         AUTH_SERVICE.createAuthToken("West");
@@ -104,7 +104,7 @@ public class DataAccessTests { // these have been renamed appropraitely.
         AUTH_SERVICE.deleteAuthObject(currentAuth);
         assertEquals(1, AUTH_SERVICE.getAuthSize());
     }
-//
+    //
     @Test
     void checkDeleteAuthObjectNotThere() throws DataAccessException {
         var newAuth = new AuthData("asdsfd", "West");
@@ -118,7 +118,7 @@ public class DataAccessTests { // these have been renamed appropraitely.
         AUTH_SERVICE.createAuthToken("West");
         assertEquals(1, AUTH_SERVICE.getAuthSize());
     }
-//
+    //
 //    // ** End of Auth Tests ** ** Start of games tests **
 //
 //
@@ -174,7 +174,7 @@ public class DataAccessTests { // these have been renamed appropraitely.
         assertThrows(DataAccessException.class, () -> {
             GAME_SERVICE.createGame("goodGame");});
     }
-//
+    //
 //    // ** END OF GAME TESTS ** ** Start of user Tests **
 //
     @Test
@@ -192,9 +192,10 @@ public class DataAccessTests { // these have been renamed appropraitely.
 
     @Test
     void getUserPositive() throws DataAccessException {
-        var newUser = new UserData("West", "password", "west@gmail.com");
+
+        var newUser = new UserData("West", "password", "west@gmail.com"); // password gets so no go
         USER_SERVICE.createUser("West", "password", "west@gmail.com");
-        assertEquals(USER_SERVICE.getUser("West"), newUser);
+        assertEquals(USER_SERVICE.getUser("West").email(), newUser.email());
     }
 
     @Test
