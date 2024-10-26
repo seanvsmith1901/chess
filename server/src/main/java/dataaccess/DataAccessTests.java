@@ -183,26 +183,26 @@ public class DataAccessTests { // these have been renamed appropraitely.
         assertEquals(USER_SERVICE.getUserCount(), 1);
     }
 
-//    @Test
-//    void createUserNegative() throws DataAccessException {
-//        USER_SERVICE.createUser("West", "password", "west@gmail.com");
-//        assertThrows(DataAccessException.class, () -> {
-//            USER_SERVICE.createUser("West", "password", "bad@gmail.com");});
-//    }
-//
-//    @Test
-//    void getUserPositive() throws DataAccessException {
-//        var newUser = new UserData("West", "password", "west@gmail.com");
-//        USER_SERVICE.createUser("West", "password", "west@gmail.com");
-//        assertEquals(USER_SERVICE.getUser("West"), newUser);
-//    }
-//
-//    @Test
-//    void getUserNegative() throws DataAccessException {
-//        assertThrows(DataAccessException.class, () -> {
-//            USER_SERVICE.getUser("West");});
-//    }
-//
+    @Test
+    void createUserNegative() throws DataAccessException {
+        USER_SERVICE.createUser("West", "password", "west@gmail.com");
+        assertThrows(DataAccessException.class, () -> {
+            USER_SERVICE.createUser("West", "password", "bad@gmail.com");});
+    }
+
+    @Test
+    void getUserPositive() throws DataAccessException {
+        var newUser = new UserData("West", "password", "west@gmail.com");
+        USER_SERVICE.createUser("West", "password", "west@gmail.com");
+        assertEquals(USER_SERVICE.getUser("West"), newUser);
+    }
+
+    @Test
+    void getUserNegative() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {
+            USER_SERVICE.getUser("West");});
+    }
+
 //    @Test
 //    void replaceUserInGamePositive() throws DataAccessException {
 //        var expectedGame =

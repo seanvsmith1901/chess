@@ -67,7 +67,7 @@ public class MySqlDataAccess implements DataAccess {
 
     public UserData getUser(String userName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT userName, json FROM userData WHERE userName = ?";
+            var statement = "SELECT * FROM userData WHERE name = ?";
             try (var stmt = conn.prepareStatement(statement)) {
                 stmt.setString(1, userName);
                 try (var rs = stmt.executeQuery()) {
