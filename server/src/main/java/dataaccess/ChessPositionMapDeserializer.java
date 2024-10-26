@@ -8,7 +8,8 @@ import java.util.HashMap;
 
 public class ChessPositionMapDeserializer implements JsonDeserializer<HashMap<ChessPosition, ChessPiece>> {
     @Override
-    public HashMap<ChessPosition, ChessPiece> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public HashMap<ChessPosition, ChessPiece> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
         HashMap<ChessPosition, ChessPiece> map = new HashMap<>();
         JsonObject jsonObject = json.getAsJsonObject();
         for (String key : jsonObject.keySet()) {
