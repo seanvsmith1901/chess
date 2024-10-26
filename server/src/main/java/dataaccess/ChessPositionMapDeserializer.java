@@ -2,7 +2,6 @@ package dataaccess; // look I know that this looks weird but I had to do it to g
 
 import com.google.gson.*;
 import chess.*;
-
 import java.lang.reflect.Type;
 import java.util.HashMap;
 

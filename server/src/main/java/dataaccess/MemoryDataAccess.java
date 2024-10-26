@@ -2,8 +2,6 @@ package dataaccess;
 
 import chess.ChessGame;
 import model.*;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import org.mindrot.jbcrypt.BCrypt;

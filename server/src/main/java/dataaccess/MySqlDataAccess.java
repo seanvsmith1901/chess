@@ -2,29 +2,16 @@ package dataaccess;
 
 import chess.*;
 import com.google.gson.Gson;
-
 import com.google.gson.reflect.TypeToken;
-import jdk.jshell.Snippet;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-
-import javax.print.DocFlavor;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import org.mindrot.jbcrypt.BCrypt;
-
-
-
-
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
@@ -35,7 +22,7 @@ public class MySqlDataAccess implements DataAccess {
 
     public MySqlDataAccess() {
 
-        this.gson = new GsonBuilder()
+        this.gson = new GsonBuilder() // gets me my custom gson object.
                 .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapSerializer())
                 .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapDeserializer())
                 .create();
@@ -46,8 +33,8 @@ public class MySqlDataAccess implements DataAccess {
         catch (DataAccessException e) {
             e.printStackTrace();
         }
-
     }
+
 
     public Object deleteEverything() throws DataAccessException {
         var statement = "TRUNCATE userData";
@@ -58,6 +45,7 @@ public class MySqlDataAccess implements DataAccess {
         executeUpdate(statement3);
         return null;
     }
+
 
     public void createUser(UserData newUser) throws DataAccessException {
         var statement = "INSERT INTO userData (name, password, email) VALUES (?, ?, ?)";
@@ -74,6 +62,7 @@ public class MySqlDataAccess implements DataAccess {
         var email = newUser.email();
         executeUpdate(statement, username, hashedPassword, email);
     }
+
 
     public UserData getUser(String userName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
@@ -92,6 +81,7 @@ public class MySqlDataAccess implements DataAccess {
         }
         throw new DataAccessException("unauthorized");
     }
+
 
     public HashSet<UserData> getUsers() throws DataAccessException {
         var result = new HashSet<UserData>();
@@ -112,12 +102,14 @@ public class MySqlDataAccess implements DataAccess {
         throw new DataAccessException("unauthorized");
     }
 
+
     public void addAuth(AuthData newAuth) throws DataAccessException {
         var statement = "INSERT INTO authData (authToken, username) VALUES (?, ?)";
         //var json = new Gson().toJson(newAuth);
         executeUpdate(statement, newAuth.authToken(), newAuth.username());
         //return new Pet(id, pet.name(), pet.type());
     }
+
 
     public int getAuthSize() throws DataAccessException {
         var result = new ArrayList<AuthData>();
@@ -137,6 +129,7 @@ public class MySqlDataAccess implements DataAccess {
         return result.size();
     }
 
+
     public AuthData getAuthObject(String authToken) throws DataAccessException {
         var statement = "SELECT * FROM authData WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection()) {
@@ -154,6 +147,7 @@ public class MySqlDataAccess implements DataAccess {
         }
         throw new DataAccessException("unauthorized");
     }
+
 
     public AuthData getAuthObjectFromUsername(String username) throws DataAccessException {
         //var statement = "SELECT * FROM authData WHERE username = ?";
@@ -175,6 +169,7 @@ public class MySqlDataAccess implements DataAccess {
 
     }
 
+
     public void deleteAuthToken(AuthData currentAuth) throws DataAccessException {
         AuthData checkAuth = getAuthObject(currentAuth.authToken()); // make sure auth exists
 
@@ -182,6 +177,7 @@ public class MySqlDataAccess implements DataAccess {
         var statement = "DELETE FROM authData WHERE authToken = ?"; // actually deletes the authToken.
         executeUpdate(statement, authToken);
     }
+
 
     public HashSet<model.GameData> getGames() throws DataAccessException {
         var result = new HashSet<GameData>();
@@ -200,8 +196,8 @@ public class MySqlDataAccess implements DataAccess {
             e.printStackTrace();
         }
         throw new DataAccessException("not entirely sure what this means");
-
     }
+
 
     public void createGame(String gameName) throws DataAccessException {
         var gamesList = getGames();
@@ -217,8 +213,8 @@ public class MySqlDataAccess implements DataAccess {
         String newGame = gson.toJson(chessGame);
         // just lets the usernames be null and inserts it. please.
         executeUpdate(statement, gameName, null, null, newGame);
-
     }
+
 
     public int getUserCount() throws DataAccessException {
 
@@ -237,11 +233,10 @@ public class MySqlDataAccess implements DataAccess {
             e.printStackTrace();
         }
         return result;
-
     }
 
-    public GameData getGame(String gameName) throws DataAccessException {
 
+    public GameData getGame(String gameName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT id, gameName, whiteUsername, blackUsername, chessGame  FROM gameData WHERE gameName = ?";
             try (var stmt = conn.prepareStatement(statement)) {
@@ -258,6 +253,7 @@ public class MySqlDataAccess implements DataAccess {
         }
         throw new DataAccessException("that game don't exist cheif try again");
     }
+
 
     public GameData getGameFromID(String gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
@@ -276,6 +272,7 @@ public class MySqlDataAccess implements DataAccess {
         }
         throw new DataAccessException("Game does not exist");
     }
+
 
     public void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException {
         var currentGameObject = getGame(currentGame.gameName()); // make sure the game exists and is in the data base
@@ -299,13 +296,7 @@ public class MySqlDataAccess implements DataAccess {
         }
         var statement = "UPDATE gameData SET whiteUsername = ?, blackUsername = ? WHERE id = ?";
         executeUpdate(statement, whiteUsername, blackUsername, currentGame.gameID());
-
-
     }
-
-
-
-
 
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
@@ -330,13 +321,13 @@ public class MySqlDataAccess implements DataAccess {
                 if (rs.next()) {
                     return rs.getInt(1);
                 }
-
                 return 0;
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error: 500, Unable to configure database: " + e.getMessage());
         }
     }
+
 
     private final String[] createStatements = {
             """
@@ -374,6 +365,7 @@ public class MySqlDataAccess implements DataAccess {
     """
     };
 
+
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
@@ -387,6 +379,7 @@ public class MySqlDataAccess implements DataAccess {
         }
     }
 
+
     private UserData readUser(ResultSet rs) throws SQLException {
         var userName = rs.getString("name");
         var password = rs.getString("password");
@@ -394,11 +387,13 @@ public class MySqlDataAccess implements DataAccess {
         return new UserData(userName, password, email); // creates the new user object and returns it.
     }
 
+
     private AuthData readAuth(ResultSet rs) throws SQLException {
         var authToken = rs.getString("authToken");
         var username = rs.getString("username");
         return new AuthData(authToken, username);
     }
+
 
     private GameData readGame(ResultSet rs) throws SQLException {
         int gameID = rs.getInt("id");
@@ -406,15 +401,7 @@ public class MySqlDataAccess implements DataAccess {
         var blackUsername = rs.getString("blackUserName");
         var gameName = rs.getString("gameName");
         String json = rs.getString("chessGame");
-
-
-
         var chessGame = gson.fromJson(json, ChessGame.class);
         return new GameData(gameID, whiteUserName, blackUsername, gameName, chessGame);
     }
-
-
-
-
-
 }
