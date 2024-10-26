@@ -21,14 +21,14 @@ public class UserService {
         return dataAccess.getUser(username);
     }
 
-//    // replaces the null with a username
-//    public void replaceUserInGame(GameData currGame, String username, String playerColor) throws DataAccessException {
-//        dataAccess.addUser(currGame, username, playerColor);
-//    }
-//
-//    public int getUserCount() throws DataAccessException { // just used for testing
-//        return dataAccess.getUserCount();
-//    }
+    // replaces the null with a username
+    public void replaceUserInGame(GameData currGame, String username, String playerColor) throws DataAccessException {
+        dataAccess.addUser(currGame, username, playerColor);
+    }
+
+    public int getUserCount() throws DataAccessException { // just used for testing
+        return dataAccess.getUserCount();
+    }
 
 
 

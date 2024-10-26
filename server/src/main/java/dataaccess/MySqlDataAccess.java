@@ -170,21 +170,68 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public void createGame(String gameName) throws DataAccessException {
-        var statement = "INSERT INTO gameData (gameName, whiteUsername, blackUsername, chessGame) VALUES (?, ?, ?, ?)";
+        var gamesList = getGames();
+        for (GameData gameData : gamesList) {
+            if (gameData.gameName().equals(gameName)) {
+                throw new DataAccessException("Game name already exists");
+            }
+        }
 
+        var statement = "INSERT INTO gameData (gameName, whiteUsername, blackUsername, chessGame) VALUES (?, ?, ?, ?)";
         // creates new json chess game
         ChessGame chessGame = new ChessGame();
-
-
-
-
         String newGame = gson.toJson(chessGame);
-
-
         // just lets the usernames be null and inserts it. please.
         executeUpdate(statement, gameName, null, null, newGame);
 
     }
+
+    public int getUserCount() throws DataAccessException {
+    return 1;
+    }
+
+    public GameData getGame(String gameName) throws DataAccessException {
+
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, gameName, whiteUsername, blackUsername, chessGame  FROM gameData WHERE gameName = ?";
+            try (var stmt = conn.prepareStatement(statement)) {
+                stmt.setString(1, gameName);
+                try (var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return readGame(rs);
+                    }
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        throw new DataAccessException("that game doesn't exist");
+    }
+
+    public GameData getGameFromID(String gameID) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, gameName, whiteUsername, blackUsername, chessGame  FROM gameData WHERE id = ?";
+            try (var stmt = conn.prepareStatement(statement)) {
+                stmt.setString(1, gameID);
+                try (var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return readGame(rs);
+                    }
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        throw new DataAccessException("Literally no clue how you got here.");
+    }
+
+    public void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException {
+        ;
+    }
+
+
 
 
 

@@ -127,53 +127,53 @@ public class DataAccessTests { // these have been renamed appropraitely.
         GAME_SERVICE.createGame("bestGame");
         assertEquals((GAME_SERVICE.getGames()).size(), 1);
     }
-//
-//    @Test
-//    void getGameNamePositive() throws DataAccessException {
-//        AUTH_SERVICE.deleteEverything();
-//        var newGame =
-//                new GameData(1, null, null, "goodGame", new ChessGame());
-//        GAME_SERVICE.createGame("goodGame"); // had to overwrite the chessgames equal operator for this one lol
-//        assertEquals(GAME_SERVICE.getGame("goodGame"), newGame);
-//    }
-//
-//    @Test
-//    void getGameNameNegative() throws DataAccessException {
-//        AUTH_SERVICE.deleteEverything();
-//        assertThrows(DataAccessException.class, () -> {
-//            GAME_SERVICE.getGame("deez");});
-//    }
-//
-//    @Test
-//    void getGameFromIDPositive() throws DataAccessException {
-//        var newGame =
-//                new GameData(1, null, null, "bestGame", new ChessGame());
-//        GAME_SERVICE.createGame("bestGame");
-//        assertEquals(GAME_SERVICE.getGameFromID("1"), newGame);
-//    }
-//
-//    @Test
-//    void getGameFromIDNegative() throws DataAccessException {
-//        assertThrows(DataAccessException.class, () -> {
-//            GAME_SERVICE.getGameFromID("bestGame");});
-//    }
-//
-//    @Test
-//    void createGamePositive() throws DataAccessException {
-//        GAME_SERVICE.createGame("bestGame");
-//        assertEquals((GAME_SERVICE.getGames()).size(), 1);
-//    }
-//
-//    @Test
-//    void createGameNegative() throws DataAccessException {
-//        var newGame =
-//                new GameData(1, null, null, "goodGame", new ChessGame());
-//        GAME_SERVICE.createGame("goodGame");
-//        var anotherGame =
-//                new GameData(2, null, null, "goodGame", new ChessGame());
-//        assertThrows(DataAccessException.class, () -> {
-//            GAME_SERVICE.createGame("goodGame");});
-//    }
+
+    @Test
+    void getGameNamePositive() throws DataAccessException {
+        AUTH_SERVICE.deleteEverything();
+        var newGame =
+                new GameData(1, null, null, "goodGame", new ChessGame());
+        GAME_SERVICE.createGame("goodGame"); // had to overwrite the chessgames equal operator for this one lol
+        assertEquals(GAME_SERVICE.getGame("goodGame"), newGame);
+    }
+
+    @Test
+    void getGameNameNegative() throws DataAccessException {
+        AUTH_SERVICE.deleteEverything();
+        assertThrows(DataAccessException.class, () -> {
+            GAME_SERVICE.getGame("deez");});
+    }
+
+    @Test
+    void getGameFromIDPositive() throws DataAccessException {
+        var newGame =
+                new GameData(1, null, null, "bestGame", new ChessGame());
+        GAME_SERVICE.createGame("bestGame");
+        assertEquals(GAME_SERVICE.getGameFromID("1"), newGame);
+    }
+
+    @Test
+    void getGameFromIDNegative() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> {
+            GAME_SERVICE.getGameFromID("bestGame");});
+    }
+
+    @Test
+    void createGamePositive() throws DataAccessException {
+        GAME_SERVICE.createGame("bestGame");
+        assertEquals((GAME_SERVICE.getGames()).size(), 1);
+    }
+
+    @Test
+    void createGameNegative() throws DataAccessException {
+        var newGame =
+                new GameData(1, null, null, "goodGame", new ChessGame());
+        GAME_SERVICE.createGame("goodGame");
+        var anotherGame =
+                new GameData(2, null, null, "goodGame", new ChessGame());
+        assertThrows(DataAccessException.class, () -> {
+            GAME_SERVICE.createGame("goodGame");});
+    }
 //
 //    // ** END OF GAME TESTS ** ** Start of user Tests **
 //

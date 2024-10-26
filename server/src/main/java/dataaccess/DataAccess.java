@@ -20,12 +20,12 @@ public interface DataAccess {
     HashSet<GameData> getGames() throws DataAccessException;
 //
     void createGame(String gameName) throws DataAccessException;
+
+    GameData getGame(String gameName) throws DataAccessException;
+
+    GameData getGameFromID(String gameID) throws DataAccessException;
 //
-//    GameData getGame(String gameName) throws DataAccessException;
-//
-//    GameData getGameFromID(String gameID) throws DataAccessException;
-//
-//    void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException;
+    void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException;
 //
     int getAuthSize() throws DataAccessException;
 //
@@ -33,7 +33,7 @@ public interface DataAccess {
 //
     AuthData getAuthObjectFromUsername(String username) throws DataAccessException;
 //
-//    int getUserCount() throws DataAccessException;
+    int getUserCount() throws DataAccessException;
 //
 //
 

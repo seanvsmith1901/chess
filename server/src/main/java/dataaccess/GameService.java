@@ -20,12 +20,12 @@ public class GameService {
     public void createGame(String gameName) throws DataAccessException { // creates a new game
         dataAccess.createGame(gameName);
     }
-//
-//    public GameData getGame(String gameName) throws DataAccessException { // gets a game from its game name
-//        return dataAccess.getGame(gameName);
-//    }
-//
-//    public GameData getGameFromID(String gameID) throws DataAccessException { // gets the game from ID
-//        return dataAccess.getGameFromID(gameID);
-//    }
+
+    public GameData getGame(String gameName) throws DataAccessException { // gets a game from its game name
+        return dataAccess.getGame(gameName);
+    }
+
+    public GameData getGameFromID(String gameID) throws DataAccessException { // gets the game from ID
+        return dataAccess.getGameFromID(gameID);
+    }
 }
