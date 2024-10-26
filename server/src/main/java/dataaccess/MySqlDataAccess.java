@@ -1,8 +1,6 @@
 package dataaccess;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
+import chess.*;
 import com.google.gson.Gson;
 
 import jdk.jshell.Snippet;
@@ -10,6 +8,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 
+import javax.print.DocFlavor;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -158,10 +157,15 @@ public class MySqlDataAccess implements DataAccess {
     public void createGame(String gameName) throws DataAccessException {
         var statement = "INSERT INTO gameData (gameName, chessGame) VALUES (?, ?)";
 
-        // Create a new ChessGame object and convert it to JSON
-        var chessGame = new Gson().toJson(new ChessGame());
+        // creates new json chess game
+        ChessGame chessGame = new ChessGame();
 
-        // Use null for usernames instead of the string "null"
+        String newGame = new Gson().toJson(chessGame); // maybe rewrite a custom interpreter (so I can put an object within an object)
+
+        System.out.println(chessGame);
+        ChessGame chessGame2 = new Gson().fromJson(newGame, ChessGame.class);
+
+        // just lets the usernames be null and inserts it. please.
         executeUpdate(statement, gameName, chessGame);
 
     }
@@ -206,14 +210,13 @@ public class MySqlDataAccess implements DataAccess {
     CREATE TABLE IF NOT EXISTS gameData (
       id INT NOT NULL AUTO_INCREMENT,
       gameName VARCHAR(256) NOT NULL,
-      whiteUsername VARCHAR(256) NOT NULL,
-      blackUsername VARCHAR(256) NOT NULL,
-      chessGame TEXT NOT NULL,
+      whiteUsername VARCHAR(256),
+      blackUsername VARCHAR(256),
+      chessGame JSON NOT NULL,
       PRIMARY KEY (id),
       INDEX idx_gameName (gameName),
       INDEX idx_whiteUsername (whiteUsername),
-      INDEX idx_blackUsername (blackUsername),
-      INDEX idx_chessGame (chessGame)
+      INDEX idx_blackUsername (blackUsername)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
     """,
 
@@ -260,7 +263,7 @@ public class MySqlDataAccess implements DataAccess {
         var whiteUserName = rs.getString("whiteUserName");
         var blackUsername = rs.getString("blackUserName");
         var gameName = rs.getString("gameName");
-        var json = rs.getString("chessGame");
+        String json = rs.getString("chessGame");
         var chessGame = new Gson().fromJson(json, ChessGame.class);
         return new GameData(gameID, whiteUserName, blackUsername, gameName, chessGame);
     }

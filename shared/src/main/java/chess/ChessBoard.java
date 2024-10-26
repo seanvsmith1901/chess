@@ -8,8 +8,8 @@ import java.util.*;
 public class ChessBoard {
     // regardless its alwasys going to be an 8 by 8 array, so we don't need a constructor cause its always the same
     private ChessPiece[][] squares = new ChessPiece[8][8];
-    HashMap<ChessPosition, ChessPiece> whitePieces = new HashMap<>();
-    HashMap<ChessPosition, ChessPiece> blackPieces = new HashMap<>();
+    public HashMap<ChessPosition, ChessPiece> whitePieces = new HashMap<>();
+    public HashMap<ChessPosition, ChessPiece> blackPieces = new HashMap<>();
 
     public ChessBoard() {
 
