@@ -20,6 +20,8 @@ import java.util.HashSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 
 
 
@@ -68,8 +70,9 @@ public class MySqlDataAccess implements DataAccess {
 
         var username = newUser.name();
         var password = newUser.password();
+        var hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         var email = newUser.email();
-        executeUpdate(statement, username, password, email);
+        executeUpdate(statement, username, hashedPassword, email);
     }
 
     public UserData getUser(String userName) throws DataAccessException {

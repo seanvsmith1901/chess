@@ -8,6 +8,7 @@ import model.UserData;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
+import org.mindrot.jbcrypt.BCrypt;
 
 
 
@@ -38,7 +39,10 @@ public class Services {
     public AuthData createSession(String username, String password) throws DataAccessException {
         UserData currentUser = userService.getUser(username);
 
-        if (Objects.equals(password, currentUser.password())) { // checks that the user checks out
+        var hashedPassword = currentUser.password();
+
+
+        if (BCrypt.checkpw(password, hashedPassword)) { // checks the hashed passowrd
             return authService.createAuthToken(username);
         }
         else {

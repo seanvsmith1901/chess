@@ -6,7 +6,7 @@ import model.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
+import org.mindrot.jbcrypt.BCrypt;
 
 public class MemoryDataAccess implements DataAccess {
 
@@ -33,7 +33,10 @@ public class MemoryDataAccess implements DataAccess {
         if(userTokens.containsKey(userName)) {
             throw new DataAccessException("already taken");
         }
-        userTokens.put(userName, currentUser);
+        String hashedPassword = BCrypt.hashpw(currentUser.password(), BCrypt.gensalt());
+
+        UserData newUser = new UserData(userName, hashedPassword, currentUser.email());
+        userTokens.put(userName, newUser);
     }
 
     public AuthData getAuthObject(String authToken) throws DataAccessException {
