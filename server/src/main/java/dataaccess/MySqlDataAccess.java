@@ -1,16 +1,21 @@
 package dataaccess;
 
+import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPiece;
 import com.google.gson.Gson;
 
+import jdk.jshell.Snippet;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.sql.*;
 import java.util.HashSet;
+
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -151,13 +156,15 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public void createGame(String gameName) throws DataAccessException {
-        var statement = "INSERT INTO gameData (whiteUserName, blackUserName, gameName, chessGame) VALUES (?, ?, ?, ?)";
-        var json = new Gson().toJson(new ChessGame());
-        //var json = new ChessGame().toString();
+        var statement = "INSERT INTO gameData (gameName, chessGame) VALUES (?, ?)";
 
-        executeUpdate(statement, "null", "null", gameName, json);
+        // Create a new ChessGame object and convert it to JSON
+        var chessGame = new Gson().toJson(new ChessGame());
+
+        // Use null for usernames instead of the string "null"
+        executeUpdate(statement, gameName, chessGame);
+
     }
-
 
 
 
@@ -198,14 +205,15 @@ public class MySqlDataAccess implements DataAccess {
             """
     CREATE TABLE IF NOT EXISTS gameData (
       id INT NOT NULL AUTO_INCREMENT,
-      whiteUserName VARCHAR(256) DEFAULT NULL,
-      blackUserName VARCHAR(256) DEFAULT NULL,
       gameName VARCHAR(256) NOT NULL,
+      whiteUsername VARCHAR(256) NOT NULL,
+      blackUsername VARCHAR(256) NOT NULL,
       chessGame TEXT NOT NULL,
       PRIMARY KEY (id),
       INDEX idx_gameName (gameName),
-      INDEX idx_whiteUserName (whiteUserName),
-      INDEX idx_blackUserName (blackUserName)
+      INDEX idx_whiteUsername (whiteUsername),
+      INDEX idx_blackUsername (blackUsername),
+      INDEX idx_chessGame (chessGame)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
     """,
 
