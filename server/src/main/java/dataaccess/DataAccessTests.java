@@ -203,35 +203,35 @@ public class DataAccessTests { // these have been renamed appropraitely.
             USER_SERVICE.getUser("West");});
     }
 
-//    @Test
-//    void replaceUserInGamePositive() throws DataAccessException {
-//        var expectedGame =
-//                new GameData(1, "West", null, "BestGame", new ChessGame());
-//        GAME_SERVICE.createGame("BestGame");
-//        var newGame = GAME_SERVICE.getGame("BestGame");
-//        USER_SERVICE.createUser("West", "password", "west@gmail.com");
-//        var currentUser = USER_SERVICE.getUser("West");
-//        USER_SERVICE.replaceUserInGame(newGame, currentUser.name(), "WHITE");
-//        assertEquals(GAME_SERVICE.getGame("BestGame"), expectedGame);
-//    }
-//
-//    @Test
-//    void replaceUserInGameNegativeColorTaken() throws DataAccessException {
-//        GAME_SERVICE.createGame("BestGame");
-//        var newGame = GAME_SERVICE.getGame("BestGame");
-//        USER_SERVICE.createUser("West", "password", "west@gmail.com");
-//        var currentUser = USER_SERVICE.getUser("West");
-//        USER_SERVICE.replaceUserInGame(newGame, currentUser.name(), "WHITE");
-//        var currName = currentUser.name();
-//        assertThrows(DataAccessException.class, () -> {
-//            USER_SERVICE.replaceUserInGame(GAME_SERVICE.getGame("BestGame"), currName, "WHITE");});
-//    }
-//
-//    @Test
-//    void getUserCountPositive() throws DataAccessException {
-//        USER_SERVICE.createUser("West", "password", "west@gmail.com");
-//        assertEquals(USER_SERVICE.getUserCount(), 1);
-//    }
+    @Test
+    void replaceUserInGamePositive() throws DataAccessException {
+        var expectedGame =
+                new GameData(1, "West", null, "BestGame", new ChessGame());
+        GAME_SERVICE.createGame("BestGame");
+        var newGame = GAME_SERVICE.getGame("BestGame");
+        USER_SERVICE.createUser("West", "password", "west@gmail.com");
+        var currentUser = USER_SERVICE.getUser("West");
+        USER_SERVICE.replaceUserInGame(newGame, currentUser.name(), "WHITE");
+        assertEquals(GAME_SERVICE.getGame("BestGame"), expectedGame);
+    }
+
+    @Test
+    void replaceUserInGameNegativeColorTaken() throws DataAccessException {
+        GAME_SERVICE.createGame("BestGame");
+        var newGame = GAME_SERVICE.getGame("BestGame");
+        USER_SERVICE.createUser("West", "password", "west@gmail.com");
+        var currentUser = USER_SERVICE.getUser("West");
+        USER_SERVICE.replaceUserInGame(newGame, currentUser.name(), "WHITE");
+        var currName = currentUser.name();
+        assertThrows(DataAccessException.class, () -> {
+            USER_SERVICE.replaceUserInGame(GAME_SERVICE.getGame("BestGame"), currName, "WHITE");});
+    }
+
+    @Test
+    void getUserCountPositive() throws DataAccessException {
+        USER_SERVICE.createUser("West", "password", "west@gmail.com");
+        assertEquals(USER_SERVICE.getUserCount(), 1);
+    }
 
     // ** end of user tests **
 

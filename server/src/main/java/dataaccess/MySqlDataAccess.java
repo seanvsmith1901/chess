@@ -59,6 +59,13 @@ public class MySqlDataAccess implements DataAccess {
 
     public void createUser(UserData newUser) throws DataAccessException {
         var statement = "INSERT INTO userData (name, password, email) VALUES (?, ?, ?)";
+        HashSet<UserData> currentUsers = getUsers();
+        for (UserData user : currentUsers) {
+            if (user.name().equals(newUser.name())) {
+                throw new DataAccessException("already taken");
+            }
+        }
+
         var username = newUser.name();
         var password = newUser.password();
         var email = newUser.email();
@@ -80,7 +87,26 @@ public class MySqlDataAccess implements DataAccess {
         catch (SQLException e) {
             e.printStackTrace();
         }
-        throw new DataAccessException("Literally no clue how you got here. abor");
+        throw new DataAccessException("unauthorized");
+    }
+
+    public HashSet<UserData> getUsers() throws DataAccessException {
+        var result = new HashSet<UserData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM userData";
+            try (var stmt = conn.prepareStatement(statement)) {
+                try (var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        result.add(readUser(rs));
+                    }
+                }
+            }
+            return result;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        throw new DataAccessException("unauthorized");
     }
 
     public void addAuth(AuthData newAuth) throws DataAccessException {
@@ -123,7 +149,7 @@ public class MySqlDataAccess implements DataAccess {
         catch (SQLException e) {
             e.printStackTrace();
         }
-        throw new DataAccessException("Literally no clue how you got here.");
+        throw new DataAccessException("unauthorized");
     }
 
     public AuthData getAuthObjectFromUsername(String username) throws DataAccessException {
@@ -142,7 +168,7 @@ public class MySqlDataAccess implements DataAccess {
         catch (SQLException e) {
             e.printStackTrace();
         }
-        throw new DataAccessException("Literally no clue how you got here.");
+        throw new DataAccessException("unauthorized.");
 
     }
 
@@ -157,19 +183,21 @@ public class MySqlDataAccess implements DataAccess {
     public HashSet<model.GameData> getGames() throws DataAccessException {
         var result = new HashSet<GameData>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, whiteUserName, blackUserName, gameName, chessGame FROM gameData";
+            var statement = "SELECT * FROM gameData";
             try (var stmt = conn.prepareStatement(statement)) {
                 try (var rs = stmt.executeQuery()) {
-                    if (rs.next()) {
+                    while (rs.next()) {
                         result.add(readGame(rs));
                     }
                 }
             }
+            return result;
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
-        return result;
+        throw new DataAccessException("not entirely sure what this means");
+
     }
 
     public void createGame(String gameName) throws DataAccessException {
@@ -225,7 +253,7 @@ public class MySqlDataAccess implements DataAccess {
         catch (SQLException e) {
             e.printStackTrace();
         }
-        throw new DataAccessException("that game doesn't exist");
+        throw new DataAccessException("that game don't exist cheif try again");
     }
 
     public GameData getGameFromID(String gameID) throws DataAccessException {
@@ -243,11 +271,33 @@ public class MySqlDataAccess implements DataAccess {
         catch (SQLException e) {
             e.printStackTrace();
         }
-        throw new DataAccessException("Literally no clue how you got here.");
+        throw new DataAccessException("Game does not exist");
     }
 
     public void addUser(GameData currentGame, String username, String playerColor) throws DataAccessException {
-        ;
+        var currentGameObject = getGame(currentGame.gameName()); // make sure the game exists and is in the data base
+        var blackUsername = currentGameObject.blackUsername();
+        var whiteUsername = currentGameObject.whiteUsername();
+        if (playerColor.equals("WHITE")) {
+            if (currentGame.whiteUsername() == null) {
+                whiteUsername = username;
+            }
+            else {
+                throw new DataAccessException("that color is taken");
+            }
+        }
+        else {
+            if (currentGame.blackUsername() == null) {
+                blackUsername = username;
+            }
+            else {
+                throw new DataAccessException("that color is taken");
+            }
+        }
+        var statement = "UPDATE gameData SET whiteUsername = ?, blackUsername = ? WHERE id = ?";
+        executeUpdate(statement, whiteUsername, blackUsername, currentGame.gameID());
+
+
     }
 
 
