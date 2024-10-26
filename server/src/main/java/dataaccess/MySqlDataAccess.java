@@ -3,6 +3,7 @@ package dataaccess;
 import chess.*;
 import com.google.gson.Gson;
 
+import com.google.gson.reflect.TypeToken;
 import jdk.jshell.Snippet;
 import model.AuthData;
 import model.GameData;
@@ -13,7 +14,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.sql.*;
+import java.util.HashMap;
 import java.util.HashSet;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+
 
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -22,7 +29,15 @@ import static java.sql.Types.NULL;
 
 public class MySqlDataAccess implements DataAccess {
 
+    private final Gson gson; // so our chessGame object is really weird, so I built a custom serializer for it.
+
     public MySqlDataAccess() {
+
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapSerializer())
+                .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapDeserializer())
+                .create();
+
         try {
             configureDatabase();
         }
@@ -155,18 +170,19 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public void createGame(String gameName) throws DataAccessException {
-        var statement = "INSERT INTO gameData (gameName, chessGame) VALUES (?, ?)";
+        var statement = "INSERT INTO gameData (gameName, whiteUsername, blackUsername, chessGame) VALUES (?, ?, ?, ?)";
 
         // creates new json chess game
         ChessGame chessGame = new ChessGame();
 
-        String newGame = new Gson().toJson(chessGame); // maybe rewrite a custom interpreter (so I can put an object within an object)
 
-        System.out.println(chessGame);
-        ChessGame chessGame2 = new Gson().fromJson(newGame, ChessGame.class);
+
+
+        String newGame = gson.toJson(chessGame);
+
 
         // just lets the usernames be null and inserts it. please.
-        executeUpdate(statement, gameName, chessGame);
+        executeUpdate(statement, gameName, null, null, newGame);
 
     }
 
@@ -264,8 +280,15 @@ public class MySqlDataAccess implements DataAccess {
         var blackUsername = rs.getString("blackUserName");
         var gameName = rs.getString("gameName");
         String json = rs.getString("chessGame");
-        var chessGame = new Gson().fromJson(json, ChessGame.class);
+
+
+
+        var chessGame = gson.fromJson(json, ChessGame.class);
         return new GameData(gameID, whiteUserName, blackUsername, gameName, chessGame);
     }
+
+
+
+
 
 }
