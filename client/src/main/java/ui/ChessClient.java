@@ -2,17 +2,19 @@ package ui;
 
 import java.util.Arrays;
 
+import ServerFacade.*;
 import com.google.gson.Gson;
 import model.*;
 import exception.ResponseException;
 
+
 public class ChessClient {
     private String visitorName = null;
-    private final ServerFacade server;
-    private final String serverUrl;
+    private ServerFacade server;
+    private String serverUrl;
     private State state = State.SIGNEDOUT;
 
-    public PetClient(String serverUrl) {
+    public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
     }
@@ -24,11 +26,11 @@ public class ChessClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "signin" -> signIn(params);
-                case "rescue" -> rescuePet(params);
-                case "list" -> listPets();
-                case "signout" -> signOut();
-                case "adopt" -> adoptPet(params);
-                case "adoptall" -> adoptAllPets();
+                //case "rescue" -> rescuePet(params);
+                //case "list" -> listPets();
+                //case "signout" -> signOut();
+                //case "adopt" -> adoptPet(params);
+                //case "adoptall" -> adoptAllPets();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -41,8 +43,6 @@ public class ChessClient {
         if (params.length >= 1) {
             state = State.SIGNEDIN;
             visitorName = String.join("-", params);
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
-            ws.enterPetShop(visitorName);
             return String.format("You signed in as %s.", visitorName);
         }
         throw new ResponseException(400, "Expected: <yourname>");
@@ -102,7 +102,7 @@ public class ChessClient {
 //        assertSignedIn();
 //        ws.leavePetShop(visitorName);
 //        ws = null;
-//        state = State.SIGNEDOUT;
+//        state = ServerFacade.State.SIGNEDOUT;
 //        return String.format("%s left the shop", visitorName);
 //    }
 //
