@@ -1,7 +1,7 @@
 
 import com.google.gson.Gson;
 import model.*;
-
+import exception.*;
 import java.io.*;
 import java.net.*;
 
@@ -49,7 +49,6 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
             //throw new ResponseException(500, ex.getMessage());
         }
     }
