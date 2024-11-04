@@ -7,7 +7,8 @@ public class Main {
             serverURL = args[0];
         }
 
-        new Repl(serverURL).run
-        System.out.println("♕ Welcome to 240 Chess. Type help to get started. ♕" );
+        var ourRepl = new Repl(serverURL);
+        ourRepl.run();
+
     }
 }
