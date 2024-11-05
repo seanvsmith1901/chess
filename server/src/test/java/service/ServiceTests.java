@@ -47,7 +47,7 @@ public class ServiceTests {
     void registerUserPositive() throws DataAccessException {
         SERVICES.registerUser("West", "12345", "West@gmail.com");
         var expectedUser = new UserData("West", "12345", "West@gmail.com");
-        assertEquals(expectedUser, SERVICES.getUser("West"));
+        assertEquals(expectedUser.email(), SERVICES.getUser("West").email()); // just check they emails cause passwords hashed
     }
 
     @Test

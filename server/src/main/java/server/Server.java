@@ -113,7 +113,11 @@ public class Server {
 
    private Object logOutUser(Request req, Response res) {
         try {
-            services.logOutUser(req.headers("authorization")); // make sure we can log them out
+            String currentAuth = new Gson().fromJson(req.body(), String.class); // so my client doesn't know how to do this so I have it set up both ways.
+            currentAuth = req.headers("authorization");
+
+            services.logOutUser(currentAuth);
+            //services.logOutUser(req.headers("authorization")); // this was the old way IDK if this effects test.
             res.status(200);
             return new Gson().toJson(null); // just returns a null object
         }

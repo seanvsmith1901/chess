@@ -1,6 +1,7 @@
 package ui;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import ServerFacade.*;
 import com.google.gson.Gson;
@@ -14,6 +15,7 @@ public class ChessClient {
     private String serverUrl;
     private State state = State.SIGNEDOUT;
     private String authToken = "";
+    private String username = "";
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -30,13 +32,14 @@ public class ChessClient {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
+                // pre login logic
                 case "register" -> register(params);
-                case "signin" -> signIn(params);
-                //case "rescue" -> rescuePet(params);
-                //case "list" -> listPets();
-                //case "signout" -> signOut();
-                //case "adopt" -> adoptPet(params);
-                //case "adoptall" -> adoptAllPets();
+                case "login" -> login(params);
+
+                // post login logic
+                case "logout" -> logOut(params);
+                case "create" -> createGame(params);
+
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -45,25 +48,52 @@ public class ChessClient {
         }
     }
 
-    public String signIn(String... params) throws ResponseException {
-        if (params.length >= 1) {
-            state = State.SIGNEDIN;
-            visitorName = String.join("-", params);
-            return String.format("You signed in as %s.", visitorName);
-        }
-        throw new ResponseException(400, "Expected: <yourname>");
-    }
-
     public String register(String... params) throws ResponseException {
         if (params.length == 3) {
-            state = State.SIGNEDIN;
             visitorName = params[0];
             var newUser = new RegisterData(params[0], params[1], params[2]);
             var newAuthData = server.register(newUser); // where should I store that auth token client side? just as a global variable?
+            authToken = newAuthData.authToken();
+            state = State.SIGNEDIN;
             return String.format("You signed up as %s.", visitorName);
         }
         throw new ResponseException(400, "USAGE: <USERNAME> <PASSWORD> <EMAIL>");
     }
+
+    public String login(String... params) throws ResponseException {
+        if (params.length == 2) {
+            visitorName = params[0];
+            var newUser = new LoginData(params[0], params[1]);
+            var newAuthData = server.login(newUser, authToken);
+            authToken = newAuthData.authToken();
+            username = newAuthData.username();
+            state = State.SIGNEDIN;
+            return String.format("You logged in as %s", username);
+        }
+        throw new ResponseException(400, "USAGE: <USERNAME> <PASSWORD> ");
+    }
+
+    public String logOut(String... params) throws ResponseException {
+        if (params.length == 0 && state == State.SIGNEDIN) {
+            state = State.SIGNEDOUT;
+            var newAuthData = server.logOut(authToken);
+            return String.format("You signed out as %s.", newAuthData);
+        }
+        throw new ResponseException(400, "you aint signed in boy");
+    }
+
+    public String createGame(String... params) throws ResponseException {
+        if (params.length == 1 && state == State.SIGNEDIN) {
+            var gameName = params[0];
+            GameCreationData newGame = new GameCreationData(gameName);
+            var thisGame = server.createGame(newGame, authToken);
+            return String.format("You have joined game %s", thisGame);
+        }
+        throw new ResponseException(400, "mnake sure you have inlcuded a game name");
+    }
+
+
+
 
 //    public String rescuePet(String... params) throws ResponseException {
 //        assertSignedIn();

@@ -1,11 +1,13 @@
 package ServerFacade;
 
 import com.google.gson.Gson;
+import com.sun.net.httpserver.BasicAuthenticator;
 import exception.*;
 import model.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.Map;
 
 public class ServerFacade {
 
@@ -18,13 +20,45 @@ public class ServerFacade {
     public AuthData register(RegisterData newUser) throws ResponseException {
         var path = "/user";
         try {
-            return (this.makeRequest("POST", path, newUser, AuthData.class));
+            return (this.makeRequest("POST", path, newUser, AuthData.class, null));
         }
         catch (ResponseException e) {
             System.out.println(e.getMessage());
         }
         throw new ResponseException(300, "What the fetch");
+    }
 
+    public AuthData login(LoginData newUser, String authToken) throws ResponseException {
+        var path = "/session";
+        try {
+            return (this.makeRequest("POST", path, newUser, AuthData.class, authToken));
+        }
+        catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+        throw new ResponseException(300, "What the fetch");
+    }
+
+    public Object logOut(String authToken) throws ResponseException {
+        var path = "/session";
+        try {
+            return (this.makeRequest("DELETE", path, authToken, String.class, authToken));
+        }
+        catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+        throw new ResponseException(300, "What the fetch");
+    }
+
+    public Object createGame(GameCreationData newGame, String authToken) throws ResponseException {
+        var path = "/game";
+        try {
+            return this.makeRequest("POST", path, newGame, GameCreated.class, authToken);
+        }
+        catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+        throw new ResponseException(300, "What the fetch");
     }
 
 
@@ -51,12 +85,16 @@ public class ServerFacade {
 //        return response.pet();
 //    }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
+
+            if(authToken != null) { // add in the authToken as a header. 
+                http.setRequestProperty("authorization", authToken);
+            }
 
             writeBody(request, http);
             http.connect();
