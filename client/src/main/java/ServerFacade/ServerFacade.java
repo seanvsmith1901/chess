@@ -2,6 +2,8 @@ package ServerFacade;
 
 import com.google.gson.Gson;
 import exception.*;
+import model.*;
+
 import java.io.*;
 import java.net.*;
 
@@ -11,6 +13,18 @@ public class ServerFacade {
 
     public ServerFacade(String url) {
         serverUrl = url;
+    }
+
+    public AuthData register(RegisterData newUser) throws ResponseException {
+        var path = "/user";
+        try {
+            return (this.makeRequest("POST", path, newUser, AuthData.class));
+        }
+        catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+        throw new ResponseException(300, "What the fetch");
+
     }
 
 

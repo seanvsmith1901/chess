@@ -13,10 +13,15 @@ public class ChessClient {
     private ServerFacade server;
     private String serverUrl;
     private State state = State.SIGNEDOUT;
+    private String authToken = "";
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+    }
+
+    public State getState() {
+        return state;
     }
 
     public String eval(String input) {
@@ -25,6 +30,7 @@ public class ChessClient {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
+                case "register" -> register(params);
                 case "signin" -> signIn(params);
                 //case "rescue" -> rescuePet(params);
                 //case "list" -> listPets();
@@ -46,6 +52,17 @@ public class ChessClient {
             return String.format("You signed in as %s.", visitorName);
         }
         throw new ResponseException(400, "Expected: <yourname>");
+    }
+
+    public String register(String... params) throws ResponseException {
+        if (params.length == 3) {
+            state = State.SIGNEDIN;
+            visitorName = params[0];
+            var newUser = new RegisterData(params[0], params[1], params[2]);
+            var newAuthData = server.register(newUser); // where should I store that auth token client side? just as a global variable?
+            return String.format("You signed up as %s.", visitorName);
+        }
+        throw new ResponseException(400, "USAGE: <USERNAME> <PASSWORD> <EMAIL>");
     }
 
 //    public String rescuePet(String... params) throws ResponseException {

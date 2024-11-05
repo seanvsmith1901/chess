@@ -1,4 +1,5 @@
 
+import ServerFacade.State;
 import ui.ChessClient;
 
 import java.util.Scanner;
@@ -15,7 +16,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.print(client.help());
+
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -40,7 +41,15 @@ public class Repl {
 //    }
 //
     private void printPrompt() {
-        System.out.println("♕ Welcome to 240 Chess. Type help to get started. ♕" );
+        var statement = "\n";
+        if (client.getState() == State.SIGNEDIN) {
+            statement += "[SIGNED IN]";
+        }
+        else {
+            statement += "[NOT SIGNED IN]";
+        }
+        statement += " >>> ";
+        System.out.println(statement);
     }
 
 }
