@@ -71,7 +71,7 @@ public class ServerFacade {
         throw new ResponseException(300, "What the fetch");
     }
 
-    public Object createGame(GameCreationData newGame, String authToken) throws ResponseException {
+    public GameCreated createGame(GameCreationData newGame, String authToken) throws ResponseException {
         var path = "/game";
         try {
             return this.makeRequest("POST", path, newGame, GameCreated.class, authToken);
@@ -97,7 +97,7 @@ public class ServerFacade {
     public GameData joinGame(JoinData joinGame, String authToken) throws ResponseException {
         var path = "/game";
         try {
-            return (this.makeRequest("PUT", path, joinGame, null, authToken));
+            return this.makeRequest("PUT", path, joinGame, GameData.class, authToken);
         }
         catch (ResponseException e) {
             System.out.println(e.getMessage());

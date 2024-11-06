@@ -86,7 +86,7 @@ public class Services {
 
         AuthData currentAuth = authService.getAuthObject(authToken);
         var username = currentAuth.username();
-        var currentGame = gameService.getGameFromID(gameID);
+        GameData currentGame = gameService.getGameFromID(gameID);
         userService.replaceUserInGame(currentGame, username, playerColor);
         return currentGame;
     }

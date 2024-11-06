@@ -116,11 +116,10 @@ public class ChessClient {
             var gameListID = Integer.parseInt(params[0]);
             var gameID = gamesList.get(gameListID).gameID();
             var joinData = new JoinData(teamColor, gameID);
-            var currentGame = server.joinGame(joinData, authToken);
+            var thisGame = server.joinGame(joinData, authToken);
 
             System.out.println("Success! You have joined " + gamesList.get(gameListID).gameName() + " as color " + teamColor);
-            return currentGame.toString();
-
+            return thisGame.gameName();
         }
 
         throw new ResponseException(400, "You are not signed in");

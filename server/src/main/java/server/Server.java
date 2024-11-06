@@ -219,7 +219,7 @@ public class Server {
             return serializer.toJson(new ErrorData("Error: bad request"));
         }
         try {
-            var currentGame = services.joinGame(authToken, playerColor, gameID);
+            GameData currentGame = services.joinGame(authToken, playerColor, gameID);
             res.status(200);
             return serializer.toJson(currentGame);
         }
