@@ -1,20 +1,39 @@
 package ServerFacade;
 
+import chess.ChessPiece;
+import chess.ChessPosition;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.sun.net.httpserver.BasicAuthenticator;
 import exception.*;
 import model.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.HashMap;
 import java.util.Map;
+
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 public class ServerFacade {
 
     private final String serverUrl;
+    private static Gson gson;
 
     public ServerFacade(String url) {
         serverUrl = url;
+
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter()
+
     }
 
     public AuthData register(RegisterData newUser) throws ResponseException {
@@ -66,7 +85,7 @@ public class ServerFacade {
         var newGame = "bestGame";
         try {
             //return this.makeRequest("POST", path, newGame, GameCreated.class, authToken);
-            return (this.makeRequest("GET", path, authToken, GamesList.class, authToken));
+            return (this.makeRequest("GET", path, null, GamesList.class, authToken));
         }
         catch (ResponseException e) {
             System.out.println(e.getMessage());
@@ -142,7 +161,7 @@ public class ServerFacade {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
+                    response = myGson.fromJson(reader, responseClass);
                 }
             }
         }
