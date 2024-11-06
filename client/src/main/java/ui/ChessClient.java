@@ -117,7 +117,9 @@ public class ChessClient {
             var gameID = gamesList.get(gameListID).gameID();
             var joinData = new JoinData(teamColor, gameID);
             var currentGame = server.joinGame(joinData, authToken);
+
             System.out.println("Success! You have joined " + gamesList.get(gameListID).gameName() + " as color " + teamColor);
+            return currentGame.toString();
 
         }
 

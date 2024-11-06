@@ -82,13 +82,13 @@ public class Services {
         return actualGame;
     }
 
-    public Object joinGame(String authToken, String playerColor, String gameID) throws DataAccessException {
+    public GameData joinGame(String authToken, String playerColor, String gameID) throws DataAccessException {
 
         AuthData currentAuth = authService.getAuthObject(authToken);
         var username = currentAuth.username();
         var currentGame = gameService.getGameFromID(gameID);
         userService.replaceUserInGame(currentGame, username, playerColor);
-        return null;
+        return currentGame;
     }
 
     // helper functions that only exists for tests, and might be used at a higher level.

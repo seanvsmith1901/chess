@@ -219,9 +219,9 @@ public class Server {
             return serializer.toJson(new ErrorData("Error: bad request"));
         }
         try {
-            services.joinGame(authToken, playerColor, gameID);
+            var currentGame = services.joinGame(authToken, playerColor, gameID);
             res.status(200);
-            return serializer.toJson(null);
+            return serializer.toJson(currentGame);
         }
         catch (DataAccessException e) {
             if (Objects.equals(e.getMessage(), "unauthorized")) { // bad authentication token
