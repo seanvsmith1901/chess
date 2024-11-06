@@ -2,7 +2,11 @@ package server;
 
 // adding this comment so I can figure out what is missing.
 
+import chess.ChessPiece;
+import chess.ChessPosition;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
 import dataaccess.MySqlDataAccess;
@@ -10,17 +14,27 @@ import service.*;
 import model.*;
 import spark.*;
 
+import java.util.HashMap;
 import java.util.Objects;
+
+import dataaccess.ChessPositionMapDeserializer;
+import dataaccess.ChessPositionMapSerializer;
 
 
 public class Server {
 
     private final Services services;
-    private final Gson serializer = new Gson();
+    private static Gson serializer = new Gson();
 
 
     public Server() {
         this.services = new Services(new MySqlDataAccess());
+
+        serializer = new GsonBuilder() // gets me my custom gson object.
+                .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapSerializer())
+                .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapDeserializer())
+                .create();
+
     }
 
     public int run(int desiredPort) {
@@ -145,7 +159,7 @@ public class Server {
             res.status(200);
             var gameTokens = services.getGames(req.headers("authorization")); // gets the game tokens
             GamesList games = new GamesList(gameTokens);
-            return new Gson().toJson(games);
+            return serializer.toJson(games);
         }
         catch (DataAccessException e) {
             if (Objects.equals(e.getMessage(), "unauthorized")) { // checks for authorization

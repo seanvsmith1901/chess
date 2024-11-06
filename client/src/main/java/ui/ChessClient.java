@@ -1,5 +1,6 @@
 package ui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -16,10 +17,12 @@ public class ChessClient {
     private State state = State.SIGNEDOUT;
     private String authToken = "";
     private String username = "";
+    private ArrayList<GameData> gamesList = new ArrayList<>();
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+
     }
 
     public State getState() {
@@ -40,6 +43,8 @@ public class ChessClient {
                 case "logout" -> logOut(params);
                 case "create" -> createGame(params);
                 case "list" -> listGames(params);
+                case "join" -> joinGame(params);
+                case "observe" -> observeGame(params);
 
                 case "quit" -> "quit";
                 default -> help();
@@ -50,7 +55,7 @@ public class ChessClient {
     }
 
     public String register(String... params) throws ResponseException {
-        if (params.length == 3) {
+        if (params.length == 3 && state == State.SIGNEDOUT) {
             visitorName = params[0];
             var newUser = new RegisterData(params[0], params[1], params[2]);
             var newAuthData = server.register(newUser); // where should I store that auth token client side? just as a global variable?
@@ -62,7 +67,7 @@ public class ChessClient {
     }
 
     public String login(String... params) throws ResponseException {
-        if (params.length == 2) {
+        if (params.length == 2 && state == State.SIGNEDOUT) {
             visitorName = params[0];
             var newUser = new LoginData(params[0], params[1]);
             var newAuthData = server.login(newUser, authToken);
@@ -95,9 +100,39 @@ public class ChessClient {
 
     public String listGames(String... params) throws ResponseException {
         if (params.length == 0 && state == State.SIGNEDIN) {
-            return (server.getGames(authToken)).toString();
+            var games =  server.getGames(authToken);
+            gamesList.addAll(games.games()); // keeps track of the order in which they were listed
+            return games.toString();
         }
         throw new ResponseException(400, "You are not signed in");
+    }
+
+    public String joinGame(String... params) throws ResponseException {
+        if (state != State.SIGNEDIN) {
+            return "You gotta login cheif";
+        }
+        if (params.length == 2) {
+            var teamColor = params[1];
+            var gameListID = Integer.parseInt(params[0]);
+            var gameID = gamesList.get(gameListID).gameID();
+            var joinData = new JoinData(teamColor, gameID);
+            var currentGame = server.joinGame(joinData, authToken);
+            System.out.println("Success! You have joined " + gamesList.get(gameListID).gameName() + " as color " + teamColor);
+
+        }
+
+        throw new ResponseException(400, "You are not signed in");
+    }
+
+    public String observeGame(String... params) throws ResponseException {
+        if (params.length == 1 && state == State.SIGNEDIN) {
+            var gameID = Integer.parseInt(params[0]);
+            var gameListID = Integer.parseInt(params[1]);
+            var joinData = new JoinData(null, gameID);
+            server.joinGame(joinData, authToken);
+            return ("Success! You are observing " + gamesList.get(gameListID).gameName() + " as an observer");
+        }
+        throw new ResponseException(400, "You are not signed in or your inputs are wrong. get wrecked.");
     }
 
 

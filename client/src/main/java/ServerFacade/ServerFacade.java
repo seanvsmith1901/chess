@@ -31,8 +31,10 @@ public class ServerFacade {
     public ServerFacade(String url) {
         serverUrl = url;
 
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter()
+        gson = new GsonBuilder() // gets me my custom gson object.
+                .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapSerializer())
+                .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapDeserializer())
+                .create();
 
     }
 
@@ -80,12 +82,22 @@ public class ServerFacade {
         throw new ResponseException(300, "What the fetch");
     }
 
-    public Object getGames(String authToken) throws ResponseException {
+    public GamesList getGames(String authToken) throws ResponseException {
         var path = "/game";
-        var newGame = "bestGame";
         try {
             //return this.makeRequest("POST", path, newGame, GameCreated.class, authToken);
             return (this.makeRequest("GET", path, null, GamesList.class, authToken));
+        }
+        catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+        throw new ResponseException(300, "What the fetch");
+    }
+
+    public GameData joinGame(JoinData joinGame, String authToken) throws ResponseException {
+        var path = "/game";
+        try {
+            return (this.makeRequest("PUT", path, joinGame, null, authToken));
         }
         catch (ResponseException e) {
             System.out.println(e.getMessage());
@@ -141,7 +153,7 @@ public class ServerFacade {
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
-            String reqData = new Gson().toJson(request);
+            String reqData = gson.toJson(request);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
@@ -161,7 +173,7 @@ public class ServerFacade {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
-                    response = myGson.fromJson(reader, responseClass);
+                    response = gson.fromJson(reader, responseClass);
                 }
             }
         }
