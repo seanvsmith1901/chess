@@ -39,6 +39,7 @@ public class ChessClient {
                 // post login logic
                 case "logout" -> logOut(params);
                 case "create" -> createGame(params);
+                case "list" -> listGames(params);
 
                 case "quit" -> "quit";
                 default -> help();
@@ -90,6 +91,13 @@ public class ChessClient {
             return String.format("You have joined game %s", thisGame);
         }
         throw new ResponseException(400, "mnake sure you have inlcuded a game name");
+    }
+
+    public String listGames(String... params) throws ResponseException {
+        if (params.length == 0 && state == State.SIGNEDIN) {
+            return (server.getGames(authToken)).toString();
+        }
+        throw new ResponseException(400, "You are not signed in");
     }
 
 

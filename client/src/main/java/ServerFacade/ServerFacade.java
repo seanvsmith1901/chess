@@ -61,6 +61,19 @@ public class ServerFacade {
         throw new ResponseException(300, "What the fetch");
     }
 
+    public Object getGames(String authToken) throws ResponseException {
+        var path = "/game";
+        var newGame = "bestGame";
+        try {
+            //return this.makeRequest("POST", path, newGame, GameCreated.class, authToken);
+            return (this.makeRequest("GET", path, authToken, GamesList.class, authToken));
+        }
+        catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+        throw new ResponseException(300, "What the fetch");
+    }
+
 
 //    public Pet addPet(Pet pet) throws ResponseException {
 //        var path = "/pet";
@@ -92,7 +105,7 @@ public class ServerFacade {
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
-            if(authToken != null) { // add in the authToken as a header. 
+            if(authToken != null) { // add in the authToken as a header.
                 http.setRequestProperty("authorization", authToken);
             }
 
