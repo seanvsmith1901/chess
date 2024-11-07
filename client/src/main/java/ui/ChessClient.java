@@ -1,13 +1,20 @@
 package ui;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
 import ServerFacade.*;
+import chess.*;
+
 import com.google.gson.Gson;
 import model.*;
 import exception.ResponseException;
+
+import static ui.EscapeSequences.*;
+
 
 
 public class ChessClient {
@@ -18,6 +25,13 @@ public class ChessClient {
     private String authToken = "";
     private String username = "";
     private ArrayList<GameData> gamesList = new ArrayList<>();
+    private PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+
+    private static final int BOARD_SIZE_IN_SQAURES = 8;
+    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
+
+
+
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -119,7 +133,8 @@ public class ChessClient {
             var thisGame = server.joinGame(joinData, authToken);
 
             System.out.println("Success! You have joined " + gamesList.get(gameListID).gameName() + " as color " + teamColor);
-            return thisGame.toString();
+            out.print(ERASE_SCREEN);
+            return drawBoard(thisGame);
         }
 
         throw new ResponseException(400, "You are not signed in");
@@ -130,81 +145,12 @@ public class ChessClient {
             var gameID = Integer.parseInt(params[0]);
             var gameListID = Integer.parseInt(params[1]);
             var joinData = new JoinData(null, gameID);
-            server.joinGame(joinData, authToken);
-            return ("Success! You are observing " + gamesList.get(gameListID).gameName() + " as an observer");
+            var thisGame = server.joinGame(joinData, authToken);
+            System.out.println("Success! You are observing " + gamesList.get(gameListID).gameName() + " as an observer");
+            return drawBoard(thisGame);
         }
         throw new ResponseException(400, "You are not signed in or your inputs are wrong. get wrecked.");
     }
-
-
-
-
-//    public String rescuePet(String... params) throws ResponseException {
-//        assertSignedIn();
-//        if (params.length >= 2) {
-//            var name = params[0];
-//            var type = PetType.valueOf(params[1].toUpperCase());
-//            var pet = new Pet(0, name, type);
-//            pet = server.addPet(pet);
-//            return String.format("You rescued %s. Assigned ID: %d", pet.name(), pet.id());
-//        }
-//        throw new ResponseException(400, "Expected: <name> <CAT|DOG|FROG>");
-//    }
-//
-//    public String listPets() throws ResponseException {
-//        assertSignedIn();
-//        var pets = server.listPets();
-//        var result = new StringBuilder();
-//        var gson = new Gson();
-//        for (var pet : pets) {
-//            result.append(gson.toJson(pet)).append('\n');
-//        }
-//        return result.toString();
-//    }
-//
-//    public String adoptPet(String... params) throws ResponseException {
-//        assertSignedIn();
-//        if (params.length == 1) {
-//            try {
-//                var id = Integer.parseInt(params[0]);
-//                var pet = getPet(id);
-//                if (pet != null) {
-//                    server.deletePet(id);
-//                    return String.format("%s says %s", pet.name(), pet.sound());
-//                }
-//            } catch (NumberFormatException ignored) {
-//            }
-//        }
-//        throw new ResponseException(400, "Expected: <pet id>");
-//    }
-//
-//    public String adoptAllPets() throws ResponseException {
-//        assertSignedIn();
-//        var buffer = new StringBuilder();
-//        for (var pet : server.listPets()) {
-//            buffer.append(String.format("%s says %s%n", pet.name(), pet.sound()));
-//        }
-//
-//        server.deleteAllPets();
-//        return buffer.toString();
-//    }
-//
-//    public String signOut() throws ResponseException {
-//        assertSignedIn();
-//        ws.leavePetShop(visitorName);
-//        ws = null;
-//        state = ServerFacade.State.SIGNEDOUT;
-//        return String.format("%s left the shop", visitorName);
-//    }
-//
-//    private Pet getPet(int id) throws ResponseException {
-//        for (var pet : server.listPets()) {
-//            if (pet.id() == id) {
-//                return pet;
-//            }
-//        }
-//        return null;
-//    }
 
     public String help() {
         if (state == State.SIGNEDOUT) {
@@ -230,4 +176,107 @@ public class ChessClient {
             throw new ResponseException(400, "You must sign in");
         }
     }
+
+    private String drawBoard(GameData game) throws ResponseException {
+        String[] blackTopLetters = {"   ", " A ", " B ", " C ", " D ", " E ", " F ", " G ", " H ", "   "};
+        String[] whiteTopLetters = {"   ", " H  ", " G  ", " F  ", " E  ", " D  ", " C  ", " B  ", " A  ", "    "};
+        ChessBoard board = game.game().getBoard();
+        for (var i = 0; i < 10; i++) { // this first rep is whiteTopfirst
+            for (var j = 0; j < 10; j++) {
+                if(i == 0 || i == 9) {
+                    out.print(SET_BG_COLOR_RED);
+                    out.print(SET_TEXT_COLOR_BLACK);
+                    out.print(whiteTopLetters[j]);
+                }
+                else if(j == 0 || j == 9) {
+                    out.print(SET_BG_COLOR_RED);
+                    out.print(" " + String.valueOf(i) + " ");
+                }
+                else {
+                    if(i % 2 == 0) {
+                        if (j % 2 == 0) {
+                            out.print(SET_BG_COLOR_WHITE);
+                        }
+                        else {
+                            out.print(SET_BG_COLOR_BLUE);
+                        }
+                    }
+                    else { // odd, start light
+                        if (j % 2 == 0) {
+                            out.print(SET_BG_COLOR_BLUE);
+                        }
+                        else {
+                            out.print(SET_BG_COLOR_WHITE);
+                        }
+                    }
+                    ChessPosition newPosition = new ChessPosition(i, j);
+                    ChessPiece currentPiece = board.getPiece(newPosition);
+                    if(currentPiece == null) {
+                        out.print(EMPTY);
+                    }
+                    else {
+                        if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                            if (currentPiece.getPieceType() == ChessPiece.PieceType.BISHOP) {
+                                out.print(WHITE_BISHOP);
+                            }
+                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                                out.print(WHITE_KNIGHT);
+                            }
+                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                                out.print(WHITE_PAWN);
+                            }
+                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KING) {
+                                out.print(WHITE_KING);
+                            }
+                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.QUEEN) {
+                                out.print(WHITE_QUEEN);
+                            }
+                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
+                                out.print(WHITE_ROOK);
+                            }
+                        }
+                        else {
+                            if (currentPiece.getPieceType() == ChessPiece.PieceType.BISHOP) {
+                                out.print(BLACK_BISHOP);
+                            }
+                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                                out.print(BLACK_KNIGHT);
+                            }
+                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                                out.print(BLACK_PAWN);
+                            }
+                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KING) {
+                                out.print(BLACK_KING);
+                            }
+                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.QUEEN) {
+                                out.print(BLACK_QUEEN);
+                            }
+                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
+                                out.print(BLACK_ROOK);
+                            }
+                        }
+                    }
+                }
+            }
+            out.print("\n");
+        }
+        return out.toString();
+    }
+
+    private static void setBlack(PrintStream out) {
+        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_BLACK);
+    }
+
+    private static void setWhite(PrintStream out) {
+        out.print(SET_BG_COLOR_WHITE);
+        out.print(SET_TEXT_COLOR_WHITE);
+    }
+
+    private static void setRed(PrintStream out) {
+        out.print(SET_BG_COLOR_RED);
+        out.print(SET_TEXT_COLOR_RED);
+    }
+
+
 }
