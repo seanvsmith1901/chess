@@ -67,7 +67,8 @@ public class ChessClient {
     }
 
     public String register(String... params) throws ResponseException {
-        if (params.length == 3 && state == State.SIGNEDOUT) {
+        assertSignedOut();
+        if (params.length == 3) {
             visitorName = params[0];
             var newUser = new RegisterData(params[0], params[1], params[2]);
             var newAuthData = server.register(newUser); // where should I store that auth token client side? just as a global variable?
@@ -79,7 +80,8 @@ public class ChessClient {
     }
 
     public String login(String... params) throws ResponseException {
-        if (params.length == 2 && state == State.SIGNEDOUT) {
+        assertSignedOut();
+        if (params.length == 2) {
             visitorName = params[0];
             var newUser = new LoginData(params[0], params[1]);
             var newAuthData = server.login(newUser, authToken);
@@ -92,7 +94,9 @@ public class ChessClient {
     }
 
     public String logOut(String... params) throws ResponseException {
-        if (params.length == 0 && state == State.SIGNEDIN) {
+        assertSignedIn();
+        if (params.length == 0) {
+            assertSignedIn();
             state = State.SIGNEDOUT;
             var newAuthData = server.logOut(authToken);
             return String.format("You signed out as %s.", newAuthData);
@@ -101,7 +105,8 @@ public class ChessClient {
     }
 
     public String createGame(String... params) throws ResponseException {
-        if (params.length == 1 && state == State.SIGNEDIN) {
+        assertSignedIn();
+        if (params.length == 1) {
             var gameName = params[0];
             GameCreationData newGame = new GameCreationData(gameName);
             var thisGame = server.createGame(newGame, authToken);
@@ -111,7 +116,8 @@ public class ChessClient {
     }
 
     public String listGames(String... params) throws ResponseException {
-        if (params.length == 0 && state == State.SIGNEDIN) {
+        assertSignedIn();
+        if (params.length == 0) {
             var games =  server.getGames(authToken);
             gamesList.addAll(games.games()); // keeps track of the order in which they were listed
             return games.toString();
@@ -120,9 +126,7 @@ public class ChessClient {
     }
 
     public String joinGame(String... params) throws ResponseException {
-        if (state != State.SIGNEDIN) {
-            return "You gotta login cheif";
-        }
+        assertSignedIn();
         if (params.length == 2) {
             var teamColor = params[1];
             var gameListID = Integer.parseInt(params[0]);
@@ -139,7 +143,8 @@ public class ChessClient {
     }
 
     public String observeGame(String... params) throws ResponseException {
-        if (params.length == 1 && state == State.SIGNEDIN) {
+        assertSignedIn();
+        if (params.length == 1) {
             var gameID = Integer.parseInt(params[0]);
             var gameListID = Integer.parseInt(params[1]);
             var joinData = new JoinData(null, gameID);
@@ -161,6 +166,7 @@ public class ChessClient {
         }
         return """
                 - create <NAME> - a game
+                - logout - when you are done
                 - list - games
                 - join <ID> [WHITE|BLACK] - a game
                 - observer <ID> - a game
@@ -172,6 +178,12 @@ public class ChessClient {
     private void assertSignedIn() throws ResponseException {
         if (state == State.SIGNEDOUT) {
             throw new ResponseException(400, "You must sign in");
+        }
+    }
+
+    private void assertSignedOut() throws ResponseException {
+        if (state == State.SIGNEDIN) {
+            throw new ResponseException(400, "you gotta sign out my guy");
         }
     }
 
@@ -338,6 +350,8 @@ public class ChessClient {
             }
             out.print("\n");
         }
+        out.print(RESET_TEXT_COLOR);
+        out.print(RESET_BG_COLOR);
         return out.toString();
     }
 }
