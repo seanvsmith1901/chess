@@ -5,6 +5,7 @@ package server;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -261,12 +262,16 @@ public class Server {
             return serializer.toJson(new ErrorData("Error: bad request"));
         }
         try {
-            GameData returnGame = new GameData(0, "Q", "Q", "fakeGame", new ChessGame()); // don't worry about it lol.
+            GameData returnGame = new GameData(-1, "Q", "Q", "fakeGame", new ChessGame()); // don't worry about it lol.
             var currentGames = services.getGames(authToken);
             for (GameData game : currentGames) {
                 if(game.gameID() == Integer.parseInt(gameID)) {
                     returnGame = game;
                 }
+            }
+            if(returnGame.gameID() == -1) {
+                res.status(405);
+                return serializer.toJson(new ErrorData("Error: there is no game with that ID"));
             }
             res.status(200);
             return serializer.toJson(returnGame);

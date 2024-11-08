@@ -116,29 +116,15 @@ public class ServerFacade {
         throw new ResponseException(300, "What the fetch");
     }
 
-
-//    public Pet addPet(Pet pet) throws ResponseException {
-//        var path = "/pet";
-//        return this.makeRequest("POST", path, pet, Pet.class);
-//    }
-//
-//    public void deletePet(int id) throws ResponseException {
-//        var path = String.format("/pet/%s", id);
-//        this.makeRequest("DELETE", path, null, null);
-//    }
-//
-//    public void deleteAllPets() throws ResponseException {
-//        var path = "/pet";
-//        this.makeRequest("DELETE", path, null, null);
-//    }
-//
-//    public Pet[] listPets() throws ResponseException {
-//        var path = "/pet";
-//        record listPetResponse(Pet[] pet) {
-//        }
-//        var response = this.makeRequest("GET", path, null, listPetResponse.class);
-//        return response.pet();
-//    }
+    public void resetDataBase() throws ResponseException { // if this ever throws an exception ill end up on the news
+        var path = "/db";
+        try {
+            this.makeRequest("DELETE", path, null, null, null);
+        }
+        catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
         try {

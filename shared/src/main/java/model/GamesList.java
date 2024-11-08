@@ -20,5 +20,8 @@ public record GamesList (HashSet<GameData> games) {
         }
         return result.toString();
     }
+    public int size() {
+        return games.size();
+    }
 
 }
