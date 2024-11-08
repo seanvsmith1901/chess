@@ -281,7 +281,7 @@ public class ChessClient {
             };
         }
     }
-    
+
     private String[] reverseArray(String[] array) {
         String[] reversed = new String[array.length];
         for (int i = 0; i < array.length; i++) {

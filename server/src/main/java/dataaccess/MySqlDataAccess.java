@@ -12,9 +12,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import com.google.gson.GsonBuilder;
 import org.mindrot.jbcrypt.BCrypt;
+import serializer.*;
+
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
-
 
 public class MySqlDataAccess implements DataAccess {
 

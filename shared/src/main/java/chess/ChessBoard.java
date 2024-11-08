@@ -215,8 +215,5 @@ public class ChessBoard {
         return board;
     }
 
-    public ChessPiece[][] returnSquares() {
-        return squares;
-    }
 
 }

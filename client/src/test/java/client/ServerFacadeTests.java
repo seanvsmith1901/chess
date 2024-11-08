@@ -7,11 +7,6 @@ import model.*;
 import serverfacade.ServerFacade;
 
 
-//assertThrows(DataAccessException .class, () -> {
-//        USER_SERVICE.createUser("West", "password", "bad@gmail.com");});
-//
-//assertEquals(USER_SERVICE.getUserCount(), 1);
-
 public class ServerFacadeTests {
 
     private static Server server;

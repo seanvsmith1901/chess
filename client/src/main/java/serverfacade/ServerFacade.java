@@ -11,7 +11,7 @@ import model.*;
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
-
+import serializer.*;
 public class ServerFacade {
 
     private final String serverUrl;

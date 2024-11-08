@@ -5,12 +5,10 @@ package server;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import dataaccess.DataAccessException;
-import dataaccess.MemoryDataAccess;
 import dataaccess.MySqlDataAccess;
 import service.*;
 import model.*;
@@ -18,10 +16,7 @@ import spark.*;
 
 import java.util.HashMap;
 import java.util.Objects;
-
-import dataaccess.ChessPositionMapDeserializer;
-import dataaccess.ChessPositionMapSerializer;
-
+import serializer.*;
 
 public class Server {
 

@@ -1,11 +1,11 @@
-package dataaccess;
+package serializer;
 
+import chess.ChessPiece;
+import chess.ChessPosition;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import chess.*;
-
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
