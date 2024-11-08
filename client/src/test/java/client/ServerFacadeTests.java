@@ -1,11 +1,10 @@
-import dataaccess.DataAccessException;
+package client;
+
 import exception.ResponseException;
 import org.junit.jupiter.api.*;
 import server.Server;
 import model.*;
-import ui.ChessClient;
 import ServerFacade.ServerFacade;
-import org.junit.jupiter.api.*;
 
 
 //assertThrows(DataAccessException .class, () -> {
