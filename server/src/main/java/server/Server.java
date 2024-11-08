@@ -130,7 +130,7 @@ public class Server {
 
    private Object logOutUser(Request req, Response res) {
         try {
-            String currentAuth = new Gson().fromJson(req.body(), String.class); // so my client doesn't know how to do this so I have it set up both ways.
+            String currentAuth = new Gson().fromJson(req.body(), String.class); // just in case
             currentAuth = req.headers("authorization");
 
             services.logOutUser(currentAuth);

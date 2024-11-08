@@ -1,27 +1,16 @@
-package ServerFacade;
+package serverfacade;
 
 import chess.ChessPiece;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.sun.net.httpserver.BasicAuthenticator;
 import exception.*;
 import model.*;
 
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
-import java.util.Map;
-
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 
 public class ServerFacade {
 

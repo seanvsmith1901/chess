@@ -1,12 +1,8 @@
 
-import ServerFacade.State;
+import serverfacade.State;
 import ui.ChessClient;
 
 import java.util.Scanner;
-
-import static ui.EscapeSequences.*;
-
-import static ui.EscapeSequences.RESET;
 
 public class Repl {
     private final ChessClient client;

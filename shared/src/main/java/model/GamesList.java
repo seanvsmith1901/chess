@@ -15,7 +15,8 @@ public record GamesList (HashSet<GameData> games) {
         int i = 1;
         result.append("\n");
         for (var game: games) {
-            result.append(Integer.toString(i)).append(": ").append(game.gameName()).append("\nWhite user: ").append(game.whiteUsername()).append(" Black user: ").append(game.blackUsername()).append("\n\n");
+            result.append(Integer.toString(i)).append(": ").append(game.gameName()).append("\nWhite user: ")
+                    .append(game.whiteUsername()).append(" Black user: ").append(game.blackUsername()).append("\n\n");
             i++;
         }
         return result.toString();

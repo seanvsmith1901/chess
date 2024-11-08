@@ -1,4 +1,4 @@
-package ServerFacade; // look I know that this looks weird but I had to do it to get my chess game it insert and desert correctly.
+package serverfacade; // look I know that this looks weird but I had to do it to get my chess game it insert and desert correctly.
 
 import chess.ChessPiece;
 import chess.ChessPosition;

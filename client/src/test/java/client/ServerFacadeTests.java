@@ -4,7 +4,7 @@ import exception.ResponseException;
 import org.junit.jupiter.api.*;
 import server.Server;
 import model.*;
-import ServerFacade.ServerFacade;
+import serverfacade.ServerFacade;
 
 
 //assertThrows(DataAccessException .class, () -> {
@@ -15,7 +15,7 @@ import ServerFacade.ServerFacade;
 public class ServerFacadeTests {
 
     private static Server server;
-    private static String serverUrl = "http://localhost:8080";
+    private static String serverUrl = "http://localhost:";
     static ServerFacade facade;
 
     @BeforeAll

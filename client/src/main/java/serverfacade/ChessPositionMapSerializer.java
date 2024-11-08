@@ -1,4 +1,4 @@
-package ServerFacade;
+package serverfacade;
 
 import chess.ChessPiece;
 import chess.ChessPosition;

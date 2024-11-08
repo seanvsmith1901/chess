@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import ServerFacade.*;
+import serverfacade.*;
 import chess.*;
 
 import model.*;
