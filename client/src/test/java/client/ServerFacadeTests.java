@@ -135,10 +135,5 @@ public class ServerFacadeTests {
         JoinData newJoin = new JoinData("WHITE", 3); // hardcoded but I'm lazy
         Assertions.assertThrows(ResponseException.class, () -> facade.observeGame(newJoin, authData.authToken()));
     }
-//    @Test
-//    void register() throws Exception {
-//        var authData = facade.register("player1", "password", "p1@email.com");
-//        Assertions.assertTrue(authData.authToken().length() > 10);
-//    }
 
 }
