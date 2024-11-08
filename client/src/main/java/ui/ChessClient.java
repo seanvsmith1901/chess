@@ -188,170 +188,106 @@ public class ChessClient {
     }
 
     private String drawBoard(GameData game) throws ResponseException {
+        ChessBoard board = game.game().getBoard(); // gets our board
         String[] topAndBottomLetters = {"   ", " H  ", " G  ", " F  ", "E ", "  D ", " C ", "  B ", "  A ", "   "};
-        ChessBoard board = game.game().getBoard();
 
-        for (var i = 0; i < 10; i++) { // this first rep is whiteTopfirst
-            for (var j = 0; j < 10; j++) {
-                if(i == 0 || i == 9) {
-                    out.print(SET_BG_COLOR_RED);
-                    out.print(SET_TEXT_COLOR_BLACK);
-                    out.print(topAndBottomLetters[j]);
-                }
-                else if(j == 0 || j == 9) {
-                    out.print(SET_BG_COLOR_RED);
-                    out.print(" " + String.valueOf(i) + " ");
-                }
-                else {
-                    if(i % 2 == 0) {
-                        if (j % 2 == 0) {
-                            out.print(SET_BG_COLOR_WHITE);
-                        }
-                        else {
-                            out.print(SET_BG_COLOR_BLUE);
-                        }
-                    }
-                    else { // odd, start light
-                        if (j % 2 == 0) {
-                            out.print(SET_BG_COLOR_BLUE);
-                        }
-                        else {
-                            out.print(SET_BG_COLOR_WHITE);
-                        }
-                    }
-                    ChessPosition newPosition = new ChessPosition(i, j);
-                    ChessPiece currentPiece = board.getPiece(newPosition);
-                    if(currentPiece == null) {
-                        out.print(EMPTY);
-                    }
-                    else {
-                        if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            if (currentPiece.getPieceType() == ChessPiece.PieceType.BISHOP) {
-                                out.print(WHITE_BISHOP);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                                out.print(WHITE_KNIGHT);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                                out.print(WHITE_PAWN);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KING) {
-                                out.print(WHITE_KING);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.QUEEN) {
-                                out.print(WHITE_QUEEN);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
-                                out.print(WHITE_ROOK);
-                            }
-                        }
-                        else {
-                            if (currentPiece.getPieceType() == ChessPiece.PieceType.BISHOP) {
-                                out.print(BLACK_BISHOP);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                                out.print(BLACK_KNIGHT);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                                out.print(BLACK_PAWN);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KING) {
-                                out.print(BLACK_KING);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.QUEEN) {
-                                out.print(BLACK_QUEEN);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
-                                out.print(BLACK_ROOK);
-                            }
-                        }
-                    }
-                }
-            }
-            out.print("\n");
+        // prints the white rows first, then the black top one
+        for (int i = 0; i < 10; i++) {
+            printBoardRow(i, topAndBottomLetters, board, true); // white
         }
 
-        for (var i = 9; i >=0; i--) { // this is black top now
-            for (var j = 9; j >= 0; j--) {
-                if(i == 0 || i == 9) {
-                    out.print(SET_BG_COLOR_RED);
-                    out.print(SET_TEXT_COLOR_BLACK);
-                    out.print(topAndBottomLetters[j]);
-                }
-                else if(j == 0 || j == 9) {
-                    out.print(SET_BG_COLOR_RED);
-                    out.print(" " + String.valueOf(i) + " ");
-                }
-                else {
-                    if(i % 2 == 0) {
-                        if (j % 2 == 0) {
-                            out.print(SET_BG_COLOR_WHITE);
-                        }
-                        else {
-                            out.print(SET_BG_COLOR_BLUE);
-                        }
-                    }
-                    else { // odd, start light
-                        if (j % 2 == 0) {
-                            out.print(SET_BG_COLOR_BLUE);
-                        }
-                        else {
-                            out.print(SET_BG_COLOR_WHITE);
-                        }
-                    }
-                    ChessPosition newPosition = new ChessPosition(i, j);
-                    ChessPiece currentPiece = board.getPiece(newPosition);
-                    if(currentPiece == null) {
-                        out.print(EMPTY);
-                    }
-                    else {
-                        if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            if (currentPiece.getPieceType() == ChessPiece.PieceType.BISHOP) {
-                                out.print(WHITE_BISHOP);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                                out.print(WHITE_KNIGHT);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                                out.print(WHITE_PAWN);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KING) {
-                                out.print(WHITE_KING);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.QUEEN) {
-                                out.print(WHITE_QUEEN);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
-                                out.print(WHITE_ROOK);
-                            }
-                        }
-                        else {
-                            if (currentPiece.getPieceType() == ChessPiece.PieceType.BISHOP) {
-                                out.print(BLACK_BISHOP);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                                out.print(BLACK_KNIGHT);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                                out.print(BLACK_PAWN);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.KING) {
-                                out.print(BLACK_KING);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.QUEEN) {
-                                out.print(BLACK_QUEEN);
-                            }
-                            else if (currentPiece.getPieceType() == ChessPiece.PieceType.ROOK) {
-                                out.print(BLACK_ROOK);
-                            }
-                        }
-                    }
-                }
-            }
-            out.print("\n");
+        for (int i = 9; i >= 0; i--) {
+            printBoardRow(i, topAndBottomLetters, board, false); // black
         }
-        out.print(RESET_TEXT_COLOR);
+
+        out.print(RESET_TEXT_COLOR); // resets text and backround color
         out.print(RESET_BG_COLOR);
         return "";
     }
+
+    private void printBoardRow(int row, String[] topAndBottomLetters, ChessBoard board, boolean whiteTop) {
+        // if its white top, its forward, if not we have to reverse the letters.
+        String[] adjustedLetters = whiteTop ? topAndBottomLetters : reverseArray(topAndBottomLetters);
+
+        for (int col = 0; col < 10; col++) {
+            if (row == 0 || row == 9) { // catches top and bottom edgecases
+                printTopAndBottomRow(col, adjustedLetters);
+            } else if (col == 0 || col == 9) { // catches left and right edgecases
+                printSideColumn(row);
+            } else { // this is where most of the bogos are binted
+                printBoardCell(row, col, board, whiteTop);
+            }
+        }
+        out.print("\n"); // gotta make sure the spacing works out.
+    }
+
+    // special case for top row and bottom row
+    private void printTopAndBottomRow(int col, String[] topAndBottomLetters) {
+        out.print(SET_BG_COLOR_RED);
+        out.print(SET_TEXT_COLOR_BLACK);
+        out.print(topAndBottomLetters[col]); // prints our things at the inxex with the specificed column
+    }
+
+    // prints the rows the way they should be.
+    private void printSideColumn(int row) {
+        out.print(SET_BG_COLOR_RED);
+        out.print(" " + String.valueOf(row) + " ");
+    }
+
+    // alternates backround colors, gets the peice if there is and controls backround color.
+    private void printBoardCell(int row, int col, ChessBoard board, boolean whiteTop) {
+        String bgColor = getCellBackgroundColor(row, col);
+        out.print(bgColor);
+
+        ChessPosition position = new ChessPosition(row, col);
+        ChessPiece piece = board.getPiece(position);
+
+        if (piece == null) {
+            out.print(EMPTY);
+        } else {
+            out.print(getPieceRepresentation(piece));
+        }
+    }
+
+    // condesned version of the logic for getting backround color
+    private String getCellBackgroundColor(int row, int col) {
+        if ((row + col) % 2 == 1) { // gosh this logic makes me feel so smart.
+            return SET_BG_COLOR_BLUE;
+        }
+        else {
+            return SET_BG_COLOR_WHITE;
+        }
+    }
+
+    // grabs the string representation of the chesspiece
+    private String getPieceRepresentation(ChessPiece piece) {
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            return switch (piece.getPieceType()) {
+                case BISHOP -> WHITE_BISHOP;
+                case KNIGHT -> WHITE_KNIGHT;
+                case PAWN -> WHITE_PAWN;
+                case KING -> WHITE_KING;
+                case QUEEN -> WHITE_QUEEN;
+                case ROOK -> WHITE_ROOK;
+            };
+        } else {
+            return switch (piece.getPieceType()) {
+                case BISHOP -> BLACK_BISHOP;
+                case KNIGHT -> BLACK_KNIGHT;
+                case PAWN -> BLACK_PAWN;
+                case KING -> BLACK_KING;
+                case QUEEN -> BLACK_QUEEN;
+                case ROOK -> BLACK_ROOK;
+            };
+        }
+    }
+    
+    private String[] reverseArray(String[] array) {
+        String[] reversed = new String[array.length];
+        for (int i = 0; i < array.length; i++) {
+            reversed[i] = array[array.length - 1 - i];
+        }
+        return reversed;
+    }
+
 }

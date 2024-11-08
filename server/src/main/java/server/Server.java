@@ -237,16 +237,7 @@ public class Server {
                 newErrorMessage = new ErrorData("Error: already taken");
                 return serializer.toJson(newErrorMessage);
             }
-            if (Objects.equals(e.getMessage(), "Game does not exist")) {
-                res.status(400);
-                newErrorMessage = new ErrorData("Error: Bad request");
-                return serializer.toJson(newErrorMessage);
-            }
-            else {
-                res.status(500); // 500
-                newErrorMessage = new ErrorData("Error:" + e.getMessage());
-                return serializer.toJson(newErrorMessage);
-            }
+            return getObject(res, e);
         }
     }
 
@@ -277,26 +268,21 @@ public class Server {
             return serializer.toJson(returnGame);
         }
         catch (DataAccessException e) {
-            if (Objects.equals(e.getMessage(), "unauthorized")) { // bad authentication token
-                res.status(401); // 401
-                newErrorMessage = new ErrorData("Error: unauthorized");
-                return serializer.toJson(newErrorMessage); // i tried breaking this up and it bricked everytime lol
-            }
-            if (Objects.equals(e.getMessage(), "that color is taken")) { // trying to join an already claimed color
-                res.status(403); // 403
-                newErrorMessage = new ErrorData("Error: already taken");
-                return serializer.toJson(newErrorMessage);
-            }
-            if (Objects.equals(e.getMessage(), "Game does not exist")) {
-                res.status(400);
-                newErrorMessage = new ErrorData("Error: Bad request");
-                return serializer.toJson(newErrorMessage);
-            }
-            else {
-                res.status(500); // 500
-                newErrorMessage = new ErrorData("Error:" + e.getMessage());
-                return serializer.toJson(newErrorMessage);
-            }
+            return getObject(res, e);
+        }
+    }
+
+    private Object getObject(Response res, DataAccessException e) {
+        ErrorData newErrorMessage;
+        if (Objects.equals(e.getMessage(), "Game does not exist")) {
+            res.status(400);
+            newErrorMessage = new ErrorData("Error: Bad request");
+            return serializer.toJson(newErrorMessage);
+        }
+        else {
+            res.status(500); // 500
+            newErrorMessage = new ErrorData("Error:" + e.getMessage());
+            return serializer.toJson(newErrorMessage);
         }
     }
 }
