@@ -2,6 +2,7 @@ package server;
 
 // adding this comment so I can figure out what is missing.
 
+import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import com.google.gson.Gson;
@@ -51,6 +52,7 @@ public class Server {
         Spark.get("/game", this::getGames); // gives a list of all the games
         Spark.post("/game", this::createGame); // creates a new game
         Spark.put("/game", this::joinGame); // verifies that game exists, and adds caller as the requested color.
+        Spark.post("/observe", this::observeGame); // for when a player just wants to observe a game.
 
 
         Spark.awaitInitialization();
@@ -222,6 +224,52 @@ public class Server {
             GameData currentGame = services.joinGame(authToken, playerColor, gameID);
             res.status(200);
             return serializer.toJson(currentGame);
+        }
+        catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "unauthorized")) { // bad authentication token
+                res.status(401); // 401
+                newErrorMessage = new ErrorData("Error: unauthorized");
+                return serializer.toJson(newErrorMessage); // i tried breaking this up and it bricked everytime lol
+            }
+            if (Objects.equals(e.getMessage(), "that color is taken")) { // trying to join an already claimed color
+                res.status(403); // 403
+                newErrorMessage = new ErrorData("Error: already taken");
+                return serializer.toJson(newErrorMessage);
+            }
+            if (Objects.equals(e.getMessage(), "Game does not exist")) {
+                res.status(400);
+                newErrorMessage = new ErrorData("Error: Bad request");
+                return serializer.toJson(newErrorMessage);
+            }
+            else {
+                res.status(500); // 500
+                newErrorMessage = new ErrorData("Error:" + e.getMessage());
+                return serializer.toJson(newErrorMessage);
+            }
+        }
+    }
+
+    private Object observeGame(Request req, Response res) {
+
+        var authToken = req.headers("authorization");
+        JoinData data = new Gson().fromJson(req.body(), JoinData.class);
+        String gameID = String.valueOf(data.gameID());
+        ErrorData newErrorMessage;
+
+        if (authToken == null || gameID == null) { // makes sure everything is there
+            res.status(400);
+            return serializer.toJson(new ErrorData("Error: bad request"));
+        }
+        try {
+            GameData returnGame = new GameData(0, "Q", "Q", "fakeGame", new ChessGame()); // don't worry about it lol.
+            var currentGames = services.getGames(authToken);
+            for (GameData game : currentGames) {
+                if(game.gameID() == Integer.parseInt(gameID)) {
+                    returnGame = game;
+                }
+            }
+            res.status(200);
+            return serializer.toJson(returnGame);
         }
         catch (DataAccessException e) {
             if (Objects.equals(e.getMessage(), "unauthorized")) { // bad authentication token

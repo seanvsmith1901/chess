@@ -12,7 +12,7 @@ public record GamesList (HashSet<GameData> games) {
         }
 
         StringBuilder result = new StringBuilder();
-        int i = 0;
+        int i = 1;
         result.append("\n");
         for (var game: games) {
             result.append(Integer.toString(i)).append(": ").append(game.gameName()).append("\nWhite user: ").append(game.whiteUsername()).append(" Black user: ").append(game.blackUsername()).append("\n\n");

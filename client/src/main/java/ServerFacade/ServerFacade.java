@@ -105,6 +105,17 @@ public class ServerFacade {
         throw new ResponseException(300, "What the fetch");
     }
 
+    public GameData observeGame(JoinData joinGame, String authToken) throws ResponseException {
+        var path = "/observe";
+        try {
+            return this.makeRequest("POST", path, joinGame, GameData.class, authToken);
+        }
+        catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+        throw new ResponseException(300, "What the fetch");
+    }
+
 
 //    public Pet addPet(Pet pet) throws ResponseException {
 //        var path = "/pet";

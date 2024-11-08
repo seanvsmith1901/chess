@@ -278,6 +278,7 @@ public class MySqlDataAccess implements DataAccess {
         var currentGameObject = getGame(currentGame.gameName()); // make sure the game exists and is in the data base
         var blackUsername = currentGameObject.blackUsername();
         var whiteUsername = currentGameObject.whiteUsername();
+
         if (playerColor.equals("WHITE") || playerColor.equals("white")) {
             if (currentGame.whiteUsername() == null) {
                 whiteUsername = username;

@@ -129,27 +129,27 @@ public class ChessClient {
         assertSignedIn();
         if (params.length == 2) {
             var teamColor = params[1];
-            var gameListID = Integer.parseInt(params[0]);
-            var gameID = gamesList.get(gameListID).gameID();
+            var input = Integer.parseInt(params[0]);
+            var gameID = gamesList.get(input-1).gameID();
             var joinData = new JoinData(teamColor, gameID);
             var thisGame = server.joinGame(joinData, authToken);
 
-            System.out.println("Success! You have joined " + gamesList.get(gameListID).gameName() + " as color " + teamColor);
+            System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
             out.print(ERASE_SCREEN);
             return drawBoard(thisGame);
         }
 
-        throw new ResponseException(400, "You are not signed in");
+        throw new ResponseException(400, " check that you entered a team color");
     }
 
     public String observeGame(String... params) throws ResponseException {
         assertSignedIn();
         if (params.length == 1) {
-            var gameID = Integer.parseInt(params[0]);
-            var gameListID = Integer.parseInt(params[1]);
-            var joinData = new JoinData(null, gameID);
-            var thisGame = server.joinGame(joinData, authToken);
-            System.out.println("Success! You are observing " + gamesList.get(gameListID).gameName() + " as an observer");
+            var gamesListID = Integer.parseInt(params[0]);
+
+            var joinData = new JoinData(null, gamesListID);
+            var thisGame = server.observeGame(joinData, authToken);
+            System.out.println("Success! You are observing " + gamesList.get(gamesListID).gameName() + " as an observer");
             return drawBoard(thisGame);
         }
         throw new ResponseException(400, "You are not signed in or your inputs are wrong. get wrecked.");
@@ -352,6 +352,6 @@ public class ChessClient {
         }
         out.print(RESET_TEXT_COLOR);
         out.print(RESET_BG_COLOR);
-        return out.toString();
+        return "";
     }
 }
