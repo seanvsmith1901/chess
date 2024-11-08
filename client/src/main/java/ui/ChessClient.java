@@ -119,6 +119,7 @@ public class ChessClient {
         assertSignedIn();
         if (params.length == 0) {
             var games =  server.getGames(authToken);
+            gamesList.clear(); // make sure its empty when we start
             gamesList.addAll(games.games()); // keeps track of the order in which they were listed
             return games.toString();
         }
