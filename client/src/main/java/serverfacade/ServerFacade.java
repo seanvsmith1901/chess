@@ -44,9 +44,9 @@ public class ServerFacade {
             return (this.makeRequest("POST", path, newUser, AuthData.class, authToken));
         }
         catch (ResponseException e) {
-            System.out.println(e.getMessage());
+            //System.out.println("That user does not exist");
+            throw new ResponseException(300, "That user does not exist");
         }
-        throw new ResponseException(300, "What the fetch");
     }
 
     public Object logOut(String authToken) throws ResponseException {
@@ -55,9 +55,8 @@ public class ServerFacade {
             return (this.makeRequest("DELETE", path, authToken, String.class, authToken));
         }
         catch (ResponseException e) {
-            System.out.println(e.getMessage());
+            throw new ResponseException(300, "You must login first");
         }
-        throw new ResponseException(300, "What the fetch");
     }
 
     public GameCreated createGame(GameCreationData newGame, String authToken) throws ResponseException {
@@ -66,9 +65,8 @@ public class ServerFacade {
             return this.makeRequest("POST", path, newGame, GameCreated.class, authToken);
         }
         catch (ResponseException e) {
-            System.out.println(e.getMessage());
+            throw new ResponseException(300, "That game already exists");
         }
-        throw new ResponseException(300, "What the fetch");
     }
 
     public GamesList getGames(String authToken) throws ResponseException {
@@ -78,9 +76,8 @@ public class ServerFacade {
             return (this.makeRequest("GET", path, null, GamesList.class, authToken));
         }
         catch (ResponseException e) {
-            System.out.println(e.getMessage());
+            throw new ResponseException(300, "you need to login first");
         }
-        throw new ResponseException(300, "What the fetch");
     }
 
     public GameData joinGame(JoinData joinGame, String authToken) throws ResponseException {
@@ -89,9 +86,8 @@ public class ServerFacade {
             return this.makeRequest("PUT", path, joinGame, GameData.class, authToken);
         }
         catch (ResponseException e) {
-            System.out.println(e.getMessage());
+            throw new ResponseException(300, "That game does not exist - please enter in a different ID");
         }
-        throw new ResponseException(300, "What the fetch");
     }
 
     public GameData observeGame(JoinData joinGame, String authToken) throws ResponseException {
@@ -100,9 +96,8 @@ public class ServerFacade {
             return this.makeRequest("POST", path, joinGame, GameData.class, authToken);
         }
         catch (ResponseException e) {
-            System.out.println(e.getMessage());
+            throw new ResponseException(300, "that game does not exist or you are not logged in");
         }
-        throw new ResponseException(300, "What the fetch");
     }
 
     public void resetDataBase() throws ResponseException { // if this ever throws an exception ill end up on the news
@@ -111,7 +106,7 @@ public class ServerFacade {
             this.makeRequest("DELETE", path, null, null, null);
         }
         catch (ResponseException e) {
-            System.out.println(e.getMessage());
+            throw new ResponseException(300, "if this goes off congrats hacker we are tracking your IP now");
         }
     }
 

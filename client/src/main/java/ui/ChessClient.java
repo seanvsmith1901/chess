@@ -148,9 +148,11 @@ public class ChessClient {
         if (params.length == 1) {
             var gamesListID = Integer.parseInt(params[0]);
 
-            var joinData = new JoinData(null, gamesListID);
+            var gameID = gamesList.get(gamesListID-1).gameID();
+            var joinData = new JoinData(null, gameID);
             var thisGame = server.observeGame(joinData, authToken);
-            System.out.println("Success! You are observing " + gamesList.get(gamesListID).gameName() + " as an observer");
+
+            System.out.println("Success! You are observing " + gamesList.get(gameID).gameName() + " as an observer");
             return drawBoard(thisGame);
         }
         throw new ResponseException(400, "You are not signed in or your inputs are wrong. get wrecked.");
