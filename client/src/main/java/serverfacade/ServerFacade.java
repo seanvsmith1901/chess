@@ -11,6 +11,8 @@ import model.*;
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
+import java.util.Objects;
+
 import serializer.*;
 public class ServerFacade {
 
@@ -33,9 +35,8 @@ public class ServerFacade {
             return (this.makeRequest("POST", path, newUser, AuthData.class, null));
         }
         catch (ResponseException e) {
-            System.out.println(e.getMessage());
+            throw new ResponseException(300, "looks like that user already exists. be more creative.");
         }
-        throw new ResponseException(300, "What the fetch");
     }
 
     public AuthData login(LoginData newUser, String authToken) throws ResponseException {
@@ -86,7 +87,12 @@ public class ServerFacade {
             return this.makeRequest("PUT", path, joinGame, GameData.class, authToken);
         }
         catch (ResponseException e) {
-            throw new ResponseException(300, "That game does not exist - please enter in a different ID");
+            if(Objects.equals(e.getMessage(), "failure: 403")) {
+                throw new ResponseException(300, "That spot is already taken. Join as a different color or observe");
+            }
+            else {
+                throw new ResponseException(300, "that game does not exist. try a different one");
+            }
         }
     }
 

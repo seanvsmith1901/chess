@@ -99,7 +99,7 @@ public class ChessClient {
             assertSignedIn();
             state = State.SIGNEDOUT;
             var newAuthData = server.logOut(authToken);
-            return String.format("You signed out as %s.", newAuthData);
+            return ("You signed out");
         }
         throw new ResponseException(400, "you aint signed in boy");
     }
@@ -131,13 +131,18 @@ public class ChessClient {
         if (params.length == 2) {
             var teamColor = params[1];
             var input = Integer.parseInt(params[0]);
-            var gameID = gamesList.get(input-1).gameID();
-            var joinData = new JoinData(teamColor, gameID);
-            var thisGame = server.joinGame(joinData, authToken);
+            if(input > gamesList.size()) {
+                throw new ResponseException(300, "That game does not exist! please try again");
+            }
+            else {
+                var gameID = gamesList.get(input-1).gameID();
+                var joinData = new JoinData(teamColor, gameID);
+                var thisGame = server.joinGame(joinData, authToken);
 
-            System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
-            out.print(ERASE_SCREEN);
-            return drawBoard(thisGame);
+                System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
+                out.print(ERASE_SCREEN);
+                return drawBoard(thisGame);
+            }
         }
 
         throw new ResponseException(400, " check that you entered a team color");
@@ -147,13 +152,18 @@ public class ChessClient {
         assertSignedIn();
         if (params.length == 1) {
             var gamesListID = Integer.parseInt(params[0]);
+            if (gamesListID > gamesList.size()) {
+                throw new ResponseException(300, "That game does not exist! please try again");
+            }
+            else {
+                var gameID = gamesList.get(gamesListID-1).gameID();
+                var joinData = new JoinData(null, gameID);
+                var thisGame = server.observeGame(joinData, authToken);
 
-            var gameID = gamesList.get(gamesListID-1).gameID();
-            var joinData = new JoinData(null, gameID);
-            var thisGame = server.observeGame(joinData, authToken);
+                System.out.println("Success! You are observing " + gamesList.get(gameID-1).gameName() + " as an observer");
+                return drawBoard(thisGame);
+            }
 
-            System.out.println("Success! You are observing " + gamesList.get(gameID).gameName() + " as an observer");
-            return drawBoard(thisGame);
         }
         throw new ResponseException(400, "You are not signed in or your inputs are wrong. get wrecked.");
     }
