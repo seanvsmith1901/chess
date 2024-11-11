@@ -219,6 +219,7 @@ public class ChessClient {
                 printBoardCell(row, col, board, whiteTop);
             }
         }
+        out.print(RESET_BG_COLOR);
         out.print("\n"); // gotta make sure the spacing works out.
     }
 
