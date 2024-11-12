@@ -110,7 +110,7 @@ public class ChessClient {
             var gameName = params[0];
             GameCreationData newGame = new GameCreationData(gameName);
             var thisGame = server.createGame(newGame, authToken);
-            return String.format("You have joined game %s", thisGame);
+            return String.format("You have created game %s", thisGame);
         }
         throw new ResponseException(400, "mnake sure you have inlcuded a game name");
     }
@@ -204,12 +204,13 @@ public class ChessClient {
         ChessBoard board = game.game().getBoard(); // gets our board
         String[] topAndBottomLetters = {"   ", " H  ", " G  ", " F  ", "E ", "  D ", " C ", "  B ", "  A ", "   "};
 
-        // prints the white rows first, then the black top one
+        // this goes through row by row
+
         for (int i = 0; i < 10; i++) {
             printBoardRow(i, topAndBottomLetters, board, true); // white
         }
 
-        for (int i = 9; i >= 0; i--) {
+        for (int i = 0; i < 10; i++) {
             printBoardRow(i, topAndBottomLetters, board, false); // black
         }
 
@@ -250,7 +251,7 @@ public class ChessClient {
 
     // alternates backround colors, gets the peice if there is and controls backround color.
     private void printBoardCell(int row, int col, ChessBoard board, boolean whiteTop) {
-        String bgColor = getCellBackgroundColor(row, col);
+        String bgColor = getCellBackgroundColor(row, col, whiteTop);
         out.print(bgColor);
 
         ChessPosition position = new ChessPosition(row, col);
@@ -264,15 +265,10 @@ public class ChessClient {
     }
 
     // condesned version of the logic for getting backround color
-    private String getCellBackgroundColor(int row, int col) {
-        if ((row + col) % 2 == 1) { // gosh this logic makes me feel so smart.
-            return SET_BG_COLOR_BLUE;
-        }
-        else {
-            return SET_BG_COLOR_WHITE;
-        }
-    }
+    private String getCellBackgroundColor(int row, int col, boolean whiteTop) {
+        return (row + col) % 2 == 1 ? SET_BG_COLOR_BLUE : SET_BG_COLOR_WHITE;
 
+    }
     // grabs the string representation of the chesspiece
     private String getPieceRepresentation(ChessPiece piece) {
         if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
