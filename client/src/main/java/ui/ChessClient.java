@@ -202,15 +202,15 @@ public class ChessClient {
 
     private String drawBoard(GameData game) throws ResponseException {
         ChessBoard board = game.game().getBoard(); // gets our board
-        String[] topAndBottomLetters = {"   ", " H  ", " G  ", " F  ", "E ", "  D ", " C ", "  B ", "  A ", "   "};
+        String[] topAndBottomLetters = {"   ", " A  ", " B  ", " C  ", "D ", "  E ", " F ", "  G ", "  H ", "   "};
 
         // this goes through row by row
 
         for (int i = 0; i < 10; i++) {
-            printBoardRow(i, topAndBottomLetters, board, true); // white
+            printBoardRow(i, topAndBottomLetters, board, true); // white maybe
         }
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 9; i >= 0; i--) {
             printBoardRow(i, topAndBottomLetters, board, false); // black
         }
 
@@ -221,17 +221,33 @@ public class ChessClient {
 
     private void printBoardRow(int row, String[] topAndBottomLetters, ChessBoard board, boolean whiteTop) {
         // if its white top, its forward, if not we have to reverse the letters.
-        String[] adjustedLetters = whiteTop ? topAndBottomLetters : reverseArray(topAndBottomLetters);
-
-        for (int col = 0; col < 10; col++) {
-            if (row == 0 || row == 9) { // catches top and bottom edgecases
-                printTopAndBottomRow(col, adjustedLetters);
-            } else if (col == 0 || col == 9) { // catches left and right edgecases
-                printSideColumn(row);
-            } else { // this is where most of the bogos are binted
-                printBoardCell(row, col, board, whiteTop);
+        // never reverse the letters like that, thats cringe
+        if (whiteTop) {
+            for(int col = 9; col >= 0; col--) {
+                if (row == 0 || row == 9) { // catches top and bottom edgecases
+                    printTopAndBottomRow(col, topAndBottomLetters);
+                } else if (col == 0 || col == 9) { // catches left and right edgecases
+                    printSideColumn(row);
+                } else { // this is where most of the bogos are binted
+                    printBoardCell(row, col, board);
+                }
             }
         }
+
+        else {
+            for (int col = 0; col < 10; col++) {
+                if (row == 0 || row == 9) { // catches top and bottom edgecases
+                    printTopAndBottomRow(col, topAndBottomLetters);
+                } else if (col == 0 || col == 9) { // catches left and right edgecases
+                    printSideColumn(row);
+                } else { // this is where most of the bogos are binted
+                    printBoardCell(row, col, board);
+                }
+            }
+        }
+
+
+
         out.print(RESET_BG_COLOR);
         out.print("\n"); // gotta make sure the spacing works out.
     }
@@ -250,8 +266,8 @@ public class ChessClient {
     }
 
     // alternates backround colors, gets the peice if there is and controls backround color.
-    private void printBoardCell(int row, int col, ChessBoard board, boolean whiteTop) {
-        String bgColor = getCellBackgroundColor(row, col, whiteTop);
+    private void printBoardCell(int row, int col, ChessBoard board) {
+        String bgColor = getCellBackgroundColor(row, col);
         out.print(bgColor);
 
         ChessPosition position = new ChessPosition(row, col);
@@ -265,8 +281,8 @@ public class ChessClient {
     }
 
     // condesned version of the logic for getting backround color
-    private String getCellBackgroundColor(int row, int col, boolean whiteTop) {
-        return (row + col) % 2 == 1 ? SET_BG_COLOR_BLUE : SET_BG_COLOR_WHITE;
+    private String getCellBackgroundColor(int row, int col) {
+        return (row + col) % 2 == 0 ? SET_BG_COLOR_BLUE : SET_BG_COLOR_WHITE;
 
     }
     // grabs the string representation of the chesspiece
