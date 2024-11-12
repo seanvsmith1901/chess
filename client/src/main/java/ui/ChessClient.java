@@ -220,33 +220,22 @@ public class ChessClient {
     }
 
     private void printBoardRow(int row, String[] topAndBottomLetters, ChessBoard board, boolean whiteTop) {
-        // if its white top, its forward, if not we have to reverse the letters.
-        // never reverse the letters like that, thats cringe
-        if (whiteTop) {
-            for(int col = 9; col >= 0; col--) {
-                if (row == 0 || row == 9) { // catches top and bottom edgecases
-                    printTopAndBottomRow(col, topAndBottomLetters);
-                } else if (col == 0 || col == 9) { // catches left and right edgecases
-                    printSideColumn(row);
-                } else { // this is where most of the bogos are binted
-                    printBoardCell(row, col, board);
-                }
+
+        int startCol = whiteTop ? 9 : 0;
+        int endCol = whiteTop ? -1 : 10;
+        int step = whiteTop? -1 : 1;
+
+        for (int col = startCol; col != endCol; col+=step) {
+            if (row == 0 || row == 9) {
+                printTopAndBottomRow(col, topAndBottomLetters);
+            }
+            else if (col == 0 || col == 9) {
+                printSideColumn(row);
+            }
+            else {
+                printBoardCell(row, col, board);
             }
         }
-
-        else {
-            for (int col = 0; col < 10; col++) {
-                if (row == 0 || row == 9) { // catches top and bottom edgecases
-                    printTopAndBottomRow(col, topAndBottomLetters);
-                } else if (col == 0 || col == 9) { // catches left and right edgecases
-                    printSideColumn(row);
-                } else { // this is where most of the bogos are binted
-                    printBoardCell(row, col, board);
-                }
-            }
-        }
-
-
 
         out.print(RESET_BG_COLOR);
         out.print("\n"); // gotta make sure the spacing works out.
@@ -307,13 +296,4 @@ public class ChessClient {
             };
         }
     }
-
-    private String[] reverseArray(String[] array) {
-        String[] reversed = new String[array.length];
-        for (int i = 0; i < array.length; i++) {
-            reversed[i] = array[array.length - 1 - i];
-        }
-        return reversed;
-    }
-
 }
