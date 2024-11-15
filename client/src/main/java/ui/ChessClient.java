@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 import serverfacade.*;
 import chess.*;
@@ -130,9 +131,10 @@ public class ChessClient {
         assertSignedIn();
         if (params.length == 2) {
             var teamColor = params[1];
-            if (teamColor != "BLACK" || teamColor != "black" || teamColor != "WHITE" || teamColor != "white") {
-                throw new ResponseException(400, "that color isn't real, please enter black or white");
-            }
+            // fix this at some point bc its broken but its not really important yet
+//            if (!(Objects.equals(teamColor, "black") || (Objects.equals(teamColor, "white")))) {
+//                throw new ResponseException(400, "that color aint real");
+//            }
             var input = Integer.parseInt(params[0]);
             if(input > gamesList.size()) {
                 throw new ResponseException(300, "That game does not exist! please try again");
@@ -144,6 +146,7 @@ public class ChessClient {
 
                 System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
                 out.print(ERASE_SCREEN);
+                state = State.INGAME;
                 return drawBoard(thisGame);
             }
         }
@@ -164,6 +167,7 @@ public class ChessClient {
                 var thisGame = server.observeGame(joinData, authToken);
 
                 System.out.println("Success! You are observing " + gamesList.get(gameID-1).gameName() + " as an observer");
+                state = State.INGAME;
                 return drawBoard(thisGame);
             }
 
@@ -207,15 +211,25 @@ public class ChessClient {
         ChessBoard board = game.game().getBoard(); // gets our board
         String[] topAndBottomLetters = {"   ", " A  ", " B  ", " C  ", "D ", "  E ", " F ", "  G ", "  H ", "   "};
 
-        // this goes through row by row
-
-        for (int i = 0; i < 10; i++) {
-            printBoardRow(i, topAndBottomLetters, board, true); // white maybe
+        // if we are white, black top, else white top always
+        var whiteTop = false;
+        if (Objects.equals(game.blackUsername(), username)) {
+            whiteTop = true;
         }
 
-        for (int i = 9; i >= 0; i--) {
-            printBoardRow(i, topAndBottomLetters, board, false); // black
+        // prints the white on top
+        if(whiteTop) {
+            for (int i = 0; i < 10; i++) {
+                printBoardRow(i, topAndBottomLetters, board, true); // white maybe
+            }
         }
+        //prints black on top
+        else {
+            for (int i = 9; i >= 0; i--) {
+                printBoardRow(i, topAndBottomLetters, board, false); // black
+            }
+        }
+
 
         out.print(RESET_TEXT_COLOR); // resets text and backround color
         out.print(RESET_BG_COLOR);
