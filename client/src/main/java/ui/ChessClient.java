@@ -130,6 +130,9 @@ public class ChessClient {
         assertSignedIn();
         if (params.length == 2) {
             var teamColor = params[1];
+            if (teamColor != "BLACK" || teamColor != "black" || teamColor != "WHITE" || teamColor != "white") {
+                throw new ResponseException(400, "that color isn't real, please enter black or white");
+            }
             var input = Integer.parseInt(params[0]);
             if(input > gamesList.size()) {
                 throw new ResponseException(300, "That game does not exist! please try again");
