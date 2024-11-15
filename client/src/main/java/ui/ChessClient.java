@@ -146,7 +146,7 @@ public class ChessClient {
 
                 System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
                 out.print(ERASE_SCREEN);
-                state = State.INGAME;
+                // state = State.INGAME; do this AFTER we get confirmation from websocket
                 return drawBoard(thisGame);
             }
         }
@@ -167,7 +167,6 @@ public class ChessClient {
                 var thisGame = server.observeGame(joinData, authToken);
 
                 System.out.println("Success! You are observing " + gamesList.get(gameID-1).gameName() + " as an observer");
-                state = State.INGAME;
                 return drawBoard(thisGame);
             }
 
@@ -184,7 +183,8 @@ public class ChessClient {
                     - help - with possible commands
                     """;
         }
-        return """
+        else if (state == State.SIGNEDIN) {
+            return """
                 - create <NAME> - a game
                 - logout - when you are done
                 - list - games
@@ -193,6 +193,19 @@ public class ChessClient {
                 - quit - playing chess
                 - help - with possible commands
                 """;
+        }
+        else {
+            return """
+                - redraw - redraws the chessboard
+                - leave - removes you from chessgame
+                - makeMove <PIECE (Q,K)>, <endPosition>
+                - resign - want to give this one up cheif?
+                - highlight legal moves <PIECE <Q,K>
+                - help - with possible commands
+                """;
+
+        }
+
     }
 
     private void assertSignedIn() throws ResponseException {
