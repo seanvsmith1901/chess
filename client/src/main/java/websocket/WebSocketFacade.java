@@ -2,12 +2,15 @@ package websocket;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import model.*;
+
+import websocket.messages.ServerMessage;
+import websocket.commands.UserGameCommand;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
@@ -42,6 +45,16 @@ public class WebSocketFacade extends Endpoint {
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
+
+    public void joinGame(String authToken, Integer gameID) throws ResponseException {
+        try {
+            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            throw new ResponseException(500, "not sure what went wrong but try again");
+        }
+    }
+
 
 //    public void enterPetShop(String visitorName) throws ResponseException {
 //        try {

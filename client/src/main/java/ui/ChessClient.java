@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+
+import websocket.NotificationHandler;
+import websocket.WebSocketFacade;
+
 import serverfacade.*;
 import chess.*;
 
@@ -29,12 +33,15 @@ public class ChessClient {
     private static final int BOARD_SIZE_IN_SQAURES = 8;
     private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
 
+    private NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
 
 
 
-    public ChessClient(String serverUrl) {
+    public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+        this.notificationHandler = notificationHandler;
 
     }
 
@@ -58,6 +65,13 @@ public class ChessClient {
                 case "list" -> listGames(params);
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
+
+                case "redraw" -> redrawBoard(params);
+                case "leave" -> leaveGame(params);
+                case "makeMove" -> makeMove(params);
+                case "resign" -> resign(params);
+                case "highlight" -> highlightMoves(params);
+
 
                 case "quit" -> "quit";
                 default -> help();
@@ -143,6 +157,9 @@ public class ChessClient {
                 var gameID = gamesList.get(input-1).gameID();
                 var joinData = new JoinData(teamColor, gameID);
                 var thisGame = server.joinGame(joinData, authToken);
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                //ws.joinGame(authToken, gameID);
+
 
                 System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
                 out.print(ERASE_SCREEN);
@@ -326,4 +343,26 @@ public class ChessClient {
             };
         }
     }
+
+    public String redrawBoard(String... params) throws ResponseException {
+        return "";
+
+    }
+    public String leaveGame(String... params) throws ResponseException {
+        return "";
+
+    }
+    public String makeMove(String... params) throws ResponseException {
+        return "";
+
+    }
+    public String resign(String... params) throws ResponseException {
+        return "";
+
+    }
+    public String highlightMoves(String... params) throws ResponseException {
+        return "";
+
+    }
+
 }

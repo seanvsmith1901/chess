@@ -14,6 +14,8 @@ import service.*;
 import model.*;
 import spark.*;
 
+import webSocket.WebSocketHandler;
+
 import java.util.HashMap;
 import java.util.Objects;
 import serializer.*;
@@ -22,11 +24,12 @@ public class Server {
 
     private final Services services;
     private static Gson serializer = new Gson();
+    private final WebSocketHandler webSocketHandler;
 
 
     public Server() {
         this.services = new Services(new MySqlDataAccess());
-
+        this.webSocketHandler = new WebSocketHandler();
         serializer = new GsonBuilder() // gets me my custom gson object.
                 .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapSerializer())
                 .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapDeserializer())
@@ -40,6 +43,8 @@ public class Server {
         Spark.staticFiles.location("web");
         Spark.init();
 
+
+
         // set up all of our curl paths
         Spark.delete("/db", this::clearDataBase); // clear application
         Spark.post("/user", this::registerUser); // Register a new user (returns auth token)
@@ -49,6 +54,8 @@ public class Server {
         Spark.post("/game", this::createGame); // creates a new game
         Spark.put("/game", this::joinGame); // verifies that game exists, and adds caller as the requested color.
         Spark.post("/observe", this::observeGame); // for when a player just wants to observe a game.
+
+        Spark.webSocket("/ws", webSocketHandler);
 
 
         Spark.awaitInitialization();

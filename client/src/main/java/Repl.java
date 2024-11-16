@@ -2,13 +2,17 @@
 import serverfacade.State;
 import ui.ChessClient;
 
+import websocket.NotificationHandler;
+import websocket.messages.ServerMessage;
+import ui.EscapeSequences;
+
 import java.util.Scanner;
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private final ChessClient client;
 
     public Repl(String serverUrl) {
-        client = new ChessClient(serverUrl);
+        client = new ChessClient(serverUrl, this);
     }
 
     public void run() {
@@ -29,6 +33,12 @@ public class Repl {
             }
         }
         System.out.println();
+    }
+
+    public void notify(ServerMessage notification) {
+        System.out.println(notification); // not sure how to do this.
+        //System.out.println(RED + notification.message());
+        //printPrompt();
     }
 
     private void printPrompt() {
