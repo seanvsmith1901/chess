@@ -158,7 +158,7 @@ public class ChessClient {
                 var joinData = new JoinData(teamColor, gameID);
                 //var thisGame = server.joinGame(joinData, authToken);
                 ws = new WebSocketFacade(serverUrl, notificationHandler);
-                ws.joinGame(authToken, gameID);
+                ws.joinGame(authToken, gameID, username);
 
 
                 System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
