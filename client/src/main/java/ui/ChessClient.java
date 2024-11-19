@@ -156,15 +156,16 @@ public class ChessClient {
             else {
                 var gameID = gamesList.get(input-1).gameID();
                 var joinData = new JoinData(teamColor, gameID);
-                var thisGame = server.joinGame(joinData, authToken);
+                //var thisGame = server.joinGame(joinData, authToken);
                 ws = new WebSocketFacade(serverUrl, notificationHandler);
-                //ws.joinGame(authToken, gameID);
+                ws.joinGame(authToken, gameID);
 
 
                 System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
                 out.print(ERASE_SCREEN);
                 // state = State.INGAME; do this AFTER we get confirmation from websocket
-                return drawBoard(thisGame);
+                //return drawBoard(thisGame);
+                return "";
             }
         }
 

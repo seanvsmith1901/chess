@@ -40,6 +40,8 @@ public class Server {
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
+        Spark.webSocket("/ws", webSocketHandler);
+
         Spark.staticFiles.location("web");
         Spark.init();
 
@@ -54,9 +56,6 @@ public class Server {
         Spark.post("/game", this::createGame); // creates a new game
         Spark.put("/game", this::joinGame); // verifies that game exists, and adds caller as the requested color.
         Spark.post("/observe", this::observeGame); // for when a player just wants to observe a game.
-
-        Spark.webSocket("/ws", webSocketHandler);
-
 
         Spark.awaitInitialization();
         return Spark.port(); // required for TA tests
