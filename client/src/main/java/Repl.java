@@ -36,9 +36,10 @@ public class Repl implements NotificationHandler {
     }
 
     public void notify(ServerMessage notification) {
-        System.out.println(notification); // not sure how to do this.
-        //System.out.println(RED + notification.message());
-        //printPrompt();
+        if (notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+            System.out.println(notification.message);
+        }
+
     }
 
     private void printPrompt() {

@@ -1,5 +1,6 @@
 package webSocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ public class Connection {
         this.session = session;
     }
 
-    public void send(String msg) throws IOException {
-        session.getRemote().sendString(msg);
+    public void send(Object msgObj) throws IOException {
+        session.getRemote().sendString(new Gson().toJson(msgObj));
     }
 }

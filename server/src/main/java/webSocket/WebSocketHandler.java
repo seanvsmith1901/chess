@@ -33,7 +33,7 @@ public class WebSocketHandler {
 
     private void enter(String authToken, Integer gameID, String username, Session session) throws IOException {
         connections.add(authToken, session);
-        var message = String.format("%s has joined the game", username);
+        var message = String.format("%s has joined the game %s", username, gameID);
         var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(authToken, serverMessage);
 
