@@ -26,14 +26,14 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
-            case CONNECT -> enter(action.getAuthToken(), action.getGameID(), action.getUsername(), session);
+            case CONNECT -> enter(action.getAuthToken(), action.getGameID(), action.getUsername(), action.getTeamColor(), session);
             //case EXIT -> exit(action.visitorName());
         }
     }
 
-    private void enter(String authToken, Integer gameID, String username, Session session) throws IOException {
+    private void enter(String authToken, Integer gameID, String username, String teamColor, Session session) throws IOException {
         connections.add(authToken, session);
-        var message = String.format("%s has joined the game %s", username, gameID);
+        var message = String.format("%s has joined the game %s as %s", username, gameID, teamColor);
         var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(authToken, serverMessage);
 
