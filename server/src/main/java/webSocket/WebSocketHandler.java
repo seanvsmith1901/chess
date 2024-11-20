@@ -33,6 +33,9 @@ public class WebSocketHandler {
 
     private void enter(String authToken, Integer gameID, String username, String teamColor, Session session) throws IOException {
         connections.add(authToken, session);
+        if(teamColor == null) {
+            teamColor = "observer";
+        }
         var message = String.format("%s has joined the game %s as %s", username, gameID, teamColor);
         var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(authToken, serverMessage);

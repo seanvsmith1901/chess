@@ -47,6 +47,9 @@ public class Repl implements NotificationHandler {
         if (client.getState() == State.SIGNEDIN) {
             statement += "[SIGNED IN]";
         }
+        else if (client.getState() == State.INGAME) {
+            statement += "[IN GAME]";
+        }
         else {
             statement += "[NOT SIGNED IN]";
         }

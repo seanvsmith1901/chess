@@ -161,9 +161,8 @@ public class ChessClient {
                 ws.joinGame(authToken, gameID, username, teamColor);
                 System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
                 out.print(ERASE_SCREEN);
-                // state = State.INGAME; do this AFTER we get confirmation from websocket
-                //return drawBoard(thisGame);
-                return "";
+                state = State.INGAME; //do this AFTER we get confirmation from websocket
+                return drawBoard(thisGame);
             }
         }
 
@@ -181,8 +180,10 @@ public class ChessClient {
                 var gameID = gamesList.get(gamesListID-1).gameID();
                 var joinData = new JoinData(null, gameID);
                 var thisGame = server.observeGame(joinData, authToken);
-
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                ws.joinGame(authToken, gameID, username, null);
                 System.out.println("Success! You are observing " + gamesList.get(gameID-1).gameName() + " as an observer");
+                state = State.INGAME; //do this AFTER we get confirmation from websocket
                 return drawBoard(thisGame);
             }
 
