@@ -36,7 +36,7 @@ public class GameService {
         dataAccess.removeUser(gameName, username);
     }
 
-    public void updateGame(Integer gameID, String username, String peice, String newMove, String teamColor) throws DataAccessException {
+    public Object updateGame(Integer gameID, String username, String peice, String newMove, String teamColor) throws DataAccessException {
         var currentGame = dataAccess.getGameFromID(String.valueOf(gameID));
 
         var modifiiedGame = currentGame.game();
@@ -81,7 +81,7 @@ public class GameService {
         if(currRow == 'H' || currRow == 'h') {
             currRow = 8;
         }
-        boolean moveMade = true;
+        
         ChessPosition newPosition = new ChessPosition(currRow, Character.getNumericValue(currCol));
         ChessMove newChessMove = new ChessMove(startPosition, newPosition, null);
         try {
@@ -90,6 +90,7 @@ public class GameService {
                     try {
                         modifiiedGame.makeMove(newChessMove);
                         System.out.println("WE HAVE MADE A MOVE! SHOULD ONLY HAPPEN ONCE");
+                        return modifiiedGame;
                     } catch (InvalidMoveException e) {
                         ; // do nothing for now but we will adjust this later.
                     }
@@ -99,6 +100,7 @@ public class GameService {
         catch (Exception e) {
             System.out.println("WHEEE");
         }
+        throw new DataAccessException("that didn't work and I have no idea what you did. perhaps try again");
 
     }
 

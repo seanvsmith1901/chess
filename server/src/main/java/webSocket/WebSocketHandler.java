@@ -16,6 +16,9 @@ import service.*;
 import java.io.IOException;
 import java.util.Timer;
 
+import serializer.GsonObject;
+
+
 
 @WebSocket
 public class WebSocketHandler {
@@ -23,9 +26,11 @@ public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
 
     Services services; // allows us to modify the database from webSocketHandler.
+    GsonObject serializer;
 
     public WebSocketHandler(Services services) {
         this.services = services;
+        this.serializer = new GsonObject();
     }
 
 
@@ -67,7 +72,7 @@ public class WebSocketHandler {
 
     private void makeMove(String authToken, Integer gameID, String username, String teamColor, Session session, String peice, String newMove) throws IOException {
         try {
-            services.makeMove(gameID, username, peice, newMove, teamColor);
+            var gameData = services.makeMove(gameID, username, peice, newMove, teamColor);
             var message = String.format("%s has left the game %s as %s", username, gameID, teamColor);
             var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.broadcast(authToken, gameID, serverMessage);
