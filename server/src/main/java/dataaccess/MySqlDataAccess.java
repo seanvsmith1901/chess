@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
+
 import com.google.gson.GsonBuilder;
 import org.mindrot.jbcrypt.BCrypt;
 import serializer.*;
@@ -298,6 +300,24 @@ public class MySqlDataAccess implements DataAccess {
         }
         var statement = "UPDATE gameData SET whiteUsername = ?, blackUsername = ? WHERE id = ?";
         executeUpdate(statement, whiteUsername, blackUsername, currentGame.gameID());
+    }
+
+    public void removeUser(String gameName, String username) throws DataAccessException {
+        var currentGameObject = getGame(gameName); // make sure the game exists and is in the data base
+        var gameID = currentGameObject.gameID();
+        var whiteUsername = currentGameObject.whiteUsername();
+        var blackUsername = currentGameObject.blackUsername();
+
+        if(Objects.equals(currentGameObject.whiteUsername(), username)) {
+            whiteUsername = null;
+        }
+        if(Objects.equals(currentGameObject.blackUsername(), username)) {
+            blackUsername = null;
+        }
+
+        var statement = "UPDATE gameData SET whiteUsername = ?, blackUsername = ? WHERE id = ?";
+        executeUpdate(statement, whiteUsername, blackUsername, gameID);
+
     }
 
 

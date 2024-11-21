@@ -30,6 +30,7 @@ public class ConnectionManager {
         Map<String, Connection> gameConnections = this.connections.get(gameName);
         gameConnections.remove(visitorName);
         connections.put(gameName, gameConnections);
+        ;
     }
 
     public void broadcast(String excludeVisitorName, Integer gameName, ServerMessage notification) throws IOException {

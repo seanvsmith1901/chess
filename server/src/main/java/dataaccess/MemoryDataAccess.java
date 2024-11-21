@@ -135,6 +135,10 @@ public class MemoryDataAccess implements DataAccess {
         return userTokens.size();
     }
 
+    public void removeUser(String gameName, String userName) {
+        ; // will implement this later
+    }
+
 
 
 }

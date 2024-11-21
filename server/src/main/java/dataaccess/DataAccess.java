@@ -34,6 +34,8 @@ public interface DataAccess {
     AuthData getAuthObjectFromUsername(String username) throws DataAccessException;
 //
     int getUserCount() throws DataAccessException;
+
+    void removeUser(String gameName, String username) throws DataAccessException;
 //
 //
 

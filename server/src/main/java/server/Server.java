@@ -29,7 +29,7 @@ public class Server {
 
     public Server() {
         this.services = new Services(new MySqlDataAccess());
-        this.webSocketHandler = new WebSocketHandler();
+        this.webSocketHandler = new WebSocketHandler(services);
         serializer = new GsonBuilder() // gets me my custom gson object.
                 .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapSerializer())
                 .registerTypeAdapter(new TypeToken<HashMap<ChessPosition, ChessPiece>>(){}.getType(), new ChessPositionMapDeserializer())

@@ -31,6 +31,7 @@ public class ChessClient {
     private PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
     private GameData currentGame = null;
 
+    private String teamColor = null;
     private static final int BOARD_SIZE_IN_SQAURES = 8;
     private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
 
@@ -159,6 +160,7 @@ public class ChessClient {
                 var joinData = new JoinData(teamColor, gameID);
                 var thisGame = server.joinGame(joinData, authToken);
                 currentGame = thisGame;
+                this.teamColor = teamColor;
                 ws = new WebSocketFacade(serverUrl, notificationHandler);
                 ws.joinGame(authToken, gameID, username, teamColor);
                 System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
@@ -356,12 +358,21 @@ public class ChessClient {
     }
     public String leaveGame(String... params) throws ResponseException {
         // remove conneciton to webscoket and reset currentgmae to null. lets go.
-        ws.leaveGame(authToken, currentGame.gameID());
-
+        ws.leaveGame(authToken, currentGame.gameID(), username, currentGame.gameName());
+        return "You have left the game";
     }
     public String makeMove(String... params) throws ResponseException {
-        return "";
+        String piece = params[0];
+        String newMove = params[1];
+        Integer gameID = currentGame.gameID();
+        try {
+            ws.makeMove(authToken, gameID, username, teamColor, piece, newMove, currentGame.gameName());
+        }
+        catch (Exception e) {
+            System.out.println("something went wrong. IDK what. might not be a valid move. I'll fix this up more later. ");
+        }
 
+        return "";
     }
     public String resign(String... params) throws ResponseException {
         return "";

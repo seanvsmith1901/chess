@@ -27,4 +27,17 @@ public class GameService {
     public GameData getGameFromID(String gameID) throws DataAccessException { // gets the game from ID
         return dataAccess.getGameFromID(gameID);
     }
+
+    public void removeUser(String gameName, String username) throws DataAccessException {
+        dataAccess.removeUser(gameName, username);
+    }
+
+    public void updateGame(String gameName, String username, String peice, String newMove) throws DataAccessException {
+        var currentGame = dataAccess.getGame(gameName);
+        var modifiiedGame = currentGame.game();
+        var chessPiece = 
+        modifiiedGame.makeMove()
+
+    }
+
 }

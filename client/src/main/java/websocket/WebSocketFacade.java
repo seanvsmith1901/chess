@@ -48,16 +48,26 @@ public class WebSocketFacade extends Endpoint {
 
     public void joinGame(String authToken, Integer gameID, String username, String teamColor) throws ResponseException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, teamColor);
+            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, teamColor, null, null, null);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new ResponseException(500, "not sure what went wrong but try again");
         }
     }
 
-    public void leaveGame(String authToken, Integer gameID, String username) throws ResponseException {
+    public void leaveGame(String authToken, Integer gameID, String username, String gameName) throws ResponseException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, username, null);
+            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, username, null, null, null, gameName);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        }
+        catch (IOException ex) {
+            throw new ResponseException(500, "not sure what went wrong but try again");
+        }
+    }
+
+    public void makeMove(String authToken, Integer gameID, String username, String teamColor, String peiceType, String newMove, String gameName) throws ResponseException {
+        try {
+            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, username, teamColor, peiceType, newMove, gameName);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         }
         catch (IOException ex) {
