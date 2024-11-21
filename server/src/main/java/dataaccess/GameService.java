@@ -36,25 +36,13 @@ public class GameService {
         dataAccess.removeUser(gameName, username);
     }
 
-    public void updateGame(String gameName, String username, String peice, String newMove, String teamColor) throws DataAccessException {
-        var currentGame = dataAccess.getGame(gameName);
+    public void updateGame(Integer gameID, String username, String peice, String newMove, String teamColor) throws DataAccessException {
+        var currentGame = dataAccess.getGameFromID(String.valueOf(gameID));
 
         var modifiiedGame = currentGame.game();
 
-        var currColor = null;
+        ChessGame.TeamColor currColor = getTeamColor(teamColor, modifiiedGame);
 
-        if(Objects.equals(teamColor, "WHITE") || Objects.equals(teamColor, "white")) {
-            currColor = ChessGame.TeamColor.WHITE;
-        }
-        if(Objects.equals(teamColor, "BLACK") || Objects.equals(teamColor, "black")) {
-            currColor = ChessGame.TeamColor.BLACK;
-        }
-
-
-        if(modifiiedGame.getTeamTurn() != currColor) { // make sure the player can in fact make a move. 
-            throw new DataAccessException("Wait yo turn!");
-        }
-        
         var currentBoard = modifiiedGame.getBoard();
         var currPieceType = getPieceType(peice);
 
@@ -114,8 +102,24 @@ public class GameService {
 
     }
 
+    private static ChessGame.TeamColor getTeamColor(String teamColor, ChessGame modifiiedGame) throws DataAccessException {
+        ChessGame.TeamColor currColor = null;
 
-    
+        if(Objects.equals(teamColor, "WHITE") || Objects.equals(teamColor, "white")) {
+            currColor = ChessGame.TeamColor.WHITE;
+        }
+        if(Objects.equals(teamColor, "BLACK") || Objects.equals(teamColor, "black")) {
+            currColor = ChessGame.TeamColor.BLACK;
+        }
+
+
+        if(modifiiedGame.getTeamTurn() != currColor) { // make sure the player can in fact make a move. 
+            throw new DataAccessException("Wait yo turn!");
+        }
+        return currColor;
+    }
+
+
     private static ChessPiece.PieceType getPieceType(String peice) {
         var currPieceType = ChessPiece.PieceType.BISHOP;
 

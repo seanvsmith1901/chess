@@ -35,7 +35,7 @@ public class WebSocketHandler {
         switch (action.getCommandType()) {
             case CONNECT -> enter(action.getAuthToken(), action.getGameID(), action.getUsername(), action.getTeamColor(), session);
             case LEAVE -> leave(action.getAuthToken(), action.getGameID(), action.getUsername(), action.getTeamColor(), action.getGameName(), session);
-            case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameName(), action.getUsername(), action.getTeamColor(), session, action.getPeice(), action.getNewMove());
+            case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID(), action.getUsername(), action.getTeamColor(), session, action.getPeice(), action.getNewMove());
         }
     }
 
@@ -65,9 +65,12 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(String authToken, String gameName, String username, String teamColor, Session session, String peice, String newMove) throws IOException {
+    private void makeMove(String authToken, Integer gameID, String username, String teamColor, Session session, String peice, String newMove) throws IOException {
         try {
-            services.makeMove(gameName, username, peice, newMove, teamColor);
+            services.makeMove(gameID, username, peice, newMove, teamColor);
+            var message = String.format("%s has left the game %s as %s", username, gameID, teamColor);
+            var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(authToken, gameID, serverMessage);
         }
         catch (DataAccessException e) {
             System.out.println(e.getMessage());
