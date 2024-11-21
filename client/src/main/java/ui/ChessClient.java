@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
-
+import model.*;
 
 import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
@@ -29,6 +29,7 @@ public class ChessClient {
     private String username = "";
     private ArrayList<GameData> gamesList = new ArrayList<>();
     private PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+    private GameData currentGame = null;
 
     private static final int BOARD_SIZE_IN_SQAURES = 8;
     private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
@@ -157,6 +158,7 @@ public class ChessClient {
                 var gameID = gamesList.get(input-1).gameID();
                 var joinData = new JoinData(teamColor, gameID);
                 var thisGame = server.joinGame(joinData, authToken);
+                currentGame = thisGame;
                 ws = new WebSocketFacade(serverUrl, notificationHandler);
                 ws.joinGame(authToken, gameID, username, teamColor);
                 System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
@@ -180,6 +182,7 @@ public class ChessClient {
                 var gameID = gamesList.get(gamesListID-1).gameID();
                 var joinData = new JoinData(null, gameID);
                 var thisGame = server.observeGame(joinData, authToken);
+                currentGame = thisGame;
                 ws = new WebSocketFacade(serverUrl, notificationHandler);
                 ws.joinGame(authToken, gameID, username, null);
                 System.out.println("Success! You are observing " + gamesList.get(gameID-1).gameName() + " as an observer");
@@ -345,11 +348,15 @@ public class ChessClient {
     }
 
     public String redrawBoard(String... params) throws ResponseException {
-        return "";
+        if (currentGame == null) {
+            return "";
+        }
+        return drawBoard(currentGame);
 
     }
     public String leaveGame(String... params) throws ResponseException {
-        return "";
+        // remove conneciton to webscoket and reset currentgmae to null. lets go.
+        ws.leaveGame(authToken, currentGame.gameID());
 
     }
     public String makeMove(String... params) throws ResponseException {
