@@ -109,8 +109,8 @@ public class Services {
         gameService.removeUser(gameName, username);
     }
 
-    public void makeMove(String gameName, String username, String peice, String newMove) throws DataAccessException {
-        gameService.updateGame(gameName, username, peice, newMove);
+    public void makeMove(String gameName, String username, String peice, String newMove, String teamColor) throws DataAccessException {
+        gameService.updateGame(gameName, username, peice, newMove, teamColor);
     }
 
 

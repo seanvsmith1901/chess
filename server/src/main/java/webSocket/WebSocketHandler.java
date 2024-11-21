@@ -67,7 +67,7 @@ public class WebSocketHandler {
 
     private void makeMove(String authToken, String gameName, String username, String teamColor, Session session, String peice, String newMove) throws IOException {
         try {
-            services.makeMove(gameName, username, peice, newMove);
+            services.makeMove(gameName, username, peice, newMove, teamColor);
         }
         catch (DataAccessException e) {
             System.out.println(e.getMessage());
