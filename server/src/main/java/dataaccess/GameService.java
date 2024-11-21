@@ -1,9 +1,6 @@
 package dataaccess;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -71,7 +68,7 @@ public class GameService {
         }
 
         var currentPieces = currentBoard.getTeamPieces(currColor);
-        chess.ChessPosition startPosition;
+        chess.ChessPosition startPosition = new ChessPosition(0, 0); // just as a default
         for (var thisPeice : currentPieces.entrySet()) {
             if(thisPeice.getValue().getPieceType() == currPieceType) {
                 startPosition = thisPeice.getKey();
@@ -109,8 +106,13 @@ public class GameService {
         String[] topAndBottomLetters = { "A", "B", "C", "D ", "E", "F", "G", "H"};
 
         ChessPosition newPosition = new ChessPosition(currRow, currCol);
-        ChessMove newMove = new ChessMove(startPosition, newPosition, null);
-        modifiiedGame.makeMove()
+        ChessMove newChessMove = new ChessMove(startPosition, newPosition, null);
+        try {
+            modifiiedGame.makeMove(newChessMove);
+        }
+        catch (InvalidMoveException e) {
+            System.out.println("WHEEE");
+        }
 
     }
 
