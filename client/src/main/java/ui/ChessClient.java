@@ -70,7 +70,7 @@ public class ChessClient {
 
                 case "redraw" -> redrawBoard(params);
                 case "leave" -> leaveGame(params);
-                case "makeMove" -> makeMove(params);
+                case "move" -> makeMove(params);
                 case "resign" -> resign(params);
                 case "highlight" -> highlightMoves(params);
 
@@ -220,7 +220,7 @@ public class ChessClient {
             return """
                 - redraw - redraws the chessboard
                 - leave - removes you from chessgame
-                - makeMove <PIECE (Q,K)>, <endPosition>
+                - makeMove <PIECE (Q,K)>, <startPosition>, <endPosition>
                 - resign - want to give this one up cheif?
                 - highlight legal moves <PIECE <Q,K>
                 - help - with possible commands

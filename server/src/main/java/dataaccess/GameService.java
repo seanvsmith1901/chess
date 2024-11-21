@@ -38,34 +38,25 @@ public class GameService {
 
     public void updateGame(String gameName, String username, String peice, String newMove, String teamColor) throws DataAccessException {
         var currentGame = dataAccess.getGame(gameName);
+
         var modifiiedGame = currentGame.game();
-        var currentBoard = modifiiedGame.getBoard();
-        var currColor = ChessGame.TeamColor.BLACK;
-        var currPieceType = ChessPiece.PieceType.BISHOP;
+
+        var currColor = null;
 
         if(Objects.equals(teamColor, "WHITE") || Objects.equals(teamColor, "white")) {
             currColor = ChessGame.TeamColor.WHITE;
         }
+        if(Objects.equals(teamColor, "BLACK") || Objects.equals(teamColor, "black")) {
+            currColor = ChessGame.TeamColor.BLACK;
+        }
 
 
-        if(Objects.equals(peice, "Q") || Objects.equals(peice, "q")) {
-            currPieceType = ChessPiece.PieceType.QUEEN;
+        if(modifiiedGame.getTeamTurn() != currColor) { // make sure the player can in fact make a move. 
+            throw new DataAccessException("Wait yo turn!");
         }
-        if(Objects.equals(peice, "K") || Objects.equals(peice, "k")) {
-            currPieceType = ChessPiece.PieceType.QUEEN;
-        }
-        if(Objects.equals(peice, "P") || Objects.equals(peice, "p")) {
-            currPieceType = ChessPiece.PieceType.QUEEN;
-        }
-        if(Objects.equals(peice, "B") || Objects.equals(peice, "b")) {
-            currPieceType = ChessPiece.PieceType.QUEEN;
-        }
-        if(Objects.equals(peice, "R") || Objects.equals(peice, "r")) {
-            currPieceType = ChessPiece.PieceType.QUEEN;
-        }
-        if(Objects.equals(peice, "N") || Objects.equals(peice, "n")) {
-            currPieceType = ChessPiece.PieceType.QUEEN;
-        }
+        
+        var currentBoard = modifiiedGame.getBoard();
+        var currPieceType = getPieceType(peice);
 
         var currentPieces = currentBoard.getTeamPieces(currColor);
         chess.ChessPosition startPosition = new ChessPosition(0, 0); // just as a default
@@ -102,18 +93,52 @@ public class GameService {
         if(currRow == 'H' || currRow == 'h') {
             currRow = 8;
         }
-
-        String[] topAndBottomLetters = { "A", "B", "C", "D ", "E", "F", "G", "H"};
-
-        ChessPosition newPosition = new ChessPosition(currRow, currCol);
+        boolean moveMade = true;
+        ChessPosition newPosition = new ChessPosition(currRow, Character.getNumericValue(currCol));
         ChessMove newChessMove = new ChessMove(startPosition, newPosition, null);
         try {
-            modifiiedGame.makeMove(newChessMove);
+            for(var checkedPeice : currentBoard.getTeamPieces(currColor).entrySet()) {
+                if (checkedPeice.getValue().getPieceType() == currPieceType) { // checks to make sure its the right peice type
+                    try {
+                        modifiiedGame.makeMove(newChessMove);
+                        System.out.println("WE HAVE MADE A MOVE! SHOULD ONLY HAPPEN ONCE");
+                    } catch (InvalidMoveException e) {
+                        ; // do nothing for now but we will adjust this later.
+                    }
+                }
+            }
         }
-        catch (InvalidMoveException e) {
+        catch (Exception e) {
             System.out.println("WHEEE");
         }
 
+    }
+
+
+    
+    private static ChessPiece.PieceType getPieceType(String peice) {
+        var currPieceType = ChessPiece.PieceType.BISHOP;
+
+
+        if(Objects.equals(peice, "Q") || Objects.equals(peice, "q")) {
+            currPieceType = ChessPiece.PieceType.QUEEN;
+        }
+        if(Objects.equals(peice, "K") || Objects.equals(peice, "k")) {
+            currPieceType = ChessPiece.PieceType.QUEEN;
+        }
+        if(Objects.equals(peice, "P") || Objects.equals(peice, "p")) {
+            currPieceType = ChessPiece.PieceType.QUEEN;
+        }
+        if(Objects.equals(peice, "B") || Objects.equals(peice, "b")) {
+            currPieceType = ChessPiece.PieceType.QUEEN;
+        }
+        if(Objects.equals(peice, "R") || Objects.equals(peice, "r")) {
+            currPieceType = ChessPiece.PieceType.QUEEN;
+        }
+        if(Objects.equals(peice, "N") || Objects.equals(peice, "n")) {
+            currPieceType = ChessPiece.PieceType.QUEEN;
+        }
+        return currPieceType;
     }
 
 }
