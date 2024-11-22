@@ -11,11 +11,9 @@ import java.util.Scanner;
 
 public class Repl implements NotificationHandler {
     private final ChessClient client;
-    private static Bucket bucket;
 
     public Repl(String serverUrl, Bucket bucket) {
         client = new ChessClient(serverUrl, this);
-        this.bucket = bucket;
     }
 
     public void run() {
