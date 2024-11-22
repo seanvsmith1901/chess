@@ -36,23 +36,52 @@ public class GameService {
         dataAccess.removeUser(gameName, username);
     }
 
-    public GameData updateGame(Integer gameID, String username, String peice, String newMove, String teamColor) throws DataAccessException {
+    public GameData updateGame(Integer gameID, String username, String oldPosition, String newPosition, String teamColor, String promotionPiece) throws DataAccessException {
         var currentGame = dataAccess.getGameFromID(String.valueOf(gameID));
 
         ChessGame modifiiedGame = currentGame.game();
 
+
         ChessGame.TeamColor currColor = getTeamColor(teamColor, modifiiedGame);
 
-        var currentBoard = modifiiedGame.getBoard();
-        var currPieceType = getPieceType(peice);
+        //var currentBoard = modifiiedGame.getBoard();
 
-        var currentPieces = currentBoard.getTeamPieces(currColor);
-        chess.ChessPosition startPosition = new ChessPosition(0, 0); // just as a default
+        var oldRow = oldPosition.charAt(0); // this one needs to change
+        var oldCol = oldPosition.charAt(1); // this one does not.
+        oldRow = charToIntRow(oldRow);
+
+        var currRow = newPosition.charAt(0); // this one needs to change
+        var currCol = newPosition.charAt(1); // this one does not.
+        currRow = charToIntRow(currRow);
+
+        ChessPosition oldFormalPosition = new ChessPosition(Character.getNumericValue(oldCol), oldRow);
+        ChessPosition newFormalPosition = new ChessPosition(Character.getNumericValue(currCol), currRow);
+        ChessPiece.PieceType newPiece = null;
+        if(!Objects.equals(promotionPiece, "none")) {
+            newPiece = getPieceType(promotionPiece);
+        }
+
+        ChessMove newChessMove = new ChessMove(oldFormalPosition, newFormalPosition, newPiece);
+
+        try {
+            modifiiedGame.makeMove(newChessMove);
+            modifiiedGame.changeTeamTurn(currColor); // adjusts the turn appropriately (should really move this to inside makeMove haha)
+            dataAccess.updateGame(gameID, modifiiedGame); // this should update the actual game
+            System.out.println("WE HAVE MADE A MOVE! SHOULD ONLY HAPPEN ONCE");
+            var returnGame = dataAccess.getGameFromID(String.valueOf(gameID));
+            // chekc to see if they are in check or whatnot.
+            return returnGame;
+        } catch (InvalidMoveException e) {
+            throw new DataAccessException(e.getMessage()); // update this later (should tell them if it doesn't get em out of check or whatnot)
+        }
 
 
-        var currRow = newMove.charAt(0); // this one needs to change
-        var currCol = newMove.charAt(1); // this one does not.
 
+
+
+    }
+
+    private char charToIntRow(char currRow) {
         if(currRow == 'A' || currRow == 'a') {
             currRow = 1;
         }
@@ -77,50 +106,9 @@ public class GameService {
         if(currRow == 'H' || currRow == 'h') {
             currRow = 8;
         }
-
-        ChessPosition newPosition = new ChessPosition(Character.getNumericValue(currCol), currRow);
-        ChessMove newChessMove;
-        try {
-            for(var checkedPeice : currentBoard.getTeamPieces(currColor).entrySet()) {
-                if (checkedPeice.getValue().getPieceType() == currPieceType) { // checks to make sure its the right peice type
-                    try {
-                        newChessMove = new ChessMove(checkedPeice.getKey(), newPosition, null);
-                        modifiiedGame.makeMove(newChessMove);
-
-                        dataAccess.updateGame(gameID, modifiiedGame); // this should update the actual game
-                        System.out.println("WE HAVE MADE A MOVE! SHOULD ONLY HAPPEN ONCE");
-                        var returnGame = dataAccess.getGameFromID(String.valueOf(gameID));
-                        // chekc to see if they are in check or whatnot.
-                        return returnGame;
-                    } catch (InvalidMoveException e) {
-                        ; // do nothing for now but we will adjust this later.
-                    }
-                }
-            }
-        }
-        catch (Exception e) {
-            System.out.println("WHEEE");
-        }
-        throw new DataAccessException("that didn't work and I have no idea what you did. perhaps try again");
-
+        return currRow;
     }
 
-    private static ChessGame.TeamColor getTeamColor(String teamColor, ChessGame modifiiedGame) throws DataAccessException {
-        ChessGame.TeamColor currColor = null;
-
-        if(Objects.equals(teamColor, "WHITE") || Objects.equals(teamColor, "white")) {
-            currColor = ChessGame.TeamColor.WHITE;
-        }
-        if(Objects.equals(teamColor, "BLACK") || Objects.equals(teamColor, "black")) {
-            currColor = ChessGame.TeamColor.BLACK;
-        }
-
-
-        if(modifiiedGame.getTeamTurn() != currColor) { // make sure the player can in fact make a move. 
-            throw new DataAccessException("Wait yo turn!");
-        }
-        return currColor;
-    }
 
 
     private static ChessPiece.PieceType getPieceType(String peice) {
@@ -146,6 +134,23 @@ public class GameService {
             currPieceType = ChessPiece.PieceType.KNIGHT;
         }
         return currPieceType;
+    }
+
+    private static ChessGame.TeamColor getTeamColor(String teamColor, ChessGame modifiiedGame) throws DataAccessException {
+        ChessGame.TeamColor currColor = null;
+
+        if(Objects.equals(teamColor, "WHITE") || Objects.equals(teamColor, "white")) {
+            currColor = ChessGame.TeamColor.WHITE;
+        }
+        if(Objects.equals(teamColor, "BLACK") || Objects.equals(teamColor, "black")) {
+            currColor = ChessGame.TeamColor.BLACK;
+        }
+
+
+        if(modifiiedGame.getTeamTurn() != currColor) { // make sure the player can in fact make a move.
+            throw new DataAccessException("Wait yo turn!");
+        }
+        return currColor;
     }
 
 }

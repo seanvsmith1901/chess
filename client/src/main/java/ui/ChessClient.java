@@ -226,7 +226,7 @@ public class ChessClient {
             return """
                 - redraw - redraws the chessboard
                 - leave - removes you from chessgame
-                - makeMove <PIECE (Q,K)>, <startPosition>, <endPosition>
+                - makeMove <startPosition>, <endPosition> <promotion piece>
                 - resign - want to give this one up cheif?
                 - highlight legal moves <PIECE <Q,K>
                 - help - with possible commands
@@ -368,11 +368,15 @@ public class ChessClient {
         return "You have left the game";
     }
     public String makeMove(String... params) throws ResponseException {
-        String piece = params[0];
-        String newMove = params[1];
+        String oldPosition = params[0];
+        String newPosition = params[1];
+        String promotionPiece = "none";
+        if(params.length == 3){
+            promotionPiece = params[2];
+        }
         Integer gameID = currentGame.gameID();
         try {
-            ws.makeMove(authToken, gameID, username, teamColor, piece, newMove, currentGame.gameName());
+            ws.makeMove(authToken, gameID, username, teamColor, oldPosition, newPosition, promotionPiece, currentGame.gameName());
         }
         catch (Exception e) {
             System.out.println("something went wrong. IDK what. might not be a valid move. I'll fix this up more later. ");

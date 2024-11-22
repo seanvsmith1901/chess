@@ -1,12 +1,16 @@
 package websocket.messages;
 
-import chess.ChessGame;
-//
-//public class Notification extends ServerMessage {
-//    String message;
-//
-//    public LoadGame(ServerMessageType type, String message, ChessGame currentGame) {
-//        super(type, message);
-//        this.game = currentGame;
-//    }
-//}
+
+public class Notification extends ServerMessage {
+    String message;
+
+    public Notification(ServerMessageType type, String currentMessage) {
+        super(type);
+        this.message = currentMessage;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+}

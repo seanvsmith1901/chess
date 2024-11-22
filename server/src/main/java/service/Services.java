@@ -89,7 +89,7 @@ public class Services {
         var username = currentAuth.username();
         GameData currentGame = gameService.getGameFromID(gameID);
         userService.replaceUserInGame(currentGame, username, playerColor);
-        return currentGame;
+        return gameService.getGameFromID(gameID); // returns the UPDATED game
     }
 
     // helper functions that only exists for tests, and might be used at a higher level.
@@ -110,8 +110,8 @@ public class Services {
         gameService.removeUser(gameName, username);
     }
 
-    public GameData makeMove(Integer gameID, String username, String peice, String newMove, String teamColor) throws DataAccessException {
-        return gameService.updateGame(gameID, username, peice, newMove, teamColor);
+    public GameData makeMove(Integer gameID, String username, String oldPosition, String newPosition, String teamColor, String promotionPiece) throws DataAccessException {
+        return gameService.updateGame(gameID, username, oldPosition, newPosition, teamColor, promotionPiece);
     }
 
 

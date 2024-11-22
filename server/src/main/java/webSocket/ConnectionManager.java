@@ -63,4 +63,28 @@ public class ConnectionManager {
         }
     }
 
+    public void broadcastAllNotification (Integer gameName, ServerMessage notification) throws IOException {
+        Map<String, Connection> current_map = connections.get(gameName);
+        for (var c : current_map.values()) {
+            if (c.session.isOpen()) {
+                c.send(notification);
+            }
+        }
+    }
+
+
+    public void directSend(String excludeVisitorName, Integer gameName, ServerMessage notification) throws IOException {
+        var removeList = new ArrayList<Connection>();
+        Map<String, Connection> current_map = connections.get(gameName);
+        for (var c : current_map.values()) {
+            if (c.session.isOpen()) {
+                if (c.visitorName.equals(excludeVisitorName)) {
+                    c.send(notification);
+                }
+            } else {
+                removeList.add(c);
+            }
+        }
+    }
+
 }

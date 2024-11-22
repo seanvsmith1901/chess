@@ -4,6 +4,8 @@ import ui.Bucket;
 import ui.ChessClient;
 
 import websocket.NotificationHandler;
+import websocket.messages.Error;
+import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 import ui.EscapeSequences;
 
@@ -36,11 +38,17 @@ public class Repl implements NotificationHandler {
         System.out.println();
     }
 
-    public void notify(ServerMessage notification) {
+    public void notify(Notification notification) {
         if (notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-            System.out.println(notification.message);
+            System.out.println(notification.getMessage());
         }
 
+    }
+
+    public void displayError(Error notification) {
+        if (notification.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            System.out.println(notification.getErrorMessage()); // make this print red IG at some point.
+        }
     }
 
     private void printPrompt() {

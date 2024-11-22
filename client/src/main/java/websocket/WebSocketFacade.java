@@ -20,8 +20,10 @@ import serializer.ChessPositionMapDeserializer;
 import serializer.ChessPositionMapSerializer;
 import ui.Bucket;
 import websocket.messages.LoadGame;
+import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
+import websocket.messages.Error;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
@@ -54,12 +56,16 @@ public class WebSocketFacade extends Endpoint {
                 public void onMessage(String message) {
                     ServerMessage notification = serializer.fromJson(message, ServerMessage.class);
                     if(notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-                        notificationHandler.notify(notification);
+                        Notification newNotification = serializer.fromJson(message, Notification.class);
+                        notificationHandler.notify(newNotification);
                     }
                     else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
                         LoadGame currentGame = serializer.fromJson(message, LoadGame.class); // does this work? who knows!!?
                         bucket.setChessGame(currentGame.getGame(), username);
-                        System.out.println("we have a new game IDK how to display it tho");
+                    }
+                    else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+                        Error currentError = serializer.fromJson(message, Error.class);
+                        notificationHandler.displayError(currentError);
                     }
 
                 }
@@ -76,7 +82,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void joinGame(String authToken, Integer gameID, String username, String teamColor) throws ResponseException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, teamColor, null, null, null);
+            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, teamColor, null, null, null, null);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new ResponseException(500, "not sure what went wrong but try again");
@@ -85,7 +91,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void leaveGame(String authToken, Integer gameID, String username, String gameName) throws ResponseException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, username, null, null, null, gameName);
+            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, username, null, null, null, null, gameName);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         }
         catch (IOException ex) {
@@ -93,9 +99,9 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void makeMove(String authToken, Integer gameID, String username, String teamColor, String peiceType, String newMove, String gameName) throws ResponseException {
+    public void makeMove(String authToken, Integer gameID, String username, String teamColor, String oldPosition, String newPosition, String promotionPeice, String gameName) throws ResponseException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, username, teamColor, peiceType, newMove, gameName);
+            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, username, teamColor, oldPosition, newPosition, promotionPeice, gameName);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         }
         catch (IOException ex) {
