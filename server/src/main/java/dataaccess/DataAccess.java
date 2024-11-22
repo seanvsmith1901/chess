@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.*;
 import java.util.HashSet;
 
@@ -36,6 +37,8 @@ public interface DataAccess {
     int getUserCount() throws DataAccessException;
 
     void removeUser(String gameName, String username) throws DataAccessException;
+
+    void updateGame(Integer gameID, ChessGame currentGame) throws DataAccessException;
 //
 //
 

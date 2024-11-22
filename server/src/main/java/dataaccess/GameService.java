@@ -36,10 +36,10 @@ public class GameService {
         dataAccess.removeUser(gameName, username);
     }
 
-    public Object updateGame(Integer gameID, String username, String peice, String newMove, String teamColor) throws DataAccessException {
+    public GameData updateGame(Integer gameID, String username, String peice, String newMove, String teamColor) throws DataAccessException {
         var currentGame = dataAccess.getGameFromID(String.valueOf(gameID));
 
-        var modifiiedGame = currentGame.game();
+        ChessGame modifiiedGame = currentGame.game();
 
         ChessGame.TeamColor currColor = getTeamColor(teamColor, modifiiedGame);
 
@@ -48,11 +48,7 @@ public class GameService {
 
         var currentPieces = currentBoard.getTeamPieces(currColor);
         chess.ChessPosition startPosition = new ChessPosition(0, 0); // just as a default
-        for (var thisPeice : currentPieces.entrySet()) {
-            if(thisPeice.getValue().getPieceType() == currPieceType) {
-                startPosition = thisPeice.getKey();
-            }
-        }
+
 
         var currRow = newMove.charAt(0); // this one needs to change
         var currCol = newMove.charAt(1); // this one does not.
@@ -81,16 +77,21 @@ public class GameService {
         if(currRow == 'H' || currRow == 'h') {
             currRow = 8;
         }
-        
-        ChessPosition newPosition = new ChessPosition(currRow, Character.getNumericValue(currCol));
-        ChessMove newChessMove = new ChessMove(startPosition, newPosition, null);
+
+        ChessPosition newPosition = new ChessPosition(Character.getNumericValue(currCol), currRow);
+        ChessMove newChessMove;
         try {
             for(var checkedPeice : currentBoard.getTeamPieces(currColor).entrySet()) {
                 if (checkedPeice.getValue().getPieceType() == currPieceType) { // checks to make sure its the right peice type
                     try {
+                        newChessMove = new ChessMove(checkedPeice.getKey(), newPosition, null);
                         modifiiedGame.makeMove(newChessMove);
+
+                        dataAccess.updateGame(gameID, modifiiedGame); // this should update the actual game
                         System.out.println("WE HAVE MADE A MOVE! SHOULD ONLY HAPPEN ONCE");
-                        return modifiiedGame;
+                        var returnGame = dataAccess.getGameFromID(String.valueOf(gameID));
+                        // chekc to see if they are in check or whatnot.
+                        return returnGame;
                     } catch (InvalidMoveException e) {
                         ; // do nothing for now but we will adjust this later.
                     }
@@ -130,19 +131,19 @@ public class GameService {
             currPieceType = ChessPiece.PieceType.QUEEN;
         }
         if(Objects.equals(peice, "K") || Objects.equals(peice, "k")) {
-            currPieceType = ChessPiece.PieceType.QUEEN;
+            currPieceType = ChessPiece.PieceType.KING;
         }
         if(Objects.equals(peice, "P") || Objects.equals(peice, "p")) {
-            currPieceType = ChessPiece.PieceType.QUEEN;
+            currPieceType = ChessPiece.PieceType.PAWN;
         }
         if(Objects.equals(peice, "B") || Objects.equals(peice, "b")) {
-            currPieceType = ChessPiece.PieceType.QUEEN;
+            currPieceType = ChessPiece.PieceType.BISHOP;
         }
         if(Objects.equals(peice, "R") || Objects.equals(peice, "r")) {
-            currPieceType = ChessPiece.PieceType.QUEEN;
+            currPieceType = ChessPiece.PieceType.ROOK;
         }
         if(Objects.equals(peice, "N") || Objects.equals(peice, "n")) {
-            currPieceType = ChessPiece.PieceType.QUEEN;
+            currPieceType = ChessPiece.PieceType.KNIGHT;
         }
         return currPieceType;
     }

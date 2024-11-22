@@ -317,6 +317,16 @@ public class MySqlDataAccess implements DataAccess {
 
         var statement = "UPDATE gameData SET whiteUsername = ?, blackUsername = ? WHERE id = ?";
         executeUpdate(statement, whiteUsername, blackUsername, gameID);
+    }
+
+    public void updateGame(Integer gameID, ChessGame currentGame) throws DataAccessException {
+        GameData oldReference = getGameFromID(gameID.toString());
+        var statement = "DELETE FROM gameData WHERE id = ?";
+        executeUpdate(statement, gameID);
+        String newGame = gson.toJson(currentGame);
+
+        var nextStatement = "INSERT INTO gameData (id, gameName, whiteUsername, blackUsername, chessGame) VALUES (?, ?, ?, ?, ?)";
+        executeUpdate(nextStatement, oldReference.gameID(), oldReference.gameName(), oldReference.whiteUsername(), oldReference.blackUsername(), newGame);
 
     }
 

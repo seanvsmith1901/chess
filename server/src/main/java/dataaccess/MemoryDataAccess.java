@@ -139,6 +139,10 @@ public class MemoryDataAccess implements DataAccess {
         ; // will implement this later
     }
 
+    public void updateGame(Integer gameID, ChessGame currentGame) throws DataAccessException {
+    ;
+    }
+
 
 
 }

@@ -20,6 +20,7 @@ import static ui.EscapeSequences.*;
 
 
 
+
 public class ChessClient {
     private String visitorName = null;
     private ServerFacade server;
@@ -38,12 +39,15 @@ public class ChessClient {
     private NotificationHandler notificationHandler;
     private WebSocketFacade ws;
 
+    private Bucket bucket;
 
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
+        this.bucket = new Bucket();
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
+
 
     }
 
@@ -161,12 +165,13 @@ public class ChessClient {
                 var thisGame = server.joinGame(joinData, authToken);
                 currentGame = thisGame;
                 this.teamColor = teamColor;
-                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                ws = new WebSocketFacade(serverUrl, notificationHandler, bucket, username);
                 ws.joinGame(authToken, gameID, username, teamColor);
                 System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
                 out.print(ERASE_SCREEN);
                 state = State.INGAME; //do this AFTER we get confirmation from websocket
-                return drawBoard(thisGame);
+                bucket.setChessGame(thisGame, username);
+                return "";
             }
         }
 
@@ -185,11 +190,12 @@ public class ChessClient {
                 var joinData = new JoinData(null, gameID);
                 var thisGame = server.observeGame(joinData, authToken);
                 currentGame = thisGame;
-                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                ws = new WebSocketFacade(serverUrl, notificationHandler, bucket, username);
                 ws.joinGame(authToken, gameID, username, null);
                 System.out.println("Success! You are observing " + gamesList.get(gameID-1).gameName() + " as an observer");
                 state = State.INGAME; //do this AFTER we get confirmation from websocket
-                return drawBoard(thisGame);
+                bucket.setChessGame(thisGame, username);
+                return "";
             }
 
         }
@@ -242,7 +248,7 @@ public class ChessClient {
         }
     }
 
-    private String drawBoard(GameData game) throws ResponseException {
+    public String drawBoard(GameData game) throws ResponseException {
         ChessBoard board = game.game().getBoard(); // gets our board
         String[] topAndBottomLetters = {"   ", " A  ", " B  ", " C  ", "D ", "  E ", " F ", "  G ", "  H ", "   "};
 
@@ -353,8 +359,8 @@ public class ChessClient {
         if (currentGame == null) {
             return "";
         }
-        return drawBoard(currentGame);
-
+        bucket.displayBoard(username);
+        return "";
     }
     public String leaveGame(String... params) throws ResponseException {
         // remove conneciton to webscoket and reset currentgmae to null. lets go.

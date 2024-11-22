@@ -1,5 +1,6 @@
 
 import serverfacade.State;
+import ui.Bucket;
 import ui.ChessClient;
 
 import websocket.NotificationHandler;
@@ -10,9 +11,11 @@ import java.util.Scanner;
 
 public class Repl implements NotificationHandler {
     private final ChessClient client;
+    private static Bucket bucket;
 
-    public Repl(String serverUrl) {
+    public Repl(String serverUrl, Bucket bucket) {
         client = new ChessClient(serverUrl, this);
+        this.bucket = bucket;
     }
 
     public void run() {

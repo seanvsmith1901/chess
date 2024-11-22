@@ -1,9 +1,11 @@
 package webSocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.DataAccess;
 
 import dataaccess.DataAccessException;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -18,6 +20,7 @@ import java.util.Timer;
 
 import serializer.GsonObject;
 
+import websocket.messages.*;
 
 
 @WebSocket
@@ -72,9 +75,11 @@ public class WebSocketHandler {
 
     private void makeMove(String authToken, Integer gameID, String username, String teamColor, Session session, String peice, String newMove) throws IOException {
         try {
-            var gameData = services.makeMove(gameID, username, peice, newMove, teamColor);
-            var message = String.format("%s has left the game %s as %s", username, gameID, teamColor);
-            var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            GameData gameData = services.makeMove(gameID, username, peice, newMove, teamColor);
+
+            var message = String.format("%s has moved %s to %s", username, peice, newMove);
+            var serverMessage = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, message, gameData);
+            connections.broadcastAll(gameID, serverMessage); // send out the new gameboard to everyone
             connections.broadcast(authToken, gameID, serverMessage);
         }
         catch (DataAccessException e) {

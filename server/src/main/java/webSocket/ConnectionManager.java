@@ -1,6 +1,7 @@
 package webSocket;
 
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.LoadGame;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -52,4 +53,14 @@ public class ConnectionManager {
 //            connections.remove(c.visitorName);
 //        }
     }
+
+    public void broadcastAll(Integer gameName, LoadGame newGame) throws IOException {
+        Map<String, Connection> current_map = connections.get(gameName);
+        for (var c : current_map.values()) {
+            if (c.session.isOpen()) {
+                c.send(newGame);
+            }
+        }
+    }
+
 }

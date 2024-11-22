@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import org.mindrot.jbcrypt.BCrypt;
 
+import chess.ChessGame;
 
 
 public class Services {
@@ -109,7 +110,7 @@ public class Services {
         gameService.removeUser(gameName, username);
     }
 
-    public Object makeMove(Integer gameID, String username, String peice, String newMove, String teamColor) throws DataAccessException {
+    public GameData makeMove(Integer gameID, String username, String peice, String newMove, String teamColor) throws DataAccessException {
         return gameService.updateGame(gameID, username, peice, newMove, teamColor);
     }
 
