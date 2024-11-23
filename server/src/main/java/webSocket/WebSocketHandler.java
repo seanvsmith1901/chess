@@ -150,7 +150,7 @@ public class WebSocketHandler {
          try {
              int currRow = charToIntRow(StartingPosition.charAt(0));
              int currCol = Character.getNumericValue(StartingPosition.charAt(1)); // this one does not.
-             ChessPosition newPosition = new ChessPosition(currCol-1, currRow-1); // don't worry about it has to do with the way we do lookups
+             ChessPosition newPosition = new ChessPosition(currCol, currRow); // don't worry about it has to do with the way we do lookups
              GameData currGame = services.getGame(gameName);
              Collection<ChessMove> validMoves = currGame.game().validMoves(newPosition);
              ServerMessage newServerMessage = new validMoves(ServerMessage.ServerMessageType.VALID_MOVES, validMoves, currGame);
