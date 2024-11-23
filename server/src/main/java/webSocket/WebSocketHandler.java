@@ -9,6 +9,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
+import websocket.commands.JoinGameRequest;
 import websocket.messages.Error;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
@@ -21,6 +22,7 @@ import java.util.Objects;
 import serializer.GsonObject;
 
 import websocket.messages.*;
+import websocket.commands.*;
 
 
 @WebSocket
@@ -41,13 +43,19 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
-            case CONNECT -> enter(action.getAuthToken(), action.getGameID(), action.getUsername(), action.getTeamColor(), session);
-            case LEAVE -> leave(action.getAuthToken(), action.getGameID(), action.getUsername(), action.getTeamColor(), action.getGameName(), session);
-            case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID(), action.getUsername(), action.getTeamColor(), session, action.getPeice(), action.getNewMove(), action.getPromotionPeice());
+            case CONNECT -> enter(message, session);
+            case LEAVE -> leave(message, session);
+            case MAKE_MOVE -> makeMove(message, session);
         }
     }
 
-    private void enter(String authToken, Integer gameID, String username, String teamColor, Session session) throws IOException {
+    private void enter(String action, Session session) throws IOException {
+        JoinGameRequest currentRequest = new Gson().fromJson(action, JoinGameRequest.class);
+        String authToken = currentRequest.getAuthToken();
+        Integer gameID = currentRequest.getGameID();
+        String teamColor = currentRequest.getTeamColor();
+        String username = currentRequest.getUsername();
+
         connections.add(authToken, gameID, session);
         if(teamColor == null) {
             teamColor = "observer";
@@ -57,13 +65,20 @@ public class WebSocketHandler {
         connections.broadcast(authToken, gameID, serverMessage);
     }
 
-    private void leave(String authToken, Integer gameID, String username, String teamColor, String gameName, Session session) throws IOException {
+    private void leave(String message, Session session) throws IOException {
+        leaveGameRequest currentRequest = new Gson().fromJson(message, leaveGameRequest.class);
+        String authToken = currentRequest.getAuthToken();
+        Integer gameID = currentRequest.getGameID();
+        String username = currentRequest.getUsername();
+        String gameName = currentRequest.getGameName();
+        String teamColor = currentRequest.getTeamColor();
+
         connections.remove(authToken, gameID);
         if(teamColor == null) {
             teamColor = "observer";
         }
-        var message = String.format("%s has left the game %s as %s", username, gameID, teamColor);
-        var serverMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        var thisMessage = String.format("%s has left the game %s as %s", username, gameID, teamColor);
+        var serverMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, thisMessage);
         try {
             services.removeUser(gameName, username);
             connections.broadcast(authToken, gameID, serverMessage);
@@ -73,15 +88,23 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(String authToken, Integer gameID, String username, String teamColor, Session session, String oldPosition, String newPosition, String promotionPeice) throws IOException {
-        try {
+    private void makeMove(String message, Session session) throws IOException {
+        makeMoveRequest currentRequest = new Gson().fromJson(message, makeMoveRequest.class);
+        String authToken = currentRequest.getAuthToken();
+        Integer gameID = currentRequest.getGameID();
+        String teamColor = currentRequest.getTeamColor();
+        String username = currentRequest.getUsername();
+        String oldPosition = currentRequest.getOldPosition();
+        String newPosition = currentRequest.getNewPosition();
+        String promotionPeice = currentRequest.getPromotionPeice();
 
+        try {
             GameData gameData = services.makeMove(gameID, username, oldPosition, newPosition, teamColor, promotionPeice);
             ChessGame.TeamColor currColor = getTeamColor(teamColor);
 
-            var message = String.format("%s has moved %s to %s", username, oldPosition, newPosition); // get the peice type maybe?
+            var thisMessage = String.format("%s has moved %s to %s", username, oldPosition, newPosition); // get the peice type maybe?
 
-            var newMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            var newMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, thisMessage);
             connections.broadcast(authToken, gameID, newMessage); // send out the message to everyone who DIDN"T make the move
             if (gameData.game().isInCheck(currColor)) {
                 String formatter = " is in ";

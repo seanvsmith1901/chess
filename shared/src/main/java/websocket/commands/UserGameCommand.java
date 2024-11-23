@@ -16,28 +16,12 @@ public class UserGameCommand {
 
     private final Integer gameID;
 
-    private final String username;
 
-    private final String teamColor;
 
-    private final String gameName;
-
-    private final String peice;
-
-    private final String newMove;
-
-    private final String promotionPeice;
-
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String username, String teamColor, String peice, String newMove, String promotionPeice, String gameName) {
+    public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;
-        this.username = username;
-        this.teamColor = teamColor;
-        this.peice = peice;
-        this.newMove = newMove;
-        this.gameName = gameName;
-        this.promotionPeice = promotionPeice;
     }
 
     public enum CommandType {
@@ -58,18 +42,6 @@ public class UserGameCommand {
     public Integer getGameID() {
         return gameID;
     }
-
-    public String getUsername() { return username; }
-
-    public String getTeamColor() { return teamColor; }
-
-    public String getPeice() { return peice; }
-
-    public String getNewMove() { return newMove; }
-
-    public String getGameName() { return gameName; }
-
-    public String getPromotionPeice() { return promotionPeice; }
 
     @Override
     public boolean equals(Object o) {

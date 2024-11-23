@@ -19,11 +19,13 @@ import model.*;
 import serializer.ChessPositionMapDeserializer;
 import serializer.ChessPositionMapSerializer;
 import ui.Bucket;
+import websocket.commands.validMovesRequest;
 import websocket.messages.LoadGame;
 import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
 import websocket.messages.Error;
+import websocket.commands.*;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
@@ -82,16 +84,16 @@ public class WebSocketFacade extends Endpoint {
 
     public void joinGame(String authToken, Integer gameID, String username, String teamColor) throws ResponseException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, teamColor, null, null, null, null);
+            var action = new JoinGameRequest(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, teamColor);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new ResponseException(500, "not sure what went wrong but try again");
         }
     }
 
-    public void leaveGame(String authToken, Integer gameID, String username, String gameName) throws ResponseException {
+    public void leaveGame(String authToken, Integer gameID, String username, String gameName, String teamColor) throws ResponseException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, username, null, null, null, null, gameName);
+            var action = new leaveGameRequest(UserGameCommand.CommandType.LEAVE, authToken, gameID, username, gameName, teamColor);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         }
         catch (IOException ex) {
@@ -101,12 +103,18 @@ public class WebSocketFacade extends Endpoint {
 
     public void makeMove(String authToken, Integer gameID, String username, String teamColor, String oldPosition, String newPosition, String promotionPeice, String gameName) throws ResponseException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, username, teamColor, oldPosition, newPosition, promotionPeice, gameName);
+            var action = new makeMoveRequest(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, username, teamColor, gameName, oldPosition, newPosition, promotionPeice);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         }
         catch (IOException ex) {
             throw new ResponseException(500, "not sure what went wrong but try again");
         }
     }
+
+//    public Object highlightMoves(String authToken, String startingPosition) {
+//        try {
+//            var action = new validMovesRequest(startingPosition);
+//        }
+//    }
 
 }

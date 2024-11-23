@@ -364,7 +364,7 @@ public class ChessClient {
     }
     public String leaveGame(String... params) throws ResponseException {
         // remove conneciton to webscoket and reset currentgmae to null. lets go.
-        ws.leaveGame(authToken, currentGame.gameID(), username, currentGame.gameName());
+        ws.leaveGame(authToken, currentGame.gameID(), username, currentGame.gameName(), teamColor);
         return "You have left the game";
     }
     public String makeMove(String... params) throws ResponseException {
@@ -389,6 +389,8 @@ public class ChessClient {
 
     }
     public String highlightMoves(String... params) throws ResponseException {
+        var startingPosition = params[0];
+        //ws.returnLegalMoves(authToken, startingPosition);
         return "";
 
     }
