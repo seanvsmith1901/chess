@@ -1,5 +1,6 @@
 package websocket;
 
+import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import com.google.gson.Gson;
@@ -11,7 +12,10 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
 
 
 import model.*;
@@ -26,6 +30,7 @@ import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
 import websocket.messages.Error;
 import websocket.commands.*;
+import websocket.messages.*;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
@@ -69,6 +74,22 @@ public class WebSocketFacade extends Endpoint {
                         Error currentError = serializer.fromJson(message, Error.class);
                         notificationHandler.displayError(currentError);
                     }
+                    else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.VALID_MOVES) {
+                        validMoves newValidMoves = serializer.fromJson(message, validMoves.class);
+                        Collection<ChessMove> validMoves = newValidMoves.returnValidMoves();
+                        GameData currGame = newValidMoves.returnGame();
+                        ArrayList<ChessPosition> newPositions = new ArrayList<>();
+                        for (ChessMove currentMove : validMoves) {
+                            newPositions.add(currentMove.getEndPosition());
+                        }
+                        try {
+                            bucket.drawBoard(currGame, username, newPositions);
+                        }
+                        catch (ResponseException e) {
+                            System.out.println(e.getMessage());
+                        }
+
+                    }
 
                 }
             });
@@ -111,10 +132,14 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-//    public Object highlightMoves(String authToken, String startingPosition) {
-//        try {
-//            var action = new validMovesRequest(startingPosition);
-//        }
-//    }
+    public void returnLegalMoves(String authToken, String startingPosition, Integer gameID, String gameName) throws ResponseException {
+        try {
+            var action = new validMovesRequest(UserGameCommand.CommandType.VALID, authToken, gameID, startingPosition, gameName);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        }
+        catch (IOException ex) {
+            throw new ResponseException(500, "Not sure what went wrong here.");
+        }
+    }
 
 }

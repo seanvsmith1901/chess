@@ -9,8 +9,12 @@ import model.GameData;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Collection;
+import java.util.Optional;
 
+import chess.ChessMove;
 
 
 import static ui.EscapeSequences.*;
@@ -28,14 +32,14 @@ public class Bucket {
 
     public void displayBoard(String username) {
         try {
-            drawBoard(currentGame, username);
+            drawBoard(currentGame, username, null);
         }
         catch (ResponseException e) {
             e.printStackTrace();
         }
     }
 
-    public String drawBoard(GameData game, String username) throws ResponseException {
+    public String drawBoard(GameData game, String username, ArrayList<ChessPosition> validMoves) throws ResponseException {
         ChessBoard board = game.game().getBoard(); // gets our board
         String[] topAndBottomLetters = {"   ", " A  ", " B  ", " C  ", "D ", "  E ", " F ", "  G ", "  H ", "   "};
 
@@ -48,13 +52,13 @@ public class Bucket {
         // prints the white on top
         if(whiteTop) {
             for (int i = 0; i < 10; i++) {
-                printBoardRow(i, topAndBottomLetters, board, true); // white maybe
+                printBoardRow(i, topAndBottomLetters, board, true, validMoves); // white maybe
             }
         }
         //prints black on top
         else {
             for (int i = 9; i >= 0; i--) {
-                printBoardRow(i, topAndBottomLetters, board, false); // black
+                printBoardRow(i, topAndBottomLetters, board, false, validMoves); // black
             }
         }
 
@@ -64,7 +68,8 @@ public class Bucket {
         return "";
     }
 
-    private void printBoardRow(int row, String[] topAndBottomLetters, ChessBoard board, boolean whiteTop) {
+
+    private void printBoardRow(int row, String[] topAndBottomLetters, ChessBoard board, boolean whiteTop, ArrayList<ChessPosition> validMoves) {
 
         int startCol = whiteTop ? 9 : 0;
         int endCol = whiteTop ? -1 : 10;
@@ -78,7 +83,7 @@ public class Bucket {
                 printSideColumn(row);
             }
             else {
-                printBoardCell(row, col, board);
+                printBoardCell(row, col, board, validMoves);
             }
         }
 
@@ -100,12 +105,20 @@ public class Bucket {
     }
 
     // alternates backround colors, gets the peice if there is and controls backround color.
-    private void printBoardCell(int row, int col, ChessBoard board) {
+    private void printBoardCell(int row, int col, ChessBoard board, ArrayList<ChessPosition> validMoves) {
         String bgColor = getCellBackgroundColor(row, col);
-        out.print(bgColor);
+        String highlight = SET_BG_COLOR_GREEN;
 
         ChessPosition position = new ChessPosition(row, col);
         ChessPiece piece = board.getPiece(position);
+
+        out.print(bgColor);
+
+        if (validMoves != null) {
+            if (validMoves.contains(position)) {
+                out.print(highlight); // not sure how these will interact
+            }
+        }
 
         if (piece == null) {
             out.print(EMPTY);

@@ -377,6 +377,7 @@ public class MySqlDataAccess implements DataAccess {
       gameName VARCHAR(256) NOT NULL,
       whiteUsername VARCHAR(256),
       blackUsername VARCHAR(256),
+      gameComplete BOOL DEFAULT FALSE,
       chessGame JSON NOT NULL,
       PRIMARY KEY (id),
       INDEX idx_gameName (gameName),

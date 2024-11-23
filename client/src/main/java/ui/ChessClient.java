@@ -151,6 +151,11 @@ public class ChessClient {
         assertSignedIn();
         if (params.length == 2) {
             var teamColor = params[1];
+            // filters color input.
+            if (!(Objects.equals(teamColor, "BLACK") || Objects.equals(teamColor, "black") || Objects.equals(teamColor, "WHITE")
+                    || Objects.equals(teamColor, "white"))) {
+                throw new ResponseException(300, "that color bad :( ! please try again");
+            }
             // fix this at some point bc its broken but its not really important yet
 //            if (!(Objects.equals(teamColor, "black") || (Objects.equals(teamColor, "white")))) {
 //                throw new ResponseException(400, "that color aint real");
@@ -390,7 +395,7 @@ public class ChessClient {
     }
     public String highlightMoves(String... params) throws ResponseException {
         var startingPosition = params[0];
-        //ws.returnLegalMoves(authToken, startingPosition);
+        ws.returnLegalMoves(authToken, startingPosition, currentGame.gameID(), currentGame.gameName());
         return "";
 
     }

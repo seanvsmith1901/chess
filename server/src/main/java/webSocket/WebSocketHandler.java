@@ -1,6 +1,8 @@
 package webSocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 
 import dataaccess.DataAccessException;
@@ -17,6 +19,8 @@ import websocket.commands.UserGameCommand;
 import service.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 import serializer.GsonObject;
@@ -46,6 +50,7 @@ public class WebSocketHandler {
             case CONNECT -> enter(message, session);
             case LEAVE -> leave(message, session);
             case MAKE_MOVE -> makeMove(message, session);
+            case VALID -> getValidMoves(message, session);
         }
     }
 
@@ -135,6 +140,28 @@ public class WebSocketHandler {
         }
     }
 
+    private void getValidMoves(String message, Session session) throws IOException { // IO should never get used so we should be chillin
+        validMovesRequest currentRequest = new Gson().fromJson(message, validMovesRequest.class);
+        String authToken = currentRequest.getAuthToken();
+        Integer gameID = currentRequest.getGameID();
+        String StartingPosition = currentRequest.getStartPosition();
+        String gameName = currentRequest.getGameName();
+
+         try {
+             int currRow = charToIntRow(StartingPosition.charAt(0));
+             int currCol = Character.getNumericValue(StartingPosition.charAt(1)); // this one does not.
+             ChessPosition newPosition = new ChessPosition(currCol-1, currRow-1); // don't worry about it has to do with the way we do lookups
+             GameData currGame = services.getGame(gameName);
+             Collection<ChessMove> validMoves = currGame.game().validMoves(newPosition);
+             ServerMessage newServerMessage = new validMoves(ServerMessage.ServerMessageType.VALID_MOVES, validMoves, currGame);
+             connections.directSend(authToken, gameID, newServerMessage);
+         }
+         catch (DataAccessException e) {
+             Error newError = new Error(ServerMessage.ServerMessageType.ERROR, e.getMessage());
+             connections.directSend(authToken, gameID, newError); // send the error back to the user.
+         }
+    }
+
 
     private static ChessGame.TeamColor getTeamColor(String teamColor) throws DataAccessException {
         ChessGame.TeamColor currColor = null;
@@ -148,6 +175,34 @@ public class WebSocketHandler {
         }
 
         return currColor;
+    }
+
+    private char charToIntRow(char currRow) {
+        if(currRow == 'A' || currRow == 'a') {
+            currRow = 1;
+        }
+        if(currRow == 'B' || currRow == 'b') {
+            currRow = 2;
+        }
+        if(currRow == 'C' || currRow == 'c') {
+            currRow = 3;
+        }
+        if(currRow == 'D' || currRow == 'd') {
+            currRow = 4;
+        }
+        if(currRow == 'E' || currRow == 'e') {
+            currRow = 5;
+        }
+        if(currRow == 'F' || currRow == 'f') {
+            currRow = 6;
+        }
+        if(currRow == 'G' || currRow == 'g') {
+            currRow = 7;
+        }
+        if(currRow == 'H' || currRow == 'h') {
+            currRow = 8;
+        }
+        return currRow;
     }
 
 
