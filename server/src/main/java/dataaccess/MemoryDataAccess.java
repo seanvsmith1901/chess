@@ -70,7 +70,7 @@ public class MemoryDataAccess implements DataAccess {
         if (gameTokens.containsKey(gameName)) {
             throw new DataAccessException("gameName already exists");
         }
-        GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());
+        GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame(), false);
         gameTokens.put(gameName, newGame);
     }
 
@@ -99,7 +99,7 @@ public class MemoryDataAccess implements DataAccess {
             var currGameID = currentGame.gameID();
             var blackUserName = currentGame.blackUsername();
             GameData newGame =
-                    new GameData(currGameID, username, blackUserName, currentGame.gameName(), currentGame.game());
+                    new GameData(currGameID, username, blackUserName, currentGame.gameName(), currentGame.game(), false);
             gameTokens.put(currentGame.gameName(), newGame);
         }
         else {
@@ -110,7 +110,7 @@ public class MemoryDataAccess implements DataAccess {
             var currGameID = currentGame.gameID();
             var whiteUserName = currentGame.whiteUsername();
             GameData newGame =
-                    new GameData(currGameID, whiteUserName, username, currentGame.gameName(), currentGame.game());
+                    new GameData(currGameID, whiteUserName, username, currentGame.gameName(), currentGame.game(), false);
             gameTokens.put(currentGame.gameName(), newGame); // keep the same game name
         }
     }
@@ -141,6 +141,10 @@ public class MemoryDataAccess implements DataAccess {
 
     public void updateGame(Integer gameID, ChessGame currentGame) throws DataAccessException {
     ;
+    }
+
+    public void replaceGame(Integer gameID, GameData newGame) throws DataAccessException {
+        ;
     }
 
 

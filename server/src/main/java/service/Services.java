@@ -114,5 +114,9 @@ public class Services {
         return gameService.updateGame(gameID, username, oldPosition, newPosition, teamColor, promotionPiece);
     }
 
+    public void markGameAsDone(GameData currentGame) throws DataAccessException {
+        gameService.markGameCompleted(currentGame);
+    }
+
 
 }

@@ -254,7 +254,7 @@ public class Server {
             return serializer.toJson(new ErrorData("Error: bad request"));
         }
         try {
-            GameData returnGame = new GameData(-1, "Q", "Q", "fakeGame", new ChessGame()); // don't worry about it lol.
+            GameData returnGame = new GameData(-1, "Q", "Q", "fakeGame", new ChessGame(), false); // don't worry about it lol.
             var currentGames = services.getGames(authToken);
             for (GameData game : currentGames) {
                 if(game.gameID() == Integer.parseInt(gameID)) {

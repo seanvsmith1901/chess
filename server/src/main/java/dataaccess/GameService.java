@@ -38,7 +38,9 @@ public class GameService {
 
     public GameData updateGame(Integer gameID, String username, String oldPosition, String newPosition, String teamColor, String promotionPiece) throws DataAccessException {
         var currentGame = dataAccess.getGameFromID(String.valueOf(gameID));
-
+        if (currentGame.gameCompleted()) {
+            throw new DataAccessException("Game over! no more moves! Sorry :(");
+        }
         ChessGame modifiiedGame = currentGame.game();
 
 
@@ -75,10 +77,11 @@ public class GameService {
             throw new DataAccessException(e.getMessage()); // update this later (should tell them if it doesn't get em out of check or whatnot)
         }
 
+    }
 
-
-
-
+    public void markGameCompleted(GameData gameData) throws DataAccessException {
+        GameData newGame = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameData.game(), true);
+        dataAccess.replaceGame(gameData.gameID(), newGame);
     }
 
     private char charToIntRow(char currRow) {

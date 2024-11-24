@@ -107,7 +107,6 @@ public class Bucket {
     // alternates backround colors, gets the peice if there is and controls backround color.
     private void printBoardCell(int row, int col, ChessBoard board, ArrayList<ChessPosition> validMoves) {
         String bgColor = getCellBackgroundColor(row, col);
-        String highlight = SET_BG_COLOR_GREEN;
 
         ChessPosition position = new ChessPosition(row, col);
         ChessPiece piece = board.getPiece(position);
@@ -116,7 +115,7 @@ public class Bucket {
 
         if (validMoves != null) {
             if (validMoves.contains(position)) {
-                out.print(highlight); // not sure how these will interact
+                out.print(SET_BG_COLOR_GREEN); // not sure how these will interact
             }
         }
 

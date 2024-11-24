@@ -39,6 +39,8 @@ public interface DataAccess {
     void removeUser(String gameName, String username) throws DataAccessException;
 
     void updateGame(Integer gameID, ChessGame currentGame) throws DataAccessException;
+
+    void replaceGame(Integer gameID, GameData newGame) throws DataAccessException;
 //
 //
 

@@ -241,7 +241,7 @@ public class MySqlDataAccess implements DataAccess {
 
     public GameData getGame(String gameName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, gameName, whiteUsername, blackUsername, chessGame  FROM gameData WHERE gameName = ?";
+            var statement = "SELECT id, gameName, whiteUsername, blackUsername, chessGame, gameComplete  FROM gameData WHERE gameName = ?";
             try (var stmt = conn.prepareStatement(statement)) {
                 stmt.setString(1, gameName);
                 try (var rs = stmt.executeQuery()) {
@@ -260,7 +260,7 @@ public class MySqlDataAccess implements DataAccess {
 
     public GameData getGameFromID(String gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, gameName, whiteUsername, blackUsername, chessGame  FROM gameData WHERE id = ?";
+            var statement = "SELECT id, gameName, whiteUsername, blackUsername, chessGame, gameComplete  FROM gameData WHERE id = ?";
             try (var stmt = conn.prepareStatement(statement)) {
                 stmt.setString(1, gameID);
                 try (var rs = stmt.executeQuery()) {
@@ -330,6 +330,16 @@ public class MySqlDataAccess implements DataAccess {
 
     }
 
+    public void replaceGame(Integer gameID, GameData newGame) throws DataAccessException {
+        var statement = "DELETE FROM gameData WHERE id = ?";
+        executeUpdate(statement, gameID);
+        Boolean gameComplete = true;
+        String thisGame = gson.toJson(newGame.game());
+        var newStatement = "INSERT INTO gameData (id, gameName, whiteUsername, blackUsername, chessGame, gameComplete) VALUES (?, ?, ?, ?, ?, ?)";
+        executeUpdate(newStatement, newGame.gameID(), newGame.gameName(), newGame.whiteUsername(),
+                newGame.blackUsername(), thisGame, gameComplete);
+    }
+
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
@@ -345,6 +355,9 @@ public class MySqlDataAccess implements DataAccess {
                     }
                     else if (param == null) {
                         ps.setNull(i + 1, NULL);
+                    }
+                    else if (param instanceof Boolean p) {
+                        ps.setBoolean(i+1, p);
                     }
                 }
                 ps.executeUpdate();
@@ -433,8 +446,9 @@ public class MySqlDataAccess implements DataAccess {
         var whiteUserName = rs.getString("whiteUserName");
         var blackUsername = rs.getString("blackUserName");
         var gameName = rs.getString("gameName");
+        Boolean gameCompleted = rs.getBoolean("gameComplete");
         String json = rs.getString("chessGame");
         var chessGame = gson.fromJson(json, ChessGame.class);
-        return new GameData(gameID, whiteUserName, blackUsername, gameName, chessGame);
+        return new GameData(gameID, whiteUserName, blackUsername, gameName, chessGame, gameCompleted);
     }
 }

@@ -51,6 +51,7 @@ public class WebSocketHandler {
             case LEAVE -> leave(message, session);
             case MAKE_MOVE -> makeMove(message, session);
             case VALID -> getValidMoves(message, session);
+            case RESIGN -> resign(message, session);
         }
     }
 
@@ -116,6 +117,7 @@ public class WebSocketHandler {
                 String state = "check";
                     if (gameData.game().isInCheckmate(currColor)) {
                         state += "mate";
+                        services.markGameAsDone(gameData); // marks game as done and updates in database.
                 }
 
                 String playerInCheck =  gameData.whiteUsername();
@@ -160,6 +162,25 @@ public class WebSocketHandler {
              Error newError = new Error(ServerMessage.ServerMessageType.ERROR, e.getMessage());
              connections.directSend(authToken, gameID, newError); // send the error back to the user.
          }
+    }
+
+    public void resign(String message, Session session) throws IOException {
+        resignRequest currentRequest = new Gson().fromJson(message, resignRequest.class);
+        String authToken = currentRequest.getAuthToken();
+        Integer gameID = currentRequest.getGameID();
+        String gameName = currentRequest.getGameName();
+        String username = currentRequest.getUsername();
+        try {
+            GameData currGame = services.getGame(gameName);
+            services.markGameAsDone(currGame); // marks game as done and updates in database.
+            var newMessage = String.format("%s has resigned!", username);
+            ServerMessage newServerMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, newMessage);
+            connections.broadcast(authToken, gameID, newServerMessage);
+        }
+        catch (DataAccessException e) {
+            Error newError = new Error(ServerMessage.ServerMessageType.ERROR, e.getMessage());
+            connections.directSend(authToken, gameID, newError); // send the error back to the user.
+        }
     }
 
 

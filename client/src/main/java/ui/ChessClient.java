@@ -38,7 +38,7 @@ public class ChessClient {
 
     private NotificationHandler notificationHandler;
     private WebSocketFacade ws;
-
+    private boolean tried = false;
     private Bucket bucket;
 
 
@@ -390,7 +390,16 @@ public class ChessClient {
         return "";
     }
     public String resign(String... params) throws ResponseException {
-        return "";
+        if(!tried) {
+            tried = true;
+            return ("Are you sure you want to resign? type resign again to confirm.");
+        }
+        else {
+            ws.resign(authToken, currentGame.gameID(), currentGame.gameName(), username);
+            tried = false;
+            return "you have resigned. fetcher.";
+        }
+
 
     }
     public String highlightMoves(String... params) throws ResponseException {
