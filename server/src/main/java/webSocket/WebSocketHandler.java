@@ -61,14 +61,28 @@ public class WebSocketHandler {
         Integer gameID = currentRequest.getGameID();
         String teamColor = currentRequest.getTeamColor();
         String username = currentRequest.getUsername();
+        String gameName = currentRequest.getGameName();
+        GameData currentGame = null;
+
 
         connections.add(authToken, gameID, session);
         if(teamColor == null) {
             teamColor = "observer";
         }
+        try {
+            currentGame = services.getGame(gameName);
+        }
+        catch (DataAccessException e) {
+            Error newError = new Error(ServerMessage.ServerMessageType.ERROR, e.getMessage());
+            connections.directSend(authToken, gameID, newError); // send the error back to the user.
+        }
+
         var message = String.format("%s has joined the game %s as %s", username, gameID, teamColor);
         var serverMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(authToken, gameID, serverMessage);
+        var newBoardMessage = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, message, currentGame);
+        connections.broadcastAll(gameID, newBoardMessage); // send out the new gameboard to everyone
+
     }
 
     private void leave(String message, Session session) throws IOException {

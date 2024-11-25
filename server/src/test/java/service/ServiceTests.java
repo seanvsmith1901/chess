@@ -105,7 +105,7 @@ public class ServiceTests {
         var authToken = SERVICES.getAuth("West").authToken();
         SERVICES.createGame(authToken, "BestGame");
         var newGame =
-                new GameData(1, null, null, "BestGame", new ChessGame());
+                new GameData(1, null, null, "BestGame", new ChessGame(), false);
         assertEquals(SERVICES.getGame("BestGame"), newGame);
     }
 
@@ -126,7 +126,7 @@ public class ServiceTests {
         int gameID = SERVICES.getGame("BestGame").gameID();
         SERVICES.joinGame(authToken, "WHITE", String.valueOf(gameID));
         var expectedGame =
-                new GameData(1, "West", null, "BestGame", new ChessGame());
+                new GameData(1, "West", null, "BestGame", new ChessGame(), false);
         // checks to make sure that we really have joined the game as white.
         assertEquals(expectedGame, SERVICES.getGame("BestGame"));
     }

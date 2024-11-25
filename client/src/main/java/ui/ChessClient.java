@@ -94,6 +94,7 @@ public class ChessClient {
             var newUser = new RegisterData(params[0], params[1], params[2]);
             var newAuthData = server.register(newUser); // where should I store that auth token client side? just as a global variable?
             authToken = newAuthData.authToken();
+            username = newAuthData.username();
             state = State.SIGNEDIN;
             return String.format("You signed up as %s.", visitorName);
         }
@@ -169,13 +170,15 @@ public class ChessClient {
                 var joinData = new JoinData(teamColor, gameID);
                 var thisGame = server.joinGame(joinData, authToken);
                 currentGame = thisGame;
-                this.teamColor = teamColor;
                 ws = new WebSocketFacade(serverUrl, notificationHandler, bucket, username);
-                ws.joinGame(authToken, gameID, username, teamColor);
+                ws.joinGame(authToken, gameID, username, teamColor, currentGame.gameName());
+
+
                 System.out.println("Success! You have joined " + gamesList.get(input-1).gameName() + " as color " + teamColor);
                 out.print(ERASE_SCREEN);
                 state = State.INGAME; //do this AFTER we get confirmation from websocket
                 bucket.setChessGame(thisGame, username);
+
                 return "";
             }
         }
@@ -196,10 +199,11 @@ public class ChessClient {
                 var thisGame = server.observeGame(joinData, authToken);
                 currentGame = thisGame;
                 ws = new WebSocketFacade(serverUrl, notificationHandler, bucket, username);
-                ws.joinGame(authToken, gameID, username, null);
+                ws.joinGame(authToken, gameID, username, null, currentGame.gameName());
                 System.out.println("Success! You are observing " + gamesList.get(gameID-1).gameName() + " as an observer");
                 state = State.INGAME; //do this AFTER we get confirmation from websocket
                 bucket.setChessGame(thisGame, username);
+                bucket.displayBoard(username);
                 return "";
             }
 

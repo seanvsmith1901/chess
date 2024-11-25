@@ -69,6 +69,7 @@ public class WebSocketFacade extends Endpoint {
                     else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
                         LoadGame currentGame = serializer.fromJson(message, LoadGame.class); // does this work? who knows!!?
                         bucket.setChessGame(currentGame.getGame(), username);
+                        bucket.displayBoard(username);
                     }
                     else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
                         Error currentError = serializer.fromJson(message, Error.class);
@@ -103,9 +104,9 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void joinGame(String authToken, Integer gameID, String username, String teamColor) throws ResponseException {
+    public void joinGame(String authToken, Integer gameID, String username, String teamColor, String gameName) throws ResponseException {
         try {
-            var action = new JoinGameRequest(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, teamColor);
+            var action = new JoinGameRequest(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, teamColor, gameName);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new ResponseException(500, "not sure what went wrong but try again");

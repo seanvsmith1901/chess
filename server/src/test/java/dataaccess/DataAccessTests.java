@@ -132,7 +132,7 @@ public class DataAccessTests { // these have been renamed appropraitely.
     void getGameNamePositive() throws DataAccessException {
         AUTH_SERVICE.deleteEverything();
         var newGame =
-                new GameData(1, null, null, "goodGame", new ChessGame());
+                new GameData(1, null, null, "goodGame", new ChessGame(), false);
         GAME_SERVICE.createGame("goodGame"); // had to overwrite the chessgames equal operator for this one lol
         assertEquals(GAME_SERVICE.getGame("goodGame"), newGame);
     }
@@ -147,7 +147,7 @@ public class DataAccessTests { // these have been renamed appropraitely.
     @Test
     void getGameFromIDPositive() throws DataAccessException {
         var newGame =
-                new GameData(1, null, null, "bestGame", new ChessGame());
+                new GameData(1, null, null, "bestGame", new ChessGame(), false);
         GAME_SERVICE.createGame("bestGame");
         assertEquals(GAME_SERVICE.getGameFromID("1"), newGame);
     }
@@ -167,10 +167,10 @@ public class DataAccessTests { // these have been renamed appropraitely.
     @Test
     void createGameNegative() throws DataAccessException {
         var newGame =
-                new GameData(1, null, null, "goodGame", new ChessGame());
+                new GameData(1, null, null, "goodGame", new ChessGame(), false);
         GAME_SERVICE.createGame("goodGame");
         var anotherGame =
-                new GameData(2, null, null, "goodGame", new ChessGame());
+                new GameData(2, null, null, "goodGame", new ChessGame(), false);
         assertThrows(DataAccessException.class, () -> {
             GAME_SERVICE.createGame("goodGame");});
     }
@@ -207,7 +207,7 @@ public class DataAccessTests { // these have been renamed appropraitely.
     @Test
     void replaceUserInGamePositive() throws DataAccessException {
         var expectedGame =
-                new GameData(1, "West", null, "BestGame", new ChessGame());
+                new GameData(1, "West", null, "BestGame", new ChessGame(), false);
         GAME_SERVICE.createGame("BestGame");
         var newGame = GAME_SERVICE.getGame("BestGame");
         USER_SERVICE.createUser("West", "password", "west@gmail.com");

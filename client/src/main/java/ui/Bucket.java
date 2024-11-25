@@ -27,7 +27,6 @@ public class Bucket {
 
     public void setChessGame(GameData newChessGame, String username) {
         currentGame = newChessGame;
-        displayBoard(username);
     }
 
     public void displayBoard(String username) {
