@@ -14,7 +14,7 @@ import service.*;
 import model.*;
 import spark.*;
 
-import WebSocket.WebSocketHandler;
+import websocket.WebSocketHandler;
 
 import java.util.HashMap;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package WebSocket;
+package websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
@@ -59,13 +59,6 @@ public class WebSocketHandler {
         JoinGameRequest currentRequest = new Gson().fromJson(action, JoinGameRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
-        // note that this is entirely to make the tests pass and I hate them.
-
-
-        //String username = currentRequest.getUsername();
-        //String gameName = currentRequest.getGameName();
-        //GameData currentGame = null;
-
 
         connections.add(authToken, gameID, session);
         try {
@@ -115,7 +108,7 @@ public class WebSocketHandler {
     }
 
     private void makeMove(String message, Session session) throws IOException {
-        makeMoveRequest currentRequest = new Gson().fromJson(message, makeMoveRequest.class);
+        MakeMoveRequest currentRequest = new Gson().fromJson(message, MakeMoveRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
         Move move = currentRequest.getMove();

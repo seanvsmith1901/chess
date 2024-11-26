@@ -1,6 +1,6 @@
 package websocket.commands;
 
-public class makeMoveRequest extends UserGameCommand {
+public class MakeMoveRequest extends UserGameCommand {
 
     private final String username;
     private final String teamColor;
@@ -8,7 +8,8 @@ public class makeMoveRequest extends UserGameCommand {
     private final Move move;  // Change to Move object
     private final String promotionPeice;
 
-    public makeMoveRequest(CommandType commandType, String authToken, Integer gameID, Move move, String username, String teamColor, String gameName, String promotionPeice) {
+    public MakeMoveRequest(CommandType commandType, String authToken, Integer gameID, Move move, String username,
+                           String teamColor, String gameName, String promotionPeice) {
         super(commandType, authToken, gameID);
         this.username = username;
         this.teamColor = teamColor;

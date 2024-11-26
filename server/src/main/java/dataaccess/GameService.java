@@ -41,7 +41,8 @@ public class GameService {
         dataAccess.removeUserWithGameID(gameID, username);
     }
 
-    public GameData updateGame(Integer gameID, String username, Move move, ChessGame.TeamColor teamColor, String promotionPiece) throws DataAccessException {
+    public GameData updateGame(Integer gameID, String username, Move move,
+                               ChessGame.TeamColor teamColor, String promotionPiece) throws DataAccessException {
         var currentGame = dataAccess.getGameFromID(String.valueOf(gameID));
         if (currentGame.gameCompleted()) {
             throw new DataAccessException("Game over! no more moves! Sorry :(");
@@ -73,7 +74,8 @@ public class GameService {
     }
 
     public void markGameCompleted(GameData gameData) throws DataAccessException {
-        GameData newGame = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameData.game(), true);
+        GameData newGame = new GameData(gameData.gameID(), gameData.whiteUsername(),
+                gameData.blackUsername(), gameData.gameName(), gameData.game(), true);
         dataAccess.replaceGame(gameData.gameID(), newGame);
     }
 
@@ -104,7 +106,8 @@ public class GameService {
         return currPieceType;
     }
 
-    private static ChessGame.TeamColor getTeamColor(String teamColor, ChessGame modifiiedGame) throws DataAccessException {
+    private static ChessGame.TeamColor getTeamColor(String teamColor, ChessGame modifiiedGame)
+            throws DataAccessException {
         ChessGame.TeamColor currColor = null;
 
         if(Objects.equals(teamColor, "WHITE") || Objects.equals(teamColor, "white")) {

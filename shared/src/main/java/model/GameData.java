@@ -20,7 +20,9 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
         this.gameName = gameName;
         this.game = game;
         this.gameCompleted = gameCompleted;
-        if(gameCompleted == null) gameCompleted = false;
+        if(gameCompleted == null) {
+            gameCompleted = false;
+        }
     }
 
     @Override
