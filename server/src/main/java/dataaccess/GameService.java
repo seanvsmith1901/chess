@@ -55,7 +55,7 @@ public class GameService {
         ChessPosition newFormalPosition = new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getCol());
 
         ChessPiece.PieceType newPiece = null;
-        if(!Objects.equals(promotionPiece, null)) {
+        if(!(Objects.equals(promotionPiece, null) || Objects.equals(promotionPiece, "none"))) {
             newPiece = getPieceType(promotionPiece);
         }
 
