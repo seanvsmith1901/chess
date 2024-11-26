@@ -5,12 +5,12 @@ import model.GameData;
 
 import java.util.Collection;
 
-public class validMoves extends ServerMessage {
+public class ValidMoves extends ServerMessage {
     Collection<ChessMove> validMoves;
     GameData game;
 
 
-    public validMoves(ServerMessageType type, Collection<ChessMove> validMoves, GameData game) {
+    public ValidMoves(ServerMessageType type, Collection<ChessMove> validMoves, GameData game) {
         super(type);
         this.validMoves = validMoves;
         this.game = game;

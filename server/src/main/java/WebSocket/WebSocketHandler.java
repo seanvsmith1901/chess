@@ -1,4 +1,4 @@
-package webSocket;
+package WebSocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
@@ -8,7 +8,6 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -21,7 +20,6 @@ import websocket.commands.UserGameCommand;
 import service.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -29,8 +27,6 @@ import serializer.GsonObject;
 
 import websocket.messages.*;
 import websocket.commands.*;
-
-import javax.xml.crypto.Data;
 
 
 @WebSocket
@@ -97,7 +93,7 @@ public class WebSocketHandler {
     }
 
     private void leave(String message, Session session) throws IOException {
-        leaveGameRequest currentRequest = new Gson().fromJson(message, leaveGameRequest.class);
+        LeaveGameRequest currentRequest = new Gson().fromJson(message, LeaveGameRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
 
@@ -172,19 +168,19 @@ public class WebSocketHandler {
     }
 
     private void getValidMoves(String message, Session session) throws IOException { // IO should never get used so we should be chillin
-        validMovesRequest currentRequest = new Gson().fromJson(message, validMovesRequest.class);
+        ValidMovesRequest currentRequest = new Gson().fromJson(message, ValidMovesRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
-        String StartingPosition = currentRequest.getStartPosition();
+        Position startPosition = currentRequest.getStartPosition();
         String gameName = currentRequest.getGameName();
 
          try {
-             int currRow = charToIntRow(StartingPosition.charAt(0));
-             int currCol = Character.getNumericValue(StartingPosition.charAt(1)); // this one does not.
+             int currRow = startPosition.getCol();
+             int currCol = startPosition.getRow(); // ignore the swap im lazy
              ChessPosition newPosition = new ChessPosition(currCol, currRow); // don't worry about it has to do with the way we do lookups
              GameData currGame = services.getGame(gameName);
              Collection<ChessMove> validMoves = currGame.game().validMoves(newPosition);
-             ServerMessage newServerMessage = new validMoves(ServerMessage.ServerMessageType.VALID_MOVES, validMoves, currGame);
+             ServerMessage newServerMessage = new ValidMoves(ServerMessage.ServerMessageType.VALID_MOVES, validMoves, currGame);
              connections.directSend(authToken, gameID, newServerMessage);
          }
          catch (DataAccessException e) {
@@ -194,7 +190,7 @@ public class WebSocketHandler {
     }
 
     public void resign(String message, Session session) throws IOException {
-        resignRequest currentRequest = new Gson().fromJson(message, resignRequest.class);
+        ResignRequest currentRequest = new Gson().fromJson(message, ResignRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
         //String gameName = currentRequest.getGameName();

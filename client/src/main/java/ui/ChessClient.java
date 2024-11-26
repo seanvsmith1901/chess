@@ -422,7 +422,10 @@ public class ChessClient {
     }
     public String highlightMoves(String... params) throws ResponseException {
         var startingPosition = params[0];
-        ws.returnLegalMoves(authToken, startingPosition, currentGame.gameID(), currentGame.gameName());
+        int rowToSend = charToIntRow(startingPosition.charAt(0));
+        int oldCol = Integer.parseInt(String.valueOf(startingPosition.charAt(1))); // yeah thats definitely legal
+        Position newPosition = new Position(oldCol, rowToSend);
+        ws.returnLegalMoves(authToken, newPosition, currentGame.gameID(), currentGame.gameName());
         return "";
 
     }

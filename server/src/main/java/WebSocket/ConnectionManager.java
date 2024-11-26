@@ -1,4 +1,4 @@
-package webSocket;
+package WebSocket;
 
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.LoadGame;
@@ -64,8 +64,8 @@ public class ConnectionManager {
     }
 
     public void broadcastAllNotification (Integer gameName, ServerMessage notification) throws IOException {
-        Map<String, Connection> current_map = connections.get(gameName);
-        for (var c : current_map.values()) {
+        Map<String, Connection> currentMap = connections.get(gameName);
+        for (var c : currentMap.values()) {
             if (c.session.isOpen()) {
                 c.send(notification);
             }
@@ -75,8 +75,8 @@ public class ConnectionManager {
 
     public void directSend(String excludeVisitorName, Integer gameName, ServerMessage notification) throws IOException {
         var removeList = new ArrayList<Connection>();
-        Map<String, Connection> current_map = connections.get(gameName);
-        for (var c : current_map.values()) {
+        Map<String, Connection> currentMap = connections.get(gameName);
+        for (var c : currentMap.values()) {
             if (c.session.isOpen()) {
                 if (c.visitorName.equals(excludeVisitorName)) {
                     c.send(notification);

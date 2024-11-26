@@ -15,7 +15,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Optional;
 
 
 import model.*;
@@ -23,7 +22,7 @@ import model.*;
 import serializer.ChessPositionMapDeserializer;
 import serializer.ChessPositionMapSerializer;
 import ui.Bucket;
-import websocket.commands.validMovesRequest;
+import websocket.commands.ValidMovesRequest;
 import websocket.messages.LoadGame;
 import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
@@ -76,7 +75,7 @@ public class WebSocketFacade extends Endpoint {
                         notificationHandler.displayError(currentError);
                     }
                     else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.VALID_MOVES) {
-                        validMoves newValidMoves = serializer.fromJson(message, validMoves.class);
+                        ValidMoves newValidMoves = serializer.fromJson(message, ValidMoves.class);
                         Collection<ChessMove> validMoves = newValidMoves.returnValidMoves();
                         GameData currGame = newValidMoves.returnGame();
                         ArrayList<ChessPosition> newPositions = new ArrayList<>();
@@ -115,7 +114,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void leaveGame(String authToken, Integer gameID, String username, String gameName, String teamColor) throws ResponseException {
         try {
-            var action = new leaveGameRequest(UserGameCommand.CommandType.LEAVE, authToken, gameID, username, gameName, teamColor);
+            var action = new LeaveGameRequest(UserGameCommand.CommandType.LEAVE, authToken, gameID, username, gameName, teamColor);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         }
         catch (IOException ex) {
@@ -134,9 +133,9 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void returnLegalMoves(String authToken, String startingPosition, Integer gameID, String gameName) throws ResponseException {
+    public void returnLegalMoves(String authToken, Position startingPosition, Integer gameID, String gameName) throws ResponseException {
         try {
-            var action = new validMovesRequest(UserGameCommand.CommandType.VALID, authToken, gameID, startingPosition, gameName);
+            var action = new ValidMovesRequest(UserGameCommand.CommandType.VALID, authToken, gameID, startingPosition, gameName);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         }
         catch (IOException ex) {
@@ -146,7 +145,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void resign(String authToken, Integer gameID, String gameName, String username) throws ResponseException {
         try {
-            var action = new resignRequest(UserGameCommand.CommandType.RESIGN, authToken, gameID, gameName, username);
+            var action = new ResignRequest(UserGameCommand.CommandType.RESIGN, authToken, gameID, gameName, username);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         }
         catch (IOException ex) {

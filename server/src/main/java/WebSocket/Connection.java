@@ -1,4 +1,4 @@
-package webSocket;
+package WebSocket;
 
 import chess.ChessPiece;
 import chess.ChessPosition;
@@ -12,7 +12,6 @@ import java.util.HashMap;
 
 import serializer.ChessPositionMapDeserializer;
 import serializer.ChessPositionMapSerializer;
-import serializer.GsonObject;
 
 public class Connection {
     public String visitorName;

@@ -1,6 +1,6 @@
 package websocket.commands;
 
-public class leaveGameRequest extends UserGameCommand {
+public class LeaveGameRequest extends UserGameCommand {
 
     private final String username;
 
@@ -8,7 +8,7 @@ public class leaveGameRequest extends UserGameCommand {
 
     private final String teamColor;
 
-    public leaveGameRequest(CommandType commandType, String authToken, Integer gameID, String username, String gameName, String teamColor) {
+    public LeaveGameRequest(CommandType commandType, String authToken, Integer gameID, String username, String gameName, String teamColor) {
         super(commandType, authToken, gameID);
         this.username = username;
         this.gameName = gameName;
