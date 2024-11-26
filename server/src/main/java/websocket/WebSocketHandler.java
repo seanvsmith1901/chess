@@ -127,17 +127,17 @@ public class WebSocketHandler {
 
             var newMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, thisMessage);
             connections.broadcast(authToken, gameID, newMessage); // everyone who didn't
-            if (gameData.game().isInCheck(teamColor)) {
+            if (gameData.game().isInCheck(gameData.game().getTeamTurn())) {
                 String formatter = " is in ";
                 String state = "check";
-                if (gameData.game().isInCheckmate(teamColor)) {
-                    state += "mate";
+                if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())) {
+                    state += "mate. Game over!";
                     services.markGameAsDone(gameData); // marks game as done and updates in database.
                 }
 
                 String playerInCheck = gameData.whiteUsername();
                 if (teamColor == ChessGame.TeamColor.BLACK) {
-                    playerInCheck = gameData.blackUsername();
+                    playerInCheck = gameData.whiteUsername();
                 }
                 String finalMessage = (playerInCheck) + (formatter) + (state);
                 Notification newNotificaiton =
