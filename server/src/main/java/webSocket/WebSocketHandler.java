@@ -30,6 +30,8 @@ import serializer.GsonObject;
 import websocket.messages.*;
 import websocket.commands.*;
 
+import javax.xml.crypto.Data;
+
 
 @WebSocket
 public class WebSocketHandler {
@@ -98,18 +100,16 @@ public class WebSocketHandler {
         leaveGameRequest currentRequest = new Gson().fromJson(message, leaveGameRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
-        String username = currentRequest.getUsername();
-        String gameName = currentRequest.getGameName();
-        String teamColor = currentRequest.getTeamColor();
 
-        connections.remove(authToken, gameID);
-        if(teamColor == null) {
-            teamColor = "observer";
-        }
-        var thisMessage = String.format("%s has left the game %s as %s", username, gameID, teamColor);
-        var serverMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, thisMessage);
         try {
+            connections.remove(authToken, gameID);
+            AuthData currentAuth = services.checkAuth(authToken);
+            String username = currentAuth.username();
+            GameData currentGame = services.getGameFromID(String.valueOf(gameID));
+            ChessGame.TeamColor teamColor = getTeamColorFromGame(currentGame, username);
             services.removeUserWithGameID(String.valueOf(gameID), username);
+            var thisMessage = String.format("%s has left the game %s as %s", username, gameID, teamColor);
+            var serverMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, thisMessage);
             connections.remove(authToken, gameID);
             connections.broadcast(authToken, gameID, serverMessage);
         }
@@ -197,10 +197,15 @@ public class WebSocketHandler {
         String gameName = currentRequest.getGameName();
         String username = currentRequest.getUsername();
         try {
+
+
             GameData currGame = services.getGameFromID(String.valueOf(gameID));
             if(currGame.gameCompleted()) {
                 throw new DataAccessException("You cant resign after they resign. game is over :(");
             }
+
+
+
             services.markGameAsDone(currGame); // marks game as done and updates in database.
             var newMessage = String.format("%s has resigned!", username);
             ServerMessage newServerMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, newMessage);
@@ -261,7 +266,7 @@ public class WebSocketHandler {
         if (Objects.equals(currentGame.blackUsername(), userName)) {
             return ChessGame.TeamColor.BLACK;
         }
-        else if (currentGame.whiteUsername().equals(userName)) {
+        else if (Objects.equals(currentGame.whiteUsername(), userName)) {
             return ChessGame.TeamColor.WHITE;
         }
         else {
