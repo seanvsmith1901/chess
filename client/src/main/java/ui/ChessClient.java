@@ -18,7 +18,8 @@ import exception.ResponseException;
 
 import static ui.EscapeSequences.*;
 
-
+import websocket.commands.Move;
+import websocket.commands.Position;
 
 
 public class ChessClient {
@@ -376,15 +377,29 @@ public class ChessClient {
         return "You have left the game";
     }
     public String makeMove(String... params) throws ResponseException {
-        String oldPosition = params[0];
-        String newPosition = params[1];
+        String oldMove = params[0];
+        int rowToSend = charToIntRow(oldMove.charAt(0));
+        int oldCol = Integer.parseInt(String.valueOf(oldMove.charAt(1))); // yeah thats definitely legal
+
+
+        String newMove = params[1];
+        int newRowToSend = charToIntRow(oldMove.charAt(0));
+        int newCol = Integer.parseInt(String.valueOf(oldMove.charAt(1))); // yeah thats definitely legal
+
+        Position startPosition = new Position(oldCol, rowToSend);
+        Position endPosition = new Position(newCol, newRowToSend);
+
+        Move moveToSend = new Move(startPosition, endPosition);
+
+
+
         String promotionPiece = "none";
-        if(params.length == 3){
-            promotionPiece = params[2];
+        if(params.length == 5){
+            promotionPiece = params[4];
         }
         Integer gameID = currentGame.gameID();
         try {
-            ws.makeMove(authToken, gameID, username, teamColor, oldPosition, newPosition, promotionPiece, currentGame.gameName());
+            ws.makeMove(authToken, gameID, username, teamColor, moveToSend, promotionPiece, currentGame.gameName());
         }
         catch (Exception e) {
             System.out.println("something went wrong. IDK what. might not be a valid move. I'll fix this up more later. ");
@@ -410,6 +425,34 @@ public class ChessClient {
         ws.returnLegalMoves(authToken, startingPosition, currentGame.gameID(), currentGame.gameName());
         return "";
 
+    }
+
+    private char charToIntRow(char currRow) {
+        if(currRow == 'A' || currRow == 'a') {
+            currRow = 1;
+        }
+        if(currRow == 'B' || currRow == 'b') {
+            currRow = 2;
+        }
+        if(currRow == 'C' || currRow == 'c') {
+            currRow = 3;
+        }
+        if(currRow == 'D' || currRow == 'd') {
+            currRow = 4;
+        }
+        if(currRow == 'E' || currRow == 'e') {
+            currRow = 5;
+        }
+        if(currRow == 'F' || currRow == 'f') {
+            currRow = 6;
+        }
+        if(currRow == 'G' || currRow == 'g') {
+            currRow = 7;
+        }
+        if(currRow == 'H' || currRow == 'h') {
+            currRow = 8;
+        }
+        return currRow;
     }
 
 }

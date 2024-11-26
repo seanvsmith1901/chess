@@ -123,10 +123,10 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void makeMove(String authToken, Integer gameID, String username, String teamColor, String move, String newPosition, String promotionPeice, String gameName) throws ResponseException {
+    public void makeMove(String authToken, Integer gameID, String username, String teamColor, Move move, String promotionPeice, String gameName) throws ResponseException {
         try {
             // convert the start and stop and promotion into a move here I think
-            var action = new makeMoveRequest(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, username, teamColor, gameName, move, promotionPeice);
+            var action = new makeMoveRequest(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move, username, teamColor, gameName, promotionPeice);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         }
         catch (IOException ex) {
