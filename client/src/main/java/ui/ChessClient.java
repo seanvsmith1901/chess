@@ -267,20 +267,27 @@ public class ChessClient {
         return "You have left the game";
     }
     public String makeMove(String... params) throws ResponseException {
-        String oldMove = params[0];
-        int rowToSend = charToIntRow(oldMove.charAt(0));
-        int oldCol = Integer.parseInt(String.valueOf(oldMove.charAt(1))); // yeah thats definitely legal
+        Move moveToSend = null;
+
+        try {
+            String oldMove = params[0];
+            int rowToSend = charToIntRow(oldMove.charAt(0));
+            int oldCol = Integer.parseInt(String.valueOf(oldMove.charAt(1))); // yeah thats definitely legal
 
 
-        String newMove = params[1];
-        int newRowToSend = charToIntRow(newMove.charAt(0));
-        int newCol = Integer.parseInt(String.valueOf(newMove.charAt(1))); // yeah thats definitely legal
+            String newMove = params[1];
+            int newRowToSend = charToIntRow(newMove.charAt(0));
+            int newCol = Integer.parseInt(String.valueOf(newMove.charAt(1))); // yeah thats definitely legal
 
-        Position startPosition = new Position(oldCol, rowToSend);
-        Position endPosition = new Position(newCol, newRowToSend);
+            Position startPosition = new Position(oldCol, rowToSend);
+            Position endPosition = new Position(newCol, newRowToSend);
 
-        Move moveToSend = new Move(startPosition, endPosition);
-
+            moveToSend = new Move(startPosition, endPosition);
+        }
+        catch (Exception e) {
+            System.out.println("Check your move formatting, looks funky");
+            return "";
+        }
 
 
         String promotionPiece = "none";

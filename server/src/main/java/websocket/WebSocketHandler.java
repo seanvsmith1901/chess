@@ -97,7 +97,11 @@ public class WebSocketHandler {
             GameData currentGame = services.getGameFromID(String.valueOf(gameID));
             ChessGame.TeamColor teamColor = getTeamColorFromGame(currentGame, username);
             services.removeUserWithGameID(String.valueOf(gameID), username);
-            var thisMessage = String.format("%s has left the game %s as %s", username, gameID, teamColor);
+            String sendTeamColor = "Observer";
+            if (teamColor != null) {
+                sendTeamColor = String.valueOf(teamColor.toString());
+            }
+            var thisMessage = String.format("%s has left the game %s as %s", username, gameID, sendTeamColor);
             var serverMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, thisMessage);
             connections.remove(authToken, gameID);
             connections.broadcast(authToken, gameID, serverMessage);
