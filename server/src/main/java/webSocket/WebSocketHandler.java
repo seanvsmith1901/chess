@@ -6,7 +6,9 @@ import chess.ChessPosition;
 import com.google.gson.Gson;
 
 import dataaccess.DataAccessException;
+import model.AuthData;
 import model.GameData;
+import model.UserData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -59,30 +61,37 @@ public class WebSocketHandler {
         JoinGameRequest currentRequest = new Gson().fromJson(action, JoinGameRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
-        String teamColor = currentRequest.getTeamColor();
-        String username = currentRequest.getUsername();
-        String gameName = currentRequest.getGameName();
-        GameData currentGame = null;
+        // note that this is entirely to make the tests pass and I hate them.
+
+
+        //String username = currentRequest.getUsername();
+        //String gameName = currentRequest.getGameName();
+        //GameData currentGame = null;
 
 
         connections.add(authToken, gameID, session);
-        if(teamColor == null) {
-            teamColor = "observer";
-        }
         try {
-            currentGame = services.getGame(gameName);
+            AuthData currentAuth = services.checkAuth(authToken);
+            String username = currentAuth.username();
+            GameData currentGame = services.getGameFromID(String.valueOf(gameID));
+            ChessGame.TeamColor teamColor = getTeamColorFromGame(currentGame, username);
+            String thingToPrint = "";
+            if (teamColor == null) {
+                thingToPrint = "observer";
+            }
+            else {
+                thingToPrint = teamColor.toString();
+            }
+            var message = String.format("%s has joined the game %s as %s", username, gameID, thingToPrint);
+            var serverMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(authToken, gameID, serverMessage);
+            var newBoardMessage = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, message, currentGame);
+            connections.directSend(authToken, gameID, newBoardMessage);
         }
         catch (DataAccessException e) {
             Error newError = new Error(ServerMessage.ServerMessageType.ERROR, e.getMessage());
             connections.directSend(authToken, gameID, newError); // send the error back to the user.
         }
-
-        var message = String.format("%s has joined the game %s as %s", username, gameID, teamColor);
-        var serverMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(authToken, gameID, serverMessage);
-        var newBoardMessage = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, message, currentGame);
-        connections.broadcastAll(gameID, newBoardMessage); // send out the new gameboard to everyone
-
     }
 
     private void leave(String message, Session session) throws IOException {
@@ -100,7 +109,8 @@ public class WebSocketHandler {
         var thisMessage = String.format("%s has left the game %s as %s", username, gameID, teamColor);
         var serverMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, thisMessage);
         try {
-            services.removeUser(gameName, username);
+            services.removeUserWithGameID(String.valueOf(gameID), username);
+            connections.remove(authToken, gameID);
             connections.broadcast(authToken, gameID, serverMessage);
         }
         catch (DataAccessException e) {
@@ -112,30 +122,32 @@ public class WebSocketHandler {
         makeMoveRequest currentRequest = new Gson().fromJson(message, makeMoveRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
-        String teamColor = currentRequest.getTeamColor();
-        String username = currentRequest.getUsername();
-        String oldPosition = currentRequest.getOldPosition();
-        String newPosition = currentRequest.getNewPosition();
+        //String teamColor = currentRequest.getTeamColor();
+        //String username = currentRequest.getUsername();
+        Move move = currentRequest.getMove();
         String promotionPeice = currentRequest.getPromotionPeice();
 
         try {
-            GameData gameData = services.makeMove(gameID, username, oldPosition, newPosition, teamColor, promotionPeice);
-            ChessGame.TeamColor currColor = getTeamColor(teamColor);
+            AuthData currentAuth = services.checkAuth(authToken);
+            String username = currentAuth.username();
+            GameData currentGame = services.getGameFromID(String.valueOf(gameID));
+            ChessGame.TeamColor teamColor = getTeamColorFromGame(currentGame, username);
+            GameData gameData = services.makeMove(gameID, username, move, teamColor, promotionPeice);
 
-            var thisMessage = String.format("%s has moved %s to %s", username, oldPosition, newPosition); // get the peice type maybe?
+            var thisMessage = String.format("%s has moved %s to %s", username, move, move); // get the peice type maybe?
 
             var newMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, thisMessage);
             connections.broadcast(authToken, gameID, newMessage); // send out the message to everyone who DIDN"T make the move
-            if (gameData.game().isInCheck(currColor)) {
+            if (gameData.game().isInCheck(teamColor)) {
                 String formatter = " is in ";
                 String state = "check";
-                    if (gameData.game().isInCheckmate(currColor)) {
+                    if (gameData.game().isInCheckmate(teamColor)) {
                         state += "mate";
                         services.markGameAsDone(gameData); // marks game as done and updates in database.
                 }
 
                 String playerInCheck =  gameData.whiteUsername();
-                if(currColor == ChessGame.TeamColor.BLACK) {
+                if(teamColor == ChessGame.TeamColor.BLACK) {
                     playerInCheck = gameData.blackUsername();
                 }
                 String finalMessage = (playerInCheck) + (formatter) + (state);
@@ -185,17 +197,22 @@ public class WebSocketHandler {
         String gameName = currentRequest.getGameName();
         String username = currentRequest.getUsername();
         try {
-            GameData currGame = services.getGame(gameName);
+            GameData currGame = services.getGameFromID(String.valueOf(gameID));
+            if(currGame.gameCompleted()) {
+                throw new DataAccessException("You cant resign after they resign. game is over :(");
+            }
             services.markGameAsDone(currGame); // marks game as done and updates in database.
             var newMessage = String.format("%s has resigned!", username);
             ServerMessage newServerMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, newMessage);
             connections.broadcast(authToken, gameID, newServerMessage);
+            connections.directSend(authToken, gameID, newServerMessage);
         }
         catch (DataAccessException e) {
             Error newError = new Error(ServerMessage.ServerMessageType.ERROR, e.getMessage());
             connections.directSend(authToken, gameID, newError); // send the error back to the user.
         }
     }
+
 
 
     private static ChessGame.TeamColor getTeamColor(String teamColor) throws DataAccessException {
@@ -240,5 +257,16 @@ public class WebSocketHandler {
         return currRow;
     }
 
+    public ChessGame.TeamColor getTeamColorFromGame(GameData currentGame, String userName) {
+        if (Objects.equals(currentGame.blackUsername(), userName)) {
+            return ChessGame.TeamColor.BLACK;
+        }
+        else if (currentGame.whiteUsername().equals(userName)) {
+            return ChessGame.TeamColor.WHITE;
+        }
+        else {
+            return null;
+        }
+    }
 
 }

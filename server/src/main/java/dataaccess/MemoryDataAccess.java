@@ -147,6 +147,10 @@ public class MemoryDataAccess implements DataAccess {
         ;
     }
 
+    public void removeUserWithGameID(String gameID, String username) throws DataAccessException {
+        ;
+    }
+
 
 
 }

@@ -304,20 +304,14 @@ public class MySqlDataAccess implements DataAccess {
 
     public void removeUser(String gameName, String username) throws DataAccessException {
         var currentGameObject = getGame(gameName); // make sure the game exists and is in the data base
-        var gameID = currentGameObject.gameID();
-        var whiteUsername = currentGameObject.whiteUsername();
-        var blackUsername = currentGameObject.blackUsername();
-
-        if(Objects.equals(currentGameObject.whiteUsername(), username)) {
-            whiteUsername = null;
-        }
-        if(Objects.equals(currentGameObject.blackUsername(), username)) {
-            blackUsername = null;
-        }
-
-        var statement = "UPDATE gameData SET whiteUsername = ?, blackUsername = ? WHERE id = ?";
-        executeUpdate(statement, whiteUsername, blackUsername, gameID);
+        updategameHelper(currentGameObject, username);
     }
+
+    public void removeUserWithGameID(String gameID, String username) throws DataAccessException {
+        var currentGameObject = getGameFromID(gameID);
+        updategameHelper(currentGameObject, username);
+    }
+
 
     public void updateGame(Integer gameID, ChessGame currentGame) throws DataAccessException {
         GameData oldReference = getGameFromID(gameID.toString());
@@ -329,6 +323,23 @@ public class MySqlDataAccess implements DataAccess {
         executeUpdate(nextStatement, oldReference.gameID(), oldReference.gameName(), oldReference.whiteUsername(), oldReference.blackUsername(), newGame);
 
     }
+    private void updategameHelper(GameData currentGameObject, String username) throws DataAccessException {
+        var gameID = currentGameObject.gameID();
+        var whiteUsername = currentGameObject.whiteUsername();
+        var blackUsername = currentGameObject.blackUsername();
+
+        if(Objects.equals(currentGameObject.whiteUsername(), username)) {
+            whiteUsername = null;
+        }
+        if(Objects.equals(currentGameObject.blackUsername(), username)) {
+            blackUsername = null;
+        }
+        var statement = "UPDATE gameData SET whiteUsername = ?, blackUsername = ? WHERE id = ?";
+        executeUpdate(statement, whiteUsername, blackUsername, gameID);
+    }
+
+
+
 
     public void replaceGame(Integer gameID, GameData newGame) throws DataAccessException {
         var statement = "DELETE FROM gameData WHERE id = ?";
@@ -339,6 +350,7 @@ public class MySqlDataAccess implements DataAccess {
         executeUpdate(newStatement, newGame.gameID(), newGame.gameName(), newGame.whiteUsername(),
                 newGame.blackUsername(), thisGame, gameComplete);
     }
+
 
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {

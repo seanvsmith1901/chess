@@ -11,6 +11,8 @@ import java.util.Objects;
 import org.mindrot.jbcrypt.BCrypt;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import websocket.commands.Move;
 
 
 public class Services {
@@ -38,6 +40,7 @@ public class Services {
     }
 
     public AuthData createSession(String username, String password) throws DataAccessException {
+
         UserData currentUser = userService.getUser(username);
 
         var hashedPassword = currentUser.password();
@@ -110,13 +113,26 @@ public class Services {
         gameService.removeUser(gameName, username);
     }
 
-    public GameData makeMove(Integer gameID, String username, String oldPosition, String newPosition, String teamColor, String promotionPiece) throws DataAccessException {
-        return gameService.updateGame(gameID, username, oldPosition, newPosition, teamColor, promotionPiece);
+    public void removeUserWithGameID(String gameID, String username) throws DataAccessException {
+        gameService.removeUserWithGameID(gameID, username);
+    }
+
+    public GameData makeMove(Integer gameID, String username, Move move, ChessGame.TeamColor teamColor, String promotionPiece) throws DataAccessException {
+        return gameService.updateGame(gameID, username, move, teamColor, promotionPiece);
     }
 
     public void markGameAsDone(GameData currentGame) throws DataAccessException {
         gameService.markGameCompleted(currentGame);
     }
+
+    public GameData getGameFromID(String gameID) throws DataAccessException {
+        return gameService.getGameFromID(gameID);
+    }
+
+    public AuthData checkAuth(String authToken) throws DataAccessException {
+        return authService.getAuthObject(authToken);
+    }
+
 
 
 }

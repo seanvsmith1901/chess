@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.*;
 import model.GameData;
+import websocket.commands.Move;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,40 +37,35 @@ public class GameService {
         dataAccess.removeUser(gameName, username);
     }
 
-    public GameData updateGame(Integer gameID, String username, String oldPosition, String newPosition, String teamColor, String promotionPiece) throws DataAccessException {
+    public void removeUserWithGameID(String gameID, String username) throws DataAccessException {
+        dataAccess.removeUserWithGameID(gameID, username);
+    }
+
+    public GameData updateGame(Integer gameID, String username, Move move, ChessGame.TeamColor teamColor, String promotionPiece) throws DataAccessException {
         var currentGame = dataAccess.getGameFromID(String.valueOf(gameID));
         if (currentGame.gameCompleted()) {
             throw new DataAccessException("Game over! no more moves! Sorry :(");
         }
         ChessGame modifiiedGame = currentGame.game();
 
-
-        ChessGame.TeamColor currColor = getTeamColor(teamColor, modifiiedGame);
-
         //var currentBoard = modifiiedGame.getBoard();
+        // TODO: Fix this once you can format moves correctly.
 
-        var oldRow = oldPosition.charAt(0); // this one needs to change
-        var oldCol = oldPosition.charAt(1); // this one does not.
-        oldRow = charToIntRow(oldRow);
+        ChessPosition oldFormalPosition = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getCol());
+        ChessPosition newFormalPosition = new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getCol());
 
-        var currRow = newPosition.charAt(0); // this one needs to change
-        var currCol = newPosition.charAt(1); // this one does not.
-        currRow = charToIntRow(currRow);
-
-        ChessPosition oldFormalPosition = new ChessPosition(Character.getNumericValue(oldCol), oldRow);
-        ChessPosition newFormalPosition = new ChessPosition(Character.getNumericValue(currCol), currRow);
         ChessPiece.PieceType newPiece = null;
-        if(!Objects.equals(promotionPiece, "none")) {
+        if(!Objects.equals(promotionPiece, null)) {
             newPiece = getPieceType(promotionPiece);
         }
 
         ChessMove newChessMove = new ChessMove(oldFormalPosition, newFormalPosition, newPiece);
 
         try {
+            checkTeamColor(modifiiedGame, teamColor);
             modifiiedGame.makeMove(newChessMove);
-            modifiiedGame.changeTeamTurn(currColor); // adjusts the turn appropriately (should really move this to inside makeMove haha)
+            modifiiedGame.changeTeamTurn(teamColor); // adjusts the turn appropriately (should really move this to inside makeMove haha)
             dataAccess.updateGame(gameID, modifiiedGame); // this should update the actual game
-            System.out.println("WE HAVE MADE A MOVE! SHOULD ONLY HAPPEN ONCE");
             var returnGame = dataAccess.getGameFromID(String.valueOf(gameID));
             // chekc to see if they are in check or whatnot.
             return returnGame;
@@ -82,34 +78,6 @@ public class GameService {
     public void markGameCompleted(GameData gameData) throws DataAccessException {
         GameData newGame = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameData.game(), true);
         dataAccess.replaceGame(gameData.gameID(), newGame);
-    }
-
-    private char charToIntRow(char currRow) {
-        if(currRow == 'A' || currRow == 'a') {
-            currRow = 1;
-        }
-        if(currRow == 'B' || currRow == 'b') {
-            currRow = 2;
-        }
-        if(currRow == 'C' || currRow == 'c') {
-            currRow = 3;
-        }
-        if(currRow == 'D' || currRow == 'd') {
-            currRow = 4;
-        }
-        if(currRow == 'E' || currRow == 'e') {
-            currRow = 5;
-        }
-        if(currRow == 'F' || currRow == 'f') {
-            currRow = 6;
-        }
-        if(currRow == 'G' || currRow == 'g') {
-            currRow = 7;
-        }
-        if(currRow == 'H' || currRow == 'h') {
-            currRow = 8;
-        }
-        return currRow;
     }
 
 
@@ -154,6 +122,12 @@ public class GameService {
             throw new DataAccessException("Wait yo turn!");
         }
         return currColor;
+    }
+
+    private void checkTeamColor(ChessGame currentGame, ChessGame.TeamColor currColor) throws DataAccessException {
+        if (currColor != currentGame.getTeamTurn()) {
+            throw new DataAccessException("Wait yo turn pls");
+        }
     }
 
 }

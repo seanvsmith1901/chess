@@ -189,6 +189,8 @@ public class Server {
 
             if(gameName == null) {
                 res.status(400);
+
+
                 return serializer.toJson(new ErrorData("Error: Bad request"));
             }
 

@@ -203,7 +203,6 @@ public class ChessClient {
                 System.out.println("Success! You are observing " + gamesList.get(gameID-1).gameName() + " as an observer");
                 state = State.INGAME; //do this AFTER we get confirmation from websocket
                 bucket.setChessGame(thisGame, username);
-                bucket.displayBoard(username);
                 return "";
             }
 
