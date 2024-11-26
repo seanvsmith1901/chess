@@ -127,6 +127,7 @@ public class WebSocketHandler {
         Move move = currentRequest.getMove();
         String promotionPeice = currentRequest.getPromotionPeice();
 
+
         try {
             AuthData currentAuth = services.checkAuth(authToken);
             String username = currentAuth.username();
@@ -141,13 +142,13 @@ public class WebSocketHandler {
             if (gameData.game().isInCheck(teamColor)) {
                 String formatter = " is in ";
                 String state = "check";
-                    if (gameData.game().isInCheckmate(teamColor)) {
-                        state += "mate";
-                        services.markGameAsDone(gameData); // marks game as done and updates in database.
+                if (gameData.game().isInCheckmate(teamColor)) {
+                    state += "mate";
+                    services.markGameAsDone(gameData); // marks game as done and updates in database.
                 }
 
-                String playerInCheck =  gameData.whiteUsername();
-                if(teamColor == ChessGame.TeamColor.BLACK) {
+                String playerInCheck = gameData.whiteUsername();
+                if (teamColor == ChessGame.TeamColor.BLACK) {
                     playerInCheck = gameData.blackUsername();
                 }
                 String finalMessage = (playerInCheck) + (formatter) + (state);
@@ -158,13 +159,15 @@ public class WebSocketHandler {
             var serverMessage = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, message, gameData);
             connections.broadcastAll(gameID, serverMessage); // send out the new gameboard to everyone
 
-
-
-
-        }
-        catch (DataAccessException e) {
-            Error newError = new Error(ServerMessage.ServerMessageType.ERROR, e.getMessage());
-            connections.directSend(authToken, gameID, newError); // send the error back to the user.
+        } catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "unauthorized")) {
+                Error newError = new Error(ServerMessage.ServerMessageType.ERROR, e.getMessage());
+                connections.sendThroughSession(session, newError);
+            }
+            else {
+                Error newError = new Error(ServerMessage.ServerMessageType.ERROR, e.getMessage());
+                connections.directSend(authToken, gameID, newError); // send the error back to the user.
+            }
         }
     }
 

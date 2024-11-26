@@ -87,4 +87,9 @@ public class ConnectionManager {
         }
     }
 
+    public void sendThroughSession(Session session, ServerMessage newError) throws IOException {
+        Connection thisConnection = new Connection("null", session);
+        thisConnection.send(newError);
+    }
+
 }
