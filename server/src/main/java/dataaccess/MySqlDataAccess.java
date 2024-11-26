@@ -320,7 +320,8 @@ public class MySqlDataAccess implements DataAccess {
         String newGame = gson.toJson(currentGame);
 
         var nextStatement = "INSERT INTO gameData (id, gameName, whiteUsername, blackUsername, chessGame) VALUES (?, ?, ?, ?, ?)";
-        executeUpdate(nextStatement, oldReference.gameID(), oldReference.gameName(), oldReference.whiteUsername(), oldReference.blackUsername(), newGame);
+        executeUpdate(nextStatement, oldReference.gameID(), oldReference.gameName(), oldReference.whiteUsername(),
+                oldReference.blackUsername(), newGame);
 
     }
     private void updategameHelper(GameData currentGameObject, String username) throws DataAccessException {

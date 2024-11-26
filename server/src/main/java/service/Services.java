@@ -21,7 +21,7 @@ public class Services {
     private UserService userService;
     private DataAccess dataAccess;
 
-    public Services(DataAccess newDataAccess) { // remember to pass in the dataaccess objects and create new objects for the interface
+    public Services(DataAccess newDataAccess) { // dataaccess and new instances
         this.dataAccess = newDataAccess;
         authService = new AuthService(dataAccess);
         gameService = new GameService(dataAccess);
@@ -117,7 +117,8 @@ public class Services {
         gameService.removeUserWithGameID(gameID, username);
     }
 
-    public GameData makeMove(Integer gameID, String username, Move move, ChessGame.TeamColor teamColor, String promotionPiece) throws DataAccessException {
+    public GameData makeMove(Integer gameID, String username, Move move, ChessGame.TeamColor teamColor,
+                             String promotionPiece) throws DataAccessException {
         return gameService.updateGame(gameID, username, move, teamColor, promotionPiece);
     }
 

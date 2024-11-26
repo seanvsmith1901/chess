@@ -48,9 +48,6 @@ public class GameService {
         }
         ChessGame modifiiedGame = currentGame.game();
 
-        //var currentBoard = modifiiedGame.getBoard();
-        // TODO: Fix this once you can format moves correctly.
-
         ChessPosition oldFormalPosition = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getCol());
         ChessPosition newFormalPosition = new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getCol());
 
@@ -64,13 +61,13 @@ public class GameService {
         try {
             checkTeamColor(modifiiedGame, teamColor);
             modifiiedGame.makeMove(newChessMove);
-            modifiiedGame.changeTeamTurn(teamColor); // adjusts the turn appropriately (should really move this to inside makeMove haha)
+            modifiiedGame.changeTeamTurn(teamColor); // adjusts the turn appropriately
             dataAccess.updateGame(gameID, modifiiedGame); // this should update the actual game
             var returnGame = dataAccess.getGameFromID(String.valueOf(gameID));
             // chekc to see if they are in check or whatnot.
             return returnGame;
         } catch (InvalidMoveException e) {
-            throw new DataAccessException(e.getMessage()); // update this later (should tell them if it doesn't get em out of check or whatnot)
+            throw new DataAccessException(e.getMessage());
         }
 
     }

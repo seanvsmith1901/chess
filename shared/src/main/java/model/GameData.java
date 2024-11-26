@@ -8,10 +8,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 
-public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game, Boolean gameCompleted) {
+public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName,
+                       ChessGame game, Boolean gameCompleted) {
 
 
-    public GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game, Boolean gameCompleted) {
+    public GameData(int gameID, String whiteUsername, String blackUsername, String gameName,
+                    ChessGame game, Boolean gameCompleted) {
         this.gameID = gameID;
         this.whiteUsername = whiteUsername;
         this.blackUsername = blackUsername;

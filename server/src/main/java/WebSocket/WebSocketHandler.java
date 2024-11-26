@@ -118,8 +118,6 @@ public class WebSocketHandler {
         makeMoveRequest currentRequest = new Gson().fromJson(message, makeMoveRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
-        //String teamColor = currentRequest.getTeamColor();
-        //String username = currentRequest.getUsername();
         Move move = currentRequest.getMove();
         String promotionPeice = currentRequest.getPromotionPeice();
 
@@ -131,10 +129,11 @@ public class WebSocketHandler {
             ChessGame.TeamColor teamColor = getTeamColorFromGame(currentGame, username);
             GameData gameData = services.makeMove(gameID, username, move, teamColor, promotionPeice);
 
-            var thisMessage = String.format("%s has moved %s to %s", username, move, move); // get the peice type maybe?
+            var thisMessage = String.format("%s has moved %s to %s", username,
+                    move.getStartPosition(), move.getEndPosition());
 
             var newMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, thisMessage);
-            connections.broadcast(authToken, gameID, newMessage); // send out the message to everyone who DIDN"T make the move
+            connections.broadcast(authToken, gameID, newMessage); // everyone who didn't
             if (gameData.game().isInCheck(teamColor)) {
                 String formatter = " is in ";
                 String state = "check";
@@ -148,7 +147,8 @@ public class WebSocketHandler {
                     playerInCheck = gameData.blackUsername();
                 }
                 String finalMessage = (playerInCheck) + (formatter) + (state);
-                Notification newNotificaiton = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, finalMessage);
+                Notification newNotificaiton =
+                        new Notification(ServerMessage.ServerMessageType.NOTIFICATION, finalMessage);
                 connections.broadcastAllNotification(gameID, newNotificaiton);
             }
 
@@ -167,7 +167,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void getValidMoves(String message, Session session) throws IOException { // IO should never get used so we should be chillin
+    private void getValidMoves(String message, Session session) throws IOException { // IO should never throw
         ValidMovesRequest currentRequest = new Gson().fromJson(message, ValidMovesRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
@@ -177,15 +177,16 @@ public class WebSocketHandler {
          try {
              int currRow = startPosition.getCol();
              int currCol = startPosition.getRow(); // ignore the swap im lazy
-             ChessPosition newPosition = new ChessPosition(currCol, currRow); // don't worry about it has to do with the way we do lookups
+             ChessPosition newPosition = new ChessPosition(currCol, currRow);
              GameData currGame = services.getGame(gameName);
              Collection<ChessMove> validMoves = currGame.game().validMoves(newPosition);
-             ServerMessage newServerMessage = new ValidMoves(ServerMessage.ServerMessageType.VALID_MOVES, validMoves, currGame);
+             ServerMessage newServerMessage = new ValidMoves(ServerMessage.ServerMessageType.VALID_MOVES,
+                     validMoves, currGame);
              connections.directSend(authToken, gameID, newServerMessage);
          }
          catch (DataAccessException e) {
              Error newError = new Error(ServerMessage.ServerMessageType.ERROR, e.getMessage());
-             connections.directSend(authToken, gameID, newError); // send the error back to the user.
+             connections.directSend(authToken, gameID, newError);
          }
     }
 
@@ -193,8 +194,7 @@ public class WebSocketHandler {
         ResignRequest currentRequest = new Gson().fromJson(message, ResignRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
-        //String gameName = currentRequest.getGameName();
-        //String username = currentRequest.getUsername();
+
         try {
             AuthData currentAuth = services.checkAuth(authToken);
             String username = currentAuth.username();
@@ -220,49 +220,6 @@ public class WebSocketHandler {
         }
     }
 
-
-
-    private static ChessGame.TeamColor getTeamColor(String teamColor) throws DataAccessException {
-        ChessGame.TeamColor currColor = null;
-
-        // yes this is supposed to be swapped, its weird I know but it works. maybe.
-        if(Objects.equals(teamColor, "WHITE") || Objects.equals(teamColor, "white")) {
-            currColor = ChessGame.TeamColor.BLACK;
-        }
-        if(Objects.equals(teamColor, "BLACK") || Objects.equals(teamColor, "black")) {
-            currColor = ChessGame.TeamColor.WHITE;
-        }
-
-        return currColor;
-    }
-
-    private char charToIntRow(char currRow) {
-        if(currRow == 'A' || currRow == 'a') {
-            currRow = 1;
-        }
-        if(currRow == 'B' || currRow == 'b') {
-            currRow = 2;
-        }
-        if(currRow == 'C' || currRow == 'c') {
-            currRow = 3;
-        }
-        if(currRow == 'D' || currRow == 'd') {
-            currRow = 4;
-        }
-        if(currRow == 'E' || currRow == 'e') {
-            currRow = 5;
-        }
-        if(currRow == 'F' || currRow == 'f') {
-            currRow = 6;
-        }
-        if(currRow == 'G' || currRow == 'g') {
-            currRow = 7;
-        }
-        if(currRow == 'H' || currRow == 'h') {
-            currRow = 8;
-        }
-        return currRow;
-    }
 
     public ChessGame.TeamColor getTeamColorFromGame(GameData currentGame, String userName) {
         if (Objects.equals(currentGame.blackUsername(), userName)) {
