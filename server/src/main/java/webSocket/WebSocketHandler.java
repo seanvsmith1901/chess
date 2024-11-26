@@ -194,20 +194,23 @@ public class WebSocketHandler {
         resignRequest currentRequest = new Gson().fromJson(message, resignRequest.class);
         String authToken = currentRequest.getAuthToken();
         Integer gameID = currentRequest.getGameID();
-        String gameName = currentRequest.getGameName();
-        String username = currentRequest.getUsername();
+        //String gameName = currentRequest.getGameName();
+        //String username = currentRequest.getUsername();
         try {
-
-
+            AuthData currentAuth = services.checkAuth(authToken);
+            String username = currentAuth.username();
             GameData currGame = services.getGameFromID(String.valueOf(gameID));
             if(currGame.gameCompleted()) {
                 throw new DataAccessException("You cant resign after they resign. game is over :(");
             }
-
-
-
+            GameData currentGame = services.getGameFromID(String.valueOf(gameID));
+            ChessGame.TeamColor teamColor = getTeamColorFromGame(currentGame, username);
+            if(teamColor == null) {
+                throw new DataAccessException("You're an observer! you can't do that!");
+            }
             services.markGameAsDone(currGame); // marks game as done and updates in database.
             var newMessage = String.format("%s has resigned!", username);
+
             ServerMessage newServerMessage = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, newMessage);
             connections.broadcast(authToken, gameID, newServerMessage);
             connections.directSend(authToken, gameID, newServerMessage);
